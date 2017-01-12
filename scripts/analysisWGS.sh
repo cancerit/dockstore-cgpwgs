@@ -188,7 +188,7 @@ do_parallel[cgpPindel]="pindel.pl \
  echo "Starting Parallel block 2: `date`"
  run_parallel $CPU do_parallel
 
-# prep ascat output for caveman:
+# prep ascat output for caveman and VerifyBam (Tumour):
 set -x
 ASCAT_CN="$OUTPUT_DIR/${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
