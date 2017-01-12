@@ -209,8 +209,8 @@ do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -a $OUTPUT_DIR/${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
  -j $OUTPUT_DIR/$NAME_MT/contamination/result.json"
 
- echo -e "\t[Parallel block 3] BB alleleCount added..."
- do_parallel[alleleCount]="battenberg.pl \
+echo -e "\t[Parallel block 3] BB alleleCount added..."
+do_parallel[alleleCount]="battenberg.pl \
   -o $OUTPUT_DIR/${NAME_MT}_vs_${NAME_WT}/battenberg \
   -u $REF_BASE/battenberg/1000genomesloci \
   -e $REF_BASE/battenberg/impute/impute_info.txt \

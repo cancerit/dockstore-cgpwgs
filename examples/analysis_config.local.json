@@ -1,0 +1,83 @@
+{
+  "reference": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/core_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "annot": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz",
+    "class": "File"
+  },
+  "snv_indel": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "cnv_sv": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "subcl": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "tumour": {
+    "path": "ftp://ngs.sanger.ac.uk/scratch/project/cancer/cgpwxs/testdata/COLO-829_ex.bam",
+    "class": "File"
+  },
+  "normal": {
+    "path": "ftp://ngs.sanger.ac.uk/scratch/project/cancer/cgpwxs/testdata/COLO-829-BL_ex.bam",
+    "class": "File"
+  },
+  "exclude": "NC_007605,hs37d5,GL%",
+  "result_archive": {
+    "path": "/tmp/result_WXS.tar.gz",
+    "class": "File"
+  },
+  "time_bas_MT": {
+    "path": "/tmp/time.bas_MT",
+    "class": "File"
+  },
+  "time_bas_WT": {
+    "path": "/tmp/time.bas_WT",
+    "class": "File"
+  },
+  "time_geno_MT": {
+    "path": "/tmp/time.geno_MT",
+    "class": "File"
+  },
+  "time_verify_WT": {
+    "path": "/tmp/time.verify_WT",
+    "class": "File"
+  },
+  "time_ascat": {
+    "path": "/tmp/time.ascat",
+    "class": "File"
+  },
+  "time_cgpPindel": {
+    "path": "/tmp/time.cgpPindel",
+    "class": "File"
+  },
+  "time_verify_MT": {
+    "path": "/tmp/time.verify_MT",
+    "class": "File"
+  },
+  "time_alleleCount": {
+    "path": "/tmp/time.alleleCount",
+    "class": "File"
+  },
+  "time_CaVEMan": {
+    "path": "/tmp/time.CaVEMan",
+    "class": "File"
+  },
+  "time_BRASS": {
+    "path": "/tmp/time.BRASS",
+    "class": "File"
+  },
+  "time_cgpPindel_annot": {
+    "path": "/tmp/time.cgpPindel_annot",
+    "class": "File"
+  },
+  "time_CaVEMan_annot": {
+    "path": "/tmp/time.CaVEMan_annot",
+    "class": "File"
+  }
+}
