@@ -88,7 +88,7 @@ printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "SNVFLAG='%s'\n", $ini;
 close $FH;
 
-exec('analysisWXS.sh'); # I will never return to the perl code
+exec('analysisWGS.sh'); # I will never return to the perl code
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
