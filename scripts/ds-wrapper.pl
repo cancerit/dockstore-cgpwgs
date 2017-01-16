@@ -45,22 +45,17 @@ if($mt_species ne $wt_species) {
     die "ERROR: Please define species to handle this mismatch\n";
   }
 }
-elsif($mt_species eq q{}) {
-  die "ERROR: Please define species, not found in [CR|B]AM headers.\n";
-}
-elsif(!defined $opts{'sp'}) {
+elsif($mt_species ne q{}) {
   $opts{'sp'} = $mt_species;
 }
+
 if($mt_assembly ne $wt_assembly) {
   warn "WARN: Assembly mismatch between T/N [CR|B]AM headers\n";
   if(!defined $opts{'as'}) {
     die "ERROR: Please define assembly to handle this mismatch\n";
   }
 }
-elsif($mt_assembly eq q{}) {
-  die "ERROR: Please define assembly, not found in [CR|B]AM headers.\n";
-}
-elsif(!defined $opts{'as'}) {
+elsif($mt_assembly ne q{}) {
   $opts{'as'} = $mt_assembly;
 }
 

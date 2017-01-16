@@ -32,6 +32,8 @@
     "path": "/tmp/result_WXS.tar.gz",
     "class": "File"
   },
+  "species": "human",
+  "assembly": "GRCh37d5",
   "time_bas_MT": {
     "path": "/tmp/time.bas_MT",
     "class": "File"
