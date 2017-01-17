@@ -11,6 +11,8 @@ USER  root
 ENV OPT /opt/wtsi-cgp
 ENV PATH $OPT/bin:$PATH
 ENV PERL5LIB $OPT/lib/perl5
+ENV R_LIBS $OPT/R-lib
+ENV R_LIBS_USER $R_LIBS
 
 COPY build/apt-build.sh build/
 COPY build/perllib-build.sh build/

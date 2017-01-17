@@ -2,7 +2,7 @@
 
 set -uxe
 
-mkdir -p /tmp/downloads
+mkdir -p /tmp/downloads $R_LIBS
 
 cd /tmp/downloads
 
@@ -47,7 +47,7 @@ curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/BRASS/archive/v5.
 mkdir /tmp/downloads/distro
 bsdtar -C /tmp/downloads/distro --strip-components 1 -xf distro.zip
 cd /tmp/downloads/distro/Rsupport
-./setupR.sh $OPT 1
+Rscript libInstall.R $R_LIBS
 cd /tmp/downloads/distro
 ./setup.sh $OPT
 cd /tmp/downloads
