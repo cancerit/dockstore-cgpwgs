@@ -42,10 +42,12 @@ cd /tmp/downloads/distro
 cd /tmp/downloads
 rm -rf distro.zip /tmp/downloads/distro /tmp/hts_cache
 
-# BRASS
+# BRASS and RSupport
 curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/BRASS/archive/v5.1.6.zip
 mkdir /tmp/downloads/distro
 bsdtar -C /tmp/downloads/distro --strip-components 1 -xf distro.zip
+cd /tmp/downloads/distro/Rsupport
+./setupR.sh $OPT 1
 cd /tmp/downloads/distro
 ./setup.sh $OPT
 cd /tmp/downloads
