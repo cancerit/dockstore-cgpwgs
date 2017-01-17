@@ -48,6 +48,9 @@ if($mt_species ne $wt_species) {
 elsif($mt_species ne q{}) {
   $opts{'sp'} = $mt_species;
 }
+if(!defined $opts{'sp'}) {
+  die "ERROR: Please define species, not found in [CR|B]AM headers.\n";
+}
 
 if($mt_assembly ne $wt_assembly) {
   warn "WARN: Assembly mismatch between T/N [CR|B]AM headers\n";
@@ -57,6 +60,9 @@ if($mt_assembly ne $wt_assembly) {
 }
 elsif($mt_assembly ne q{}) {
   $opts{'as'} = $mt_assembly;
+}
+if(!defined $opts{'as'}) {
+  die "ERROR: Please define assembly, not found in [CR|B]AM headers.\n";
 }
 
 printf "Options loaded: \n%s\n",Dumper(\%opts);
