@@ -121,6 +121,7 @@ if [ ! -f "${BAM_MT}.bas" ]; then
   do_parallel[bas_MT]="bam_stats -i $BAM_MT_TMP -o $BAM_MT_TMP.bas"
 else
   ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
+  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
 fi
 
 if [ ! -f "${BAM_WT}.bas" ]; then
@@ -128,6 +129,7 @@ if [ ! -f "${BAM_WT}.bas" ]; then
   do_parallel[bas_WT]="bam_stats -i $BAM_WT_TMP -o $BAM_WT_TMP.bas"
 else
   ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
+  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
 fi
 
 echo -e "\t[Parallel block 1] Genotype Check added..."
