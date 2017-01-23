@@ -77,7 +77,7 @@ ref_unpack($ref_area, $opts{'cs'});
 ref_unpack($ref_area, $opts{'sc'});
 
 ## now complete the caveman flaging file correctly
-my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WXS.ini");
+my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
 
 my $run_file = $ENV{HOME}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
@@ -99,7 +99,7 @@ exec('analysisWGS.sh'); # I will never return to the perl code
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
   $species =~ s/ /_/g;
-  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WXS.ini';
+  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WGS.ini';
   open my $IN, '<', $ini_in;
   open my $OUT,'>',$ini_out;
   while(my $line = <$IN>) {
@@ -160,7 +160,7 @@ __END__
 
 =head1 NAME
 
-dh-wrapper.pl - Generate the param file and execute analysisWXS.sh (for dockstore)
+dh-wrapper.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
 
 =head1 SYNOPSIS
 
