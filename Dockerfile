@@ -25,7 +25,7 @@ RUN bash build/opt-build.sh
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
 COPY bin/ssearch36-fasta-36.3.8d-linux64 $OPT/bin/ssearch36
-RUN chmod a+x $OPT/bin/analysisWXS.sh $OPT/bin/ds-wrapper.pl $OPT/bin/ssearch36
+RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-wrapper.pl $OPT/bin/ssearch36
 
 USER    ubuntu
 WORKDIR /home/ubuntu
