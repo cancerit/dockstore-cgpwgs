@@ -245,7 +245,7 @@ do_parallel[CaVEMan]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman"
 
- echo -e "\t[Parallel block 3] BRASS added..."
+echo -e "\t[Parallel block 3] BRASS added..."
 do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -d $REF_BASE/brass/HiDepth.bed.gz \
  -f $REF_BASE/brass/brass_np.groups.gz \
@@ -261,19 +261,19 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/*.samplestatistics.txt \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass"
 
+ # annotate pindel
+ rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
+ echo -e "\t[Parallel block 3] Pindel_annot added..."
+ do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache.gz \
+  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
+  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
+
 echo "Starting Parallel block 3: `date`"
 run_parallel $CPU do_parallel
 
 # unset and redeclare the parallel array ready for block 4
 unset do_parallel
 declare -A do_parallel
-
-# annotate pindel
-rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
-echo -e "\t[Parallel block 4] Pindel_annot added..."
-do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache.gz \
- -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
 
 # annotate caveman
 rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf.gz*
