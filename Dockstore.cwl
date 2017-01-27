@@ -2,9 +2,9 @@
 
 class: CommandLineTool
 
-id: "cgpwxs"
+id: "cgpwgs"
 
-label: "CGP WXS analysis flow"
+label: "CGP WGS analysis flow"
 
 cwlVersion: v1.0
 
@@ -141,15 +141,15 @@ outputs:
     outputBinding:
       glob: WGS_*_vs_*.time.bas_WT
 
-  time_geno_MT:
+  time_geno:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.time.geno_MT
+      glob: WGS_*_vs_*.time.geno
 
   time_verify_WT:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.time.verify_WT
+      glob: WGS_*.time.verify_WT
 
   time_ascat:
     type: File
@@ -164,7 +164,7 @@ outputs:
   time_verify_MT:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.time.verify_MT
+      glob: WGS_*.time.verify_MT
 
   time_alleleCount:
     type: File

@@ -42,8 +42,8 @@
     "path": "/tmp/time.bas_WT",
     "class": "File"
   },
-  "time_geno_MT": {
-    "path": "/tmp/time.geno_MT",
+  "time_geno": {
+    "path": "/tmp/time.geno",
     "class": "File"
   },
   "time_verify_WT": {
