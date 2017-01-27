@@ -15,11 +15,12 @@ ENV R_LIBS $OPT/R-lib
 ENV R_LIBS_USER $R_LIBS
 
 COPY build/apt-build.sh build/
-COPY build/perllib-build.sh build/
-COPY build/opt-build.sh build/
-
 RUN bash build/apt-build.sh
+
+COPY build/perllib-build.sh build/
 RUN bash build/perllib-build.sh
+
+COPY build/opt-build.sh build/
 RUN bash build/opt-build.sh
 
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
