@@ -20,7 +20,7 @@ run_parallel () {
 
     echo -e "\tStarting $key"
     set -x
-    bash -c "$CMD" &
+    bash -c "$CMD" >& $OUTPUT_DIR/${key}.wrapper.log&
     set +x
     pids+=(["$key"]="$!")
   done
@@ -194,9 +194,9 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
-set +x
 # ensure no annotated pindel
 rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
+set +x
 
 # unset and redeclare the parallel array ready for block 3
 unset do_parallel
