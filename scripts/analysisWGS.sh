@@ -139,6 +139,26 @@ do_parallel[geno]="compareBamGenotypes.pl \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
  -tb $BAM_MT_TMP"
 
+echo -e "\t[Parallel block 1] VerifyBam Normal added..."
+do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
+  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
+  -b $BAM_WT_TMP \
+  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
+
+echo -e "\t[Parallel block 1] BB alleleCount added..."
+do_parallel[alleleCount]="battenberg.pl \
+  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
+  -u $REF_BASE/battenberg/1000genomesloci \
+  -e $REF_BASE/battenberg/impute/impute_info.txt \
+  -c $REF_BASE/battenberg/probloci.txt \
+  -r $REF_BASE/genome.fa.fai \
+  -ig $REF_BASE/battenberg/ignore_contigs.txt \
+  -ge XX \
+  -tb $BAM_MT_TMP \
+  -nb $BAM_WT_TMP \
+  -p allelecount \
+  -t $CPU"
+
 echo "Starting Parallel block 1: `date`"
 run_parallel $CPU do_parallel
 
@@ -146,12 +166,6 @@ run_parallel $CPU do_parallel
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 2"
-
-echo -e "\t[Parallel block 2] VerifyBam Normal added..."
-do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
- -b $BAM_WT_TMP \
- -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
 
 echo -e "\t[Parallel block 2] ASCAT added..."
 do_parallel[ascat]="ascat.pl \
@@ -209,20 +223,6 @@ do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -b $BAM_MT_TMP \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
-
-echo -e "\t[Parallel block 3] BB alleleCount added..."
-do_parallel[alleleCount]="battenberg.pl \
-  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-  -u $REF_BASE/battenberg/1000genomesloci \
-  -e $REF_BASE/battenberg/impute/impute_info.txt \
-  -c $REF_BASE/battenberg/probloci.txt \
-  -r $REF_BASE/genome.fa.fai \
-  -ig $REF_BASE/battenberg/ignore_contigs.txt \
-  -ge XX \
-  -tb $BAM_MT_TMP \
-  -nb $BAM_WT_TMP \
-  -p allelecount \
-  -t $CPU"
 
 echo -e "\t[Parallel block 3] CaVEMan added..."
 do_parallel[CaVEMan]="caveman.pl \
