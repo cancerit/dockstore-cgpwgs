@@ -128,67 +128,12 @@ outputs:
   result_archive:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.tar.gz
+      glob: WGS_*_vs_*.result.tar.gz
 
   # named like this so can be converted to a secondaryFile set once supported by dockstore cli
-  time_bas_MT:
+  timings:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.time.bas_MT
-
-  time_bas_WT:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.bas_WT
-
-  time_geno:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.geno
-
-  time_verify_WT:
-    type: File
-    outputBinding:
-      glob: WGS_*.time.verify_WT
-
-  time_ascat:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.ascat
-
-  time_cgpPindel:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.cgpPindel
-
-  time_verify_MT:
-    type: File
-    outputBinding:
-      glob: WGS_*.time.verify_MT
-
-  time_alleleCount:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.alleleCount
-
-  time_CaVEMan:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.CaVEMan
-
-  time_BRASS:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.BRASS
-
-  time_cgpPindel_annot:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.cgpPindel_annot
-
-  time_CaVEMan_annot:
-    type: File
-    outputBinding:
-      glob: WGS_*_vs_*.time.CaVEMan_annot
+      glob: WGS_*_vs_*.timings.tar.gz
 
 baseCommand: ["/opt/wtsi-cgp/bin/ds-wrapper.pl"]
