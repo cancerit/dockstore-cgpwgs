@@ -2,6 +2,11 @@ dockstore-cgpwgs
 ======
 `dockstore-cgpwgs` provides a complete multi threaded WGS analysis for SNV, INDEL, SV and Copynumber variation with associated annotation of VCF files.  This has been packaged specifically for use with the [Dockstore.org](https://dockstore.org/) framework.
 
+[![Docker Repository on Quay](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status "Docker Repository on Quay")](https://quay.io/repository/wtsicgp/dockstore-cgpwgs)
+
+[![Build Status](https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=master)](https://travis-ci.org/cancerit/dockstore-cgpwgs) : master  
+[![Build Status](https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=develop)](https://travis-ci.org/cancerit/dockstore-cgpwgs) : develop
+
 Required input files are
 
 1. Tumour BAM file
