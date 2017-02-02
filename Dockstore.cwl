@@ -123,7 +123,7 @@ outputs:
   run_params:
     type: File
     outputBinding:
-      glob: WGS_*_vs_*.run.params
+      glob: run.params
 
   result_archive:
     type: File

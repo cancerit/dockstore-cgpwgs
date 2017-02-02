@@ -28,58 +28,18 @@
     "class": "File"
   },
   "exclude": "NC_007605,hs37d5,GL%",
+  "species": "human",
+  "assembly": "GRCh37d5",
   "result_archive": {
     "path": "/tmp/result_WGS.tar.gz",
     "class": "File"
   },
-  "species": "human",
-  "assembly": "GRCh37d5",
-  "time_bas_MT": {
-    "path": "/tmp/time.bas_MT",
+  "timings": {
+    "path": "/tmp/timings_WGS.tar.gz",
     "class": "File"
   },
-  "time_bas_WT": {
-    "path": "/tmp/time.bas_WT",
-    "class": "File"
-  },
-  "time_geno": {
-    "path": "/tmp/time.geno",
-    "class": "File"
-  },
-  "time_verify_WT": {
-    "path": "/tmp/time.verify_WT",
-    "class": "File"
-  },
-  "time_ascat": {
-    "path": "/tmp/time.ascat",
-    "class": "File"
-  },
-  "time_cgpPindel": {
-    "path": "/tmp/time.cgpPindel",
-    "class": "File"
-  },
-  "time_verify_MT": {
-    "path": "/tmp/time.verify_MT",
-    "class": "File"
-  },
-  "time_alleleCount": {
-    "path": "/tmp/time.alleleCount",
-    "class": "File"
-  },
-  "time_CaVEMan": {
-    "path": "/tmp/time.CaVEMan",
-    "class": "File"
-  },
-  "time_BRASS": {
-    "path": "/tmp/time.BRASS",
-    "class": "File"
-  },
-  "time_cgpPindel_annot": {
-    "path": "/tmp/time.cgpPindel_annot",
-    "class": "File"
-  },
-  "time_CaVEMan_annot": {
-    "path": "/tmp/time.CaVEMan_annot",
+  "run_params": {
+    "path": "/tmp/params_WGS.params",
     "class": "File"
   }
 }
