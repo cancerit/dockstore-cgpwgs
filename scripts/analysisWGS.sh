@@ -44,7 +44,7 @@ run_parallel () {
 
   rm -f $OUTPUT_DIR/*.wrapper.log
 
-  return 1
+  return 0
 }
 
 set -e
