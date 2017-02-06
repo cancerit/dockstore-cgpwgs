@@ -8,41 +8,43 @@ TIME_FORMAT='command:%C\\nreal:%e\\nuser:%U\\nsys:%S\\npctCpu:%P\\ntext:%Xk\\nda
 # declare function to run parallel processing
 run_parallel () {
   # adapted from: http://stackoverflow.com/a/18666536/4460430
-  local max_concurrent_tasks=$1
-  local -A pids=()
+
+  rm -f $OUTPUT_DIR/*.wrapper.log
 
   for key in "${!do_parallel[@]}"; do
-    while [ $(jobs 2>&1 | grep -c Running) -ge "$max_concurrent_tasks" ]; do
-      sleep 1 # gnu sleep allows floating point here...
-    done
 
     CMD="/usr/bin/time -f $TIME_FORMAT -o $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.$key ${do_parallel[$key]}"
 
     echo -e "\tStarting $key"
     set -x
-    bash -c "$CMD" >& $OUTPUT_DIR/${key}.wrapper.log&
+    bash -c "$CMD ; echo 'WRAPPER_EXIT: '\$?" >& $OUTPUT_DIR/${key}.wrapper.log&
     set +x
-    pids+=(["$key"]="$!")
   done
 
-  errors=0
-  for key in "${!do_parallel[@]}"; do
-    pid=${pids[$key]}
-    local cur_ret=0
-    if [ -z "$pid" ]; then
-      echo "No Job ID known for the $key process" # should never happen
-      cur_ret=1
-    else
-      wait $pid
-      cur_ret=$?
-    fi
-    if [ "$cur_ret" -ne 0 ]; then
-      errors=$(($errors + 1))
-      echo "$key (${do_parallel[$key]}) failed."
-    fi
-  done
+  sleep 10
 
-  return $errors
+  set +e
+  while true ; do
+    ALL_WRAPPERS=`ls -1 $OUTPUT_DIR/*.wrapper.log | wc -l`
+    ALL_EXIT=`grep -lF 'WRAPPER_EXIT: ' $OUTPUT_DIR/*.wrapper.log | wc -l`
+    BAD_JOBS=`grep -e 'WRAPPER_EXIT: [^0]' $OUTPUT_DIR/*.wrapper.log | wc -l`
+
+    if [ $BAD_JOBS -ne 0 ]; then
+      DISPLAY_BAD=`grep -vF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
+      >&2 echo "ERRORS OCCURED: $DISPLAY_BAD"
+      exit 1
+    fi
+
+    if [ $ALL_WRAPPERS -eq $ALL_EXIT ]; then
+      break
+    fi
+    sleep 15
+  done
+  set -e
+
+  rm -f $OUTPUT_DIR/*.wrapper.log
+
+  return 0
 }
 
 set -e
@@ -161,7 +163,7 @@ do_parallel[alleleCount]="battenberg.pl \
   -t $CPU"
 
 echo "Starting Parallel block 1: `date`"
-run_parallel $CPU do_parallel
+run_parallel do_parallel
 
 # unset and redeclare the parallel array ready for block 2
 unset do_parallel
@@ -202,7 +204,7 @@ do_parallel[cgpPindel]="pindel.pl \
  -sf $REF_BASE/pindel/softRules.lst"
 
 echo "Starting Parallel block 2: `date`"
-run_parallel $CPU do_parallel
+run_parallel do_parallel
 
 # prep ascat output for caveman and VerifyBam (Tumour):
 set -x
@@ -270,7 +272,7 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
 
 echo "Starting Parallel block 3: `date`"
-run_parallel $CPU do_parallel
+run_parallel do_parallel
 
 # unset and redeclare the parallel array ready for block 4
 unset do_parallel
@@ -284,7 +286,7 @@ do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
 echo "Starting Parallel block 4: `date`"
-run_parallel $CPU do_parallel
+run_parallel do_parallel
 
 # clean up log files
 rm -rf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/*/logs

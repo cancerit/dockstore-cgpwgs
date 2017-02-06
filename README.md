@@ -2,6 +2,8 @@ dockstore-cgpwgs
 ======
 `dockstore-cgpwgs` provides a complete multi threaded WGS analysis for SNV, INDEL, SV and Copynumber variation with associated annotation of VCF files.  This has been packaged specifically for use with the [Dockstore.org](https://dockstore.org/) framework.
 
+[![Join the chat at https://gitter.im/dockstore-cgpwgs/general](https://badges.gitter.im/dockstore-cgpwgs/general.svg)](https://gitter.im/dockstore-cgpwgs/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Docker Repository on Quay](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status "Docker Repository on Quay")](https://quay.io/repository/wtsicgp/dockstore-cgpwgs)
 
 [![Build Status](https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=master)](https://travis-ci.org/cancerit/dockstore-cgpwgs) : master  
