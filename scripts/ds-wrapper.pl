@@ -26,6 +26,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
             'sf|snvflag=s' => \$opts{'sf'},
+            'sb|skipbb' => \$opts{'sb'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -96,6 +97,8 @@ printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "SNVFLAG='%s'\n", $ini;
+# Options to disable algorithms
+print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
 
 exec('analysisWGS.sh'); # I will never return to the perl code
@@ -184,6 +187,7 @@ dh-wrapper.pl [options] [file(s)...]
   Optional parameters
     -species     -sp  Species name (may require quoting)
     -assembly    -a   Reference assembly
+    -skipbb      -sb  Skip Battenberg allele counts
 
   Other:
     -help        -h   Brief help message.
@@ -238,6 +242,10 @@ Specify overriding species, by default will select the most prevelant entry in
 
 Specify overriding assembly, by default will select the most prevelant entry in
 [CR|B]AM header (to cope with inclusion of viral/decoy sequences).
+
+=item B<-skipbb>
+
+Disables the Battenberg allele count generation
 
 =back
 

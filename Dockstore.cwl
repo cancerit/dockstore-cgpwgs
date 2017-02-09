@@ -119,6 +119,14 @@ inputs:
       separate: true
       shellQuote: true
 
+  skipbb:
+    type: boolean?
+    doc: "Skip Battenberg allele counts"
+    inputBinding:
+      prefix: -skipbb
+      position: 11
+      separate: true
+
 outputs:
   run_params:
     type: File

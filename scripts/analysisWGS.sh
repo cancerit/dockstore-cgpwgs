@@ -149,18 +149,22 @@ do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
 
 echo -e "\t[Parallel block 1] BB alleleCount added..."
-do_parallel[alleleCount]="battenberg.pl \
-  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-  -u $REF_BASE/battenberg/1000genomesloci \
-  -e $REF_BASE/battenberg/impute/impute_info.txt \
-  -c $REF_BASE/battenberg/probloci.txt \
-  -r $REF_BASE/genome.fa.fai \
-  -ig $REF_BASE/battenberg/ignore_contigs.txt \
-  -ge XX \
-  -tb $BAM_MT_TMP \
-  -nb $BAM_WT_TMP \
-  -p allelecount \
-  -t $CPU"
+if [ ! -z ${SKIPBB+x} ]; then
+  do_parallel[alleleCount]="echo 'BB allele count disabled by params'"
+else
+  do_parallel[alleleCount]="battenberg.pl \
+    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
+    -u $REF_BASE/battenberg/1000genomesloci \
+    -e $REF_BASE/battenberg/impute/impute_info.txt \
+    -c $REF_BASE/battenberg/probloci.txt \
+    -r $REF_BASE/genome.fa.fai \
+    -ig $REF_BASE/battenberg/ignore_contigs.txt \
+    -ge XX \
+    -tb $BAM_MT_TMP \
+    -nb $BAM_WT_TMP \
+    -p allelecount \
+    -t $CPU"
+fi
 
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
