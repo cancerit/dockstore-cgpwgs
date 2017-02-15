@@ -36,6 +36,7 @@ delete $opts{'h'};
 delete $opts{'m'};
 delete $opts{'sp'} if(! defined $opts{'sp'}  || length $opts{'sp'} == 0);
 delete $opts{'as'} if(! defined $opts{'as'}  || length $opts{'as'} == 0);
+delete $opts{'sb'} if(! defined $opts{'sb'}  || length $opts{'sb'} == 0);
 
 ## read species/assembly from bam headers
 my ($mt_species, $mt_assembly) = species_assembly_from_xam($opts{'t'});
