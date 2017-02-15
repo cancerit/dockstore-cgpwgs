@@ -60,7 +60,7 @@ cd $TMPDIR/downloads
 rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
 
 # cgpBattenberg
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpBattenberg/archive/1.5.3.zip
+curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpBattenberg/archive/release/2.0.0.zip
 mkdir $TMPDIR/downloads/distro
 bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
 cd $TMPDIR/downloads/distro
