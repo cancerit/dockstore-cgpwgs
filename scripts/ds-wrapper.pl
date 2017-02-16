@@ -25,7 +25,6 @@ GetOptions( 'h|help' => \$opts{'h'},
             'e|exclude=s' => \$opts{'e'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
-            'sf|snvflag=s' => \$opts{'sf'},
             'sb|skipbb' => \$opts{'sb'},
 ) or pod2usage(2);
 
@@ -102,7 +101,10 @@ printf $FH "SNVFLAG='%s'\n", $ini;
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
 
-exec('analysisWGS.sh'); # I will never return to the perl code
+make_path($ENV{HOME}.'/timings');
+my $time_file = $ENV{HOME}.'/timings/WGS_analysis.time.full';
+my $cmd = "/usr/bin/time -v analysisWGS.sh >& $time_file";
+exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;

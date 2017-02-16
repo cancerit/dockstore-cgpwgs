@@ -3,8 +3,6 @@
 # about to do some parallel work...
 declare -A do_parallel
 
-TIME_FORMAT='command:%C\\nreal:%e\\nuser:%U\\nsys:%S\\npctCpu:%P\\ntext:%Xk\\ndata:%Dk\\nmax:%Mk\\n';
-
 # declare function to run parallel processing
 run_parallel () {
   # adapted from: http://stackoverflow.com/a/18666536/4460430
@@ -13,7 +11,7 @@ run_parallel () {
 
   for key in "${!do_parallel[@]}"; do
 
-    CMD="/usr/bin/time -f $TIME_FORMAT -o $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.$key ${do_parallel[$key]}"
+    CMD="/usr/bin/time -v ${do_parallel[$key]} >& $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.$key"
 
     echo -e "\tStarting $key"
     set -x
@@ -27,11 +25,11 @@ run_parallel () {
   while true ; do
     ALL_WRAPPERS=`ls -1 $OUTPUT_DIR/*.wrapper.log | wc -l`
     ALL_EXIT=`grep -lF 'WRAPPER_EXIT: ' $OUTPUT_DIR/*.wrapper.log | wc -l`
-    BAD_JOBS=`grep -e 'WRAPPER_EXIT: [^0]' $OUTPUT_DIR/*.wrapper.log | wc -l`
+    BAD_JOBS=`grep -le 'WRAPPER_EXIT: [^0]' $OUTPUT_DIR/*.wrapper.log | wc -l`
 
     if [ $BAD_JOBS -ne 0 ]; then
-      DISPLAY_BAD=`grep -vF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
-      >&2 echo "ERRORS OCCURED: $DISPLAY_BAD"
+      DISPLAY_BAD=`grep -LF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
+      >&2 echo -e "ERRORS OCCURED:\n$DISPLAY_BAD"
       exit 1
     fi
 
@@ -142,7 +140,7 @@ if [ ! -f "${BAM_MT}.bas" ]; then
   do_parallel[bas_MT]="bam_stats -i $BAM_MT_TMP -o $BAM_MT_TMP.bas"
 else
   ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
-  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
+  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
 fi
 
 if [ ! -f "${BAM_WT}.bas" ]; then
@@ -150,7 +148,7 @@ if [ ! -f "${BAM_WT}.bas" ]; then
   do_parallel[bas_WT]="bam_stats -i $BAM_WT_TMP -o $BAM_WT_TMP.bas"
 else
   ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
-  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
+  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
 fi
 
 echo -e "\t[Parallel block 1] Genotype Check added..."
