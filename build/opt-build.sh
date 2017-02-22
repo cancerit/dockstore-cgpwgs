@@ -15,6 +15,10 @@ VER_ALLELECOUNT="v3.2.3"
 VER_CGPNGSQC="v1.4.0"
 VER_VERIFYBAM="1.1.2"
 
+### ascatNgs
+VER_ASCATNGS="v4.0.0"
+SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
+
 
 
 if [ "$#" -lt "1" ] ; then
@@ -94,23 +98,12 @@ if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
   touch $SETUP_DIR/cgpNgsQc.success
 fi
 
+
+
 exit 0
 
 ### BRASS WILL NEED THIS:
 # cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
-
-mkdir -p $TMPDIR/downloads $R_LIBS
-
-cd $TMPDIR/downloads
-
-# cgpNgsQc
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpNgsQc/archive/v1.3.0.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
 
 # ascatNgs
 curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/ascatNgs/archive/v4.0.0.zip
