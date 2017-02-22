@@ -8,7 +8,12 @@ fi
 
 set -u
 
+### alleleCount
 VER_ALLELECOUNT="v3.2.3"
+
+### cgpNgsQc
+VER_CGPNGSQC="v1.4.0"
+VER_VERIFYBAM="1.1.2"
 
 
 
@@ -71,6 +76,22 @@ if [ ! -e $SETUP_DIR/alleleCount.success ]; then
   cd $SETUP_DIR
   rm -rf distro.* distro/*
   touch $SETUP_DIR/alleleCount.success
+fi
+
+### cgpNgsQc
+if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
+  curl -sSL https://github.com/statgen/verifyBamID/releases/download/v${VER_VERIFYBAM}/verifyBamID.${VER_VERIFYBAM} > $OPT/bin/verifyBamId
+  chmod +x $OPT/bin/verifyBamId
+
+  curl -sSL --retry 10 https://github.com/cancerit/cgpNgsQc/archive/${VER_CGPNGSQC}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+  cd distro
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/cgpNgsQc.success
 fi
 
 exit 0
