@@ -8,7 +8,7 @@ fi
 
 set -u
 
-VER_ALLELECOUNT="v3.2.2"
+VER_ALLELECOUNT="v3.2.3"
 
 
 
@@ -54,7 +54,6 @@ export PERL5LIB=`echo $INST_PATH/lib/perl5:$PERL5LIB | perl -pe 's/:\$//;'`
 set -u
 
 ##### alleleCount installation
-DO MORE HERE
 if [ ! -e $SETUP_DIR/alleleCount.success ]; then
   curl -sSL --retry 10 https://github.com/cancerit/alleleCount/archive/${VER_ALLELECOUNT}.tar.gz > distro.tar.gz
   rm -rf distro/*
@@ -66,6 +65,7 @@ if [ ! -e $SETUP_DIR/alleleCount.success ]; then
     cp c/bin/alleleCounter $INST_PATH/bin/.
     touch $SETUP_DIR/alleleCount_c.success
   fi
+  cd perl
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
@@ -73,7 +73,7 @@ if [ ! -e $SETUP_DIR/alleleCount.success ]; then
   touch $SETUP_DIR/alleleCount.success
 fi
 
-exit 1
+exit 0
 
 ### BRASS WILL NEED THIS:
 # cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
@@ -81,15 +81,6 @@ exit 1
 mkdir -p $TMPDIR/downloads $R_LIBS
 
 cd $TMPDIR/downloads
-
-# alleleCount
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/alleleCount/archive/v3.2.2.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
 
 # cgpNgsQc
 curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpNgsQc/archive/v1.3.0.zip
