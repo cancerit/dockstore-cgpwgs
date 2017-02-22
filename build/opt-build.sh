@@ -8,6 +8,9 @@ fi
 
 set -u
 
+### BRASS WILL NEED THIS:
+# cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
+
 mkdir -p $TMPDIR/downloads $R_LIBS
 
 cd $TMPDIR/downloads
