@@ -39,6 +39,8 @@ fi
 
 INST_PATH=$1
 BUILD_R=$2
+SCRIPT_PATH=`dirname $0`;
+SCRIPT_PATH=`(cd $SCRIPT_PATH && pwd)`
 
 CPU=`grep -c ^processor /proc/cpuinfo`
 if [ $? -eq 0 ]; then
@@ -67,14 +69,14 @@ if [ "x$BUILD_R" != "x" ]; then
   mkdir $TMP_DIR/R-build
   tar -C $TMP_DIR/R-build --strip-components 1 -zxf tmp.tar.gz
   cd $TMP_DIR/R-build
-  ./configure --enable-R-shlib --with-cairo=yes --prefix=$INST_PATH
+  ./configure --enable-R-shlib --with-x=no --with-cairo=yes --prefix=$INST_PATH
   make -j$CPU
   make check
   make install
   cd $TMP_DIR
 fi
 
-Rscript $INIT_DIR/rlib-build.R $R_LIBS_USER
+Rscript $SCRIPT_PATH/rlib-build.R $R_LIBS_USER
 
 cd $INIT_DIR
 rm -rf $TMP_DIR
