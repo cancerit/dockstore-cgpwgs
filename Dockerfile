@@ -19,7 +19,7 @@ COPY build/apt-build.sh build/
 RUN bash build/apt-build.sh
 
 COPY build/r-build.sh build/
-COPY build/rlib-build.sh build/
+COPY build/rlib-build.R build/
 RUN bash build/r-build.sh $OPT 1
 
 COPY build/perllib-build.sh build/
