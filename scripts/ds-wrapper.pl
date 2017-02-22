@@ -25,7 +25,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'e|exclude=s' => \$opts{'e'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
-            'sf|snvflag=s' => \$opts{'sf'},
+            'sb|skipbb' => \$opts{'sb'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -35,6 +35,7 @@ delete $opts{'h'};
 delete $opts{'m'};
 delete $opts{'sp'} if(! defined $opts{'sp'}  || length $opts{'sp'} == 0);
 delete $opts{'as'} if(! defined $opts{'as'}  || length $opts{'as'} == 0);
+delete $opts{'sb'} if(! defined $opts{'sb'}  || length $opts{'sb'} == 0);
 
 ## read species/assembly from bam headers
 my ($mt_species, $mt_assembly) = species_assembly_from_xam($opts{'t'});
@@ -96,18 +97,24 @@ printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "SNVFLAG='%s'\n", $ini;
+# Options to disable algorithms
+print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
 
-exec('analysisWGS.sh'); # I will never return to the perl code
+make_path($ENV{HOME}.'/timings');
+my $time_file = $ENV{HOME}.'/timings/WGS_analysis.time.full';
+my $cmd = "/usr/bin/time -v analysisWGS.sh >& $time_file";
+exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
   $species =~ s/ /_/g;
-  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WGS.ini';
+  $species = uc $species;
+  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WXS.ini';
   open my $IN, '<', $ini_in;
   open my $OUT,'>',$ini_out;
   while(my $line = <$IN>) {
-    $line =~ s/^\[/[$species/;
+    $line =~ s/^\[HUMAN_/[${species}_/;
     print $OUT $line;
   }
   close $OUT;
@@ -184,6 +191,7 @@ dh-wrapper.pl [options] [file(s)...]
   Optional parameters
     -species     -sp  Species name (may require quoting)
     -assembly    -a   Reference assembly
+    -skipbb      -sb  Skip Battenberg allele counts
 
   Other:
     -help        -h   Brief help message.
@@ -238,6 +246,10 @@ Specify overriding species, by default will select the most prevelant entry in
 
 Specify overriding assembly, by default will select the most prevelant entry in
 [CR|B]AM header (to cope with inclusion of viral/decoy sequences).
+
+=item B<-skipbb>
+
+Disables the Battenberg allele count generation
 
 =back
 
