@@ -11,6 +11,7 @@ USER  root
 ENV OPT /opt/wtsi-cgp
 ENV PATH $OPT/bin:$PATH
 ENV PERL5LIB $OPT/lib/perl5
+ENV LD_LIBRARY_PATH $OPT/lib
 ENV R_LIBS $OPT/R-lib
 ENV R_LIBS_USER $R_LIBS
 
@@ -21,7 +22,7 @@ COPY build/perllib-build.sh build/
 RUN bash build/perllib-build.sh
 
 COPY build/opt-build.sh build/
-RUN bash build/opt-build.sh
+RUN bash build/opt-build.sh $OPT
 
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
