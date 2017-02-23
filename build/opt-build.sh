@@ -149,7 +149,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     rm -rf distro/*
     tar --strip-components 1 -C distro -xzf distro.tar.gz
     cd distro/src
-    make -f ../make/Makefile.linux64
+    make -j$CPU -f ../make/Makefile.linux64
     cp ../bin/ssarch36 $OPT/bin/.
     cd $SETUP_DIR
     rm -rf distro.* distro/*
@@ -225,15 +225,15 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   if [ -e $SETUP_DIR/brass_c.success ]; then
     cd $SETUP_DIR/distro
     rm -rf cansam*
-    unzip -q distros/cansam.zip && \
-    mv cansam-master cansam && \
-    make -C cansam && \
-    make -C c++ && \
-    cp c++/augment-bam $INST_PATH/bin/. && \
-    cp c++/brass-group $INST_PATH/bin/. && \
-    cp c++/filterout-bam $INST_PATH/bin/. && \
-    make -C c++ clean && \
-    rm -rf cansam && \
+    unzip -q distros/cansam.zip
+    mv cansam-master cansam
+    make -j$CPU -C cansam
+    make -C c++
+    cp c++/augment-bam $INST_PATH/bin/.
+    cp c++/brass-group $INST_PATH/bin/.
+    cp c++/filterout-bam $INST_PATH/bin/.
+    make -C c++ clean
+    rm -rf cansam
     touch $SETUP_DIR/brass_c.success
   fi
 
