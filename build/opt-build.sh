@@ -19,6 +19,17 @@ VER_VERIFYBAM="1.1.2"
 VER_ASCATNGS="v4.0.0"
 SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
 
+### grass
+VER_GRASS="v2.1.0"
+
+### BRASS
+VER_BRASS="feature/switchToCgpBigWig" #"v5.2.0"
+SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
+SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
+# Warning bedtools 2.24.0 and 2.25.0 have a swapped usage in coverageBed
+# No upgrades until [this ticket](https://github.com/arq5x/bedtools2/issues/319) is resolved
+VER_BEDTOOLS="2.21.0" # leading 'v' intentionally left off
+
 
 
 if [ "$#" -lt "1" ] ; then
@@ -84,6 +95,7 @@ fi
 
 ### cgpNgsQc
 if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
+
   curl -sSL https://github.com/statgen/verifyBamID/releases/download/v${VER_VERIFYBAM}/verifyBamID.${VER_VERIFYBAM} > $OPT/bin/verifyBamId
   chmod +x $OPT/bin/verifyBamId
 
@@ -98,41 +110,143 @@ if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
   touch $SETUP_DIR/cgpNgsQc.success
 fi
 
+### ascatNgs
+if [ ! -e $SETUP_DIR/ascatNgs.success ]; then
+  curl -sSL --retry 10 https://github.com/cancerit/ascatNgs/archive/${VER_ASCATNGS}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+  cd distro/perl
 
+  # add ascatSrc
+  curl -sSL $SRC_ASCAT > share/ascat/ascat.R
+
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/ascatNgs.success
+fi
+
+### grass
+if [ ! -e $SETUP_DIR/grass.success ]; then
+  curl -sSL --retry 10 https://github.com/cancerit/grass/archive/${VER_GRASS}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+  cd distro
+
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/grass.success
+fi
+
+### BRASS
+if [ ! -e $SETUP_DIR/BRASS.success ]; then
+
+  if [ ! -e $SETUP_DIR/fasta36.success ]; then
+    curl -sSL --retry 10 $SRC_FASTA36 > distro.tar.gz
+    rm -rf distro/*
+    tar --strip-components 1 -C distro -xzf distro.tar.gz
+    cd distro/src
+    make -f ../make/Makefile.linux64
+    cp ../bin/ssarch36 $OPT/bin/.
+    cd $SETUP_DIR
+    rm -rf distro.* distro/*
+    touch $SETUP_DIR/fasta36.success
+  fi
+
+  if [ ! -e $SETUP_DIR/bedtools.success]; then
+    curl -sSL --retry 10 https://github.com/arq5x/bedtools2/releases/download/v${VER_BEDTOOLS}/bedtools-${VER_BEDTOOLS}.tar.gz > distro.tar.gz
+    rm -rf distro/*
+    tar --strip-components 1 -C distro -xzf distro.tar.gz
+    cd distro
+    make -C distro -j$CPU
+    cp distro/bin/* $INST_PATH/bin/.
+    cd $SETUP_DIR
+    rm -rf distro.* distro/*
+    touch $SETUP_DIR/bedtools.success
+  fi
+
+  if [ ! -e $SETUP_DIR/blat.success]; then
+    curl -sSL --retry 10 $SOURCE_BLAT > distro.zip
+    rm -rf distro/*
+    unzip -d distro distro.zip
+    cd distro/blatSrc
+    BINDIR=$SETUP_DIR/blat/bin
+    mkdir -p $BINDIR
+    export BINDIR
+    export MACHTYPE
+    make -j$CPU
+    cp $BINDIR/blat $INST_PATH/bin/.
+    cd $SETUP_DIR
+    rm -rf distro.* distro/*
+    touch $SETUP_DIR/blat.success
+  fi
+
+  ## need brass distro here
+  curl -sSL --retry 10 https://github.com/cancerit/BRASS/archive/${VER_BRASS}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+
+  if [ ! -e $SETUP_DIR/velvet.success ]; then
+    cd $SETUP_DIR/distro/distros
+    tar zxf velvet_1.2.10.tgz
+    cd velvet_1.2.10
+    make MAXKMERLENGTH=95 velveth velvetg
+    mv velveth $INST_PATH/bin/velvet95h
+    mv velvetg $INST_PATH/bin/velvet95g
+    make clean
+    make velveth velvetg   	# don't do multi-threaded make
+    mv velveth $INST_PATH/bin/velvet31h
+    mv velvetg $INST_PATH/bin/velvet31g
+    ln -fs $INST_PATH/bin/velvet95h $INST_PATH/bin/velveth
+    ln -fs $INST_PATH/bin/velvet95g $INST_PATH/bin/velvetg
+    cd $SETUP_DIR/distro
+    rm -rf distros/velvet_1.2.10
+    touch $SETUP_DIR/velvet.success
+  fi
+
+  if [ ! -e $SETUP_DIR/exonerate.success ]; then
+    cd $SETUP_DIR/distro/distros
+    tar zxf exonerate-2.2.0.tar.gz
+    cd exonerate-2.2.0
+    cp ../patches/exonerate_pthread-asneeded.diff
+    patch -p1 < exonerate_pthread-asneeded.diff
+    ./configure --prefix=$INST_PATH
+    make    # don't do multi-threaded make
+    make check
+    make install
+    cd $SETUP_DIR/distro
+    rm -rf distros/exonerate-2.2.0
+    touch $SETUP_DIR/exonerate.success
+  fi
+
+  if [ -e $SETUP_DIR/brass_c.success ]; then
+    cd $SETUP_DIR/distro
+    rm -rf cansam*
+    unzip -q distros/cansam.zip && \
+    mv cansam-master cansam && \
+    make -C cansam && \
+    make -C c++ && \
+    cp c++/augment-bam $INST_PATH/bin/. && \
+    cp c++/brass-group $INST_PATH/bin/. && \
+    cp c++/filterout-bam $INST_PATH/bin/. && \
+    make -C c++ clean && \
+    rm -rf cansam && \
+    touch $SETUP_DIR/brass_c.success
+  fi
+
+  cd $SETUP_DIR/distro/perl
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/BRASS.success
+fi
 
 exit 0
-
-### BRASS WILL NEED THIS:
-# cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
-
-# ascatNgs
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/ascatNgs/archive/v4.0.0.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
-
-# Grass
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/grass/archive/v2.1.0.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
-
-# BRASS and RSupport
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/BRASS/archive/v5.2.0.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro/Rsupport
-Rscript libInstall.R $R_LIBS
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
 
 # cgpBattenberg
 curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpBattenberg/archive/release/2.0.0.zip
