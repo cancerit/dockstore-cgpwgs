@@ -30,6 +30,8 @@ SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.g
 # No upgrades until [this ticket](https://github.com/arq5x/bedtools2/issues/319) is resolved
 VER_BEDTOOLS="2.21.0" # leading 'v' intentionally left off
 
+### cgpBattenberg
+VER_CGPBB="release/2.0.0"
 
 
 if [ "$#" -lt "1" ] ; then
@@ -150,7 +152,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     tar --strip-components 1 -C distro -xzf distro.tar.gz
     cd distro/src
     make -j$CPU -f ../make/Makefile.linux64
-    cp ../bin/ssarch36 $OPT/bin/.
+    cp ../bin/ssearch36 $OPT/bin/.
     cd $SETUP_DIR
     rm -rf distro.* distro/*
     touch $SETUP_DIR/fasta36.success
@@ -211,7 +213,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     cd $SETUP_DIR/distro/distros
     tar zxf exonerate-2.2.0.tar.gz
     cd exonerate-2.2.0
-    cp ../patches/exonerate_pthread-asneeded.diff
+    cp ../patches/exonerate_pthread-asneeded.diff .
     patch -p1 < exonerate_pthread-asneeded.diff
     ./configure --prefix=$INST_PATH
     make    # don't do multi-threaded make
@@ -222,13 +224,16 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/exonerate.success
   fi
 
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Graph
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
+
   if [ -e $SETUP_DIR/brass_c.success ]; then
     cd $SETUP_DIR/distro
     rm -rf cansam*
     unzip -q distros/cansam.zip
     mv cansam-master cansam
     make -j$CPU -C cansam
-    make -C c++
+    make -j$CPU -C c++
     cp c++/augment-bam $INST_PATH/bin/.
     cp c++/brass-group $INST_PATH/bin/.
     cp c++/filterout-bam $INST_PATH/bin/.
@@ -238,7 +243,6 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   fi
 
   cd $SETUP_DIR/distro/perl
-  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
@@ -246,15 +250,32 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   touch $SETUP_DIR/BRASS.success
 fi
 
-exit 0
+### cgpBattenberg
+if [ ! -e $SETUP_DIR/cgpBB.success ]; then
+  curl -sSL --retry 10 https://github.com/cancerit/cgpBattenberg/archive/${VER_CGPBB}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+  cd distro/perl
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/cgpBB.success
+fi
 
-# cgpBattenberg
-curl -sSL -o distro.zip --retry 10 https://github.com/cancerit/cgpBattenberg/archive/release/2.0.0.zip
-mkdir $TMPDIR/downloads/distro
-bsdtar -C $TMPDIR/downloads/distro --strip-components 1 -xf distro.zip
-cd $TMPDIR/downloads/distro
-./setup.sh $OPT
-cd $TMPDIR/downloads
-rm -rf distro.zip $TMPDIR/downloads/distro /tmp/hts_cache
+cd $HOME
+rm -rf $SETUP_DIR
 
-rm -rf $TMPDIR/downloads
+set +x
+
+echo "
+################################################################
+
+  To use the non-central tools you need to set the following
+    export LD_LIBRARY_PATH=$INST_PATH/lib:\$LD_LIBRARY_PATH
+    export PATH=$INST_PATH/bin:\$PATH
+    export MANPATH=$INST_PATH/man:$INST_PATH/share/man:\$MANPATH
+    export PERL5LIB=$INST_PATH/lib/perl5:\$PERL5LIB
+
+################################################################
+"
