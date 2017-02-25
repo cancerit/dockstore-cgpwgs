@@ -20,11 +20,11 @@
     "class": "File"
   },
   "tumour": {
-    "path": "ftp://ngs.sanger.ac.uk/scratch/project/cancer/cgpwgs/testdata/COLO-829.bam",
+    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/COLO-829.sample.dupmarked.bam",
     "class": "File"
   },
   "normal": {
-    "path": "ftp://ngs.sanger.ac.uk/scratch/project/cancer/cgpwgs/testdata/COLO-829-BL.bam",
+    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/COLO-829-BL.sample.dupmarked.bam",
     "class": "File"
   },
   "exclude": "NC_007605,hs37d5,GL%",
