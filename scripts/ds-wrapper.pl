@@ -102,8 +102,7 @@ print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
 
 make_path($ENV{HOME}.'/timings');
-my $time_file = $ENV{HOME}.'/timings/WGS_analysis.time.full';
-my $cmd = "/usr/bin/time -v analysisWGS.sh >& $time_file";
+my $cmd = "/usr/bin/time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
 exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
