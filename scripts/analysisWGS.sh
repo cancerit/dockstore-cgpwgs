@@ -115,6 +115,24 @@ ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
 ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
 
+if [ ! -z ${SKIPBB+x} ]; then
+  echo 'BB allele count disabled by params'
+else
+  battenberg.pl \
+    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
+    -u $REF_BASE/battenberg/1000genomesloci \
+    -e $REF_BASE/battenberg/impute/impute_info.txt \
+    -c $REF_BASE/battenberg/probloci.txt \
+    -r $REF_BASE/genome.fa.fai \
+    -ig $REF_BASE/battenberg/ignore_contigs.txt \
+    -ge XX \
+    -tb $BAM_MT_TMP \
+    -nb $BAM_WT_TMP \
+    -p splitlocifiles \
+    -nl 200 \
+    -t $CPU
+fi
+
 echo "Setting up Parallel block 1"
 
 if [ ! -f "${BAM_MT}.bas" ]; then
