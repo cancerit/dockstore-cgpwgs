@@ -3,6 +3,7 @@
 use strict;
 use Getopt::Long;
 use File::Path qw(make_path);
+use File::Copy qw(copy);
 use Pod::Usage qw(pod2usage);
 use Data::Dumper;
 use autodie qw(:all);
@@ -79,6 +80,9 @@ ref_unpack($ref_area, $opts{'sc'});
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
+
+## CWL changes $HOME so need to copy in relevant config for R
+copy('/home/ubuntu/.Rprofile', $ENV{HOME}.'/.Rprofile');
 
 my $run_file = $ENV{HOME}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
