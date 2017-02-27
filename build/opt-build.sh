@@ -26,9 +26,6 @@ VER_GRASS="v2.1.0"
 VER_BRASS="feature/switchToCgpBigWig" #"v5.2.0"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
-# Warning bedtools 2.24.0 and 2.25.0 have a swapped usage in coverageBed
-# No upgrades until [this ticket](https://github.com/arq5x/bedtools2/issues/319) is resolved
-VER_BEDTOOLS="2.21.0" # leading 'v' intentionally left off
 
 ### cgpBattenberg
 VER_CGPBB="release/2.0.0"
@@ -158,18 +155,6 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/fasta36.success
   fi
 
-  if [ ! -e $SETUP_DIR/bedtools.success ]; then
-    curl -sSL --retry 10 https://github.com/arq5x/bedtools2/releases/download/v${VER_BEDTOOLS}/bedtools-${VER_BEDTOOLS}.tar.gz > distro.tar.gz
-    rm -rf distro/*
-    tar --strip-components 1 -C distro -xzf distro.tar.gz
-    cd distro
-    make -C distro -j$CPU
-    cp distro/bin/* $INST_PATH/bin/.
-    cd $SETUP_DIR
-    rm -rf distro.* distro/*
-    touch $SETUP_DIR/bedtools.success
-  fi
-
   if [ ! -e $SETUP_DIR/blat.success ]; then
     curl -sSL --retry 10 $SOURCE_BLAT > distro.zip
     rm -rf distro/*
@@ -227,7 +212,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Graph
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
 
-  if [ -e $SETUP_DIR/brass_c.success ]; then
+  if [ ! -e $SETUP_DIR/brass_c.success ]; then
     cd $SETUP_DIR/distro
     rm -rf cansam*
     unzip -q distros/cansam.zip
