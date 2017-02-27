@@ -158,7 +158,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/fasta36.success
   fi
 
-  if [ ! -e $SETUP_DIR/bedtools.success]; then
+  if [ ! -e $SETUP_DIR/bedtools.success ]; then
     curl -sSL --retry 10 https://github.com/arq5x/bedtools2/releases/download/v${VER_BEDTOOLS}/bedtools-${VER_BEDTOOLS}.tar.gz > distro.tar.gz
     rm -rf distro/*
     tar --strip-components 1 -C distro -xzf distro.tar.gz
@@ -170,7 +170,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/bedtools.success
   fi
 
-  if [ ! -e $SETUP_DIR/blat.success]; then
+  if [ ! -e $SETUP_DIR/blat.success ]; then
     curl -sSL --retry 10 $SOURCE_BLAT > distro.zip
     rm -rf distro/*
     unzip -d distro distro.zip
