@@ -251,9 +251,6 @@ fi
 cd $HOME
 rm -rf $SETUP_DIR
 
-echo "options(bitmapType='cairo')" > /home/ubuntu/.Rprofile
-chown ubuntu:ubuntu /home/ubuntu/.Rprofile
-
 set +x
 
 echo "
