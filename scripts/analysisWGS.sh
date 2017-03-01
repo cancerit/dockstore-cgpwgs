@@ -3,8 +3,6 @@
 # about to do some parallel work...
 declare -A do_parallel
 
-TIME_FORMAT='command:%C\\nreal:%e\\nuser:%U\\nsys:%S\\npctCpu:%P\\ntext:%Xk\\ndata:%Dk\\nmax:%Mk\\n';
-
 # declare function to run parallel processing
 run_parallel () {
   # adapted from: http://stackoverflow.com/a/18666536/4460430
@@ -13,7 +11,7 @@ run_parallel () {
 
   for key in "${!do_parallel[@]}"; do
 
-    CMD="/usr/bin/time -f $TIME_FORMAT -o $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.$key ${do_parallel[$key]}"
+    CMD="/usr/bin/time -v ${do_parallel[$key]} >& $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.$key"
 
     echo -e "\tStarting $key"
     set -x
@@ -27,11 +25,11 @@ run_parallel () {
   while true ; do
     ALL_WRAPPERS=`ls -1 $OUTPUT_DIR/*.wrapper.log | wc -l`
     ALL_EXIT=`grep -lF 'WRAPPER_EXIT: ' $OUTPUT_DIR/*.wrapper.log | wc -l`
-    BAD_JOBS=`grep -e 'WRAPPER_EXIT: [^0]' $OUTPUT_DIR/*.wrapper.log | wc -l`
+    BAD_JOBS=`grep -le 'WRAPPER_EXIT: [^0]' $OUTPUT_DIR/*.wrapper.log | wc -l`
 
     if [ $BAD_JOBS -ne 0 ]; then
-      DISPLAY_BAD=`grep -vF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
-      >&2 echo "ERRORS OCCURED: $DISPLAY_BAD"
+      DISPLAY_BAD=`grep -LF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
+      >&2 echo -e "ERRORS OCCURED:\n$DISPLAY_BAD"
       exit 1
     fi
 
@@ -117,6 +115,24 @@ ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
 ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
 
+if [ ! -z ${SKIPBB+x} ]; then
+  echo 'BB allele count disabled by params'
+else
+  battenberg.pl \
+    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
+    -u $REF_BASE/battenberg/1000genomesloci \
+    -e $REF_BASE/battenberg/impute/impute_info.txt \
+    -c $REF_BASE/battenberg/probloci.txt \
+    -r $REF_BASE/genome.fa.fai \
+    -ig $REF_BASE/battenberg/ignore_contigs.txt \
+    -ge XX \
+    -tb $BAM_MT_TMP \
+    -nb $BAM_WT_TMP \
+    -p splitlocifiles \
+    -nl 200 \
+    -t $CPU
+fi
+
 echo "Setting up Parallel block 1"
 
 if [ ! -f "${BAM_MT}.bas" ]; then
@@ -124,7 +140,7 @@ if [ ! -f "${BAM_MT}.bas" ]; then
   do_parallel[bas_MT]="bam_stats -i $BAM_MT_TMP -o $BAM_MT_TMP.bas"
 else
   ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
-  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
+  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
 fi
 
 if [ ! -f "${BAM_WT}.bas" ]; then
@@ -132,7 +148,7 @@ if [ ! -f "${BAM_WT}.bas" ]; then
   do_parallel[bas_WT]="bam_stats -i $BAM_WT_TMP -o $BAM_WT_TMP.bas"
 else
   ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
-  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
+  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
 fi
 
 echo -e "\t[Parallel block 1] Genotype Check added..."
@@ -149,18 +165,23 @@ do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
 
 echo -e "\t[Parallel block 1] BB alleleCount added..."
-do_parallel[alleleCount]="battenberg.pl \
-  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-  -u $REF_BASE/battenberg/1000genomesloci \
-  -e $REF_BASE/battenberg/impute/impute_info.txt \
-  -c $REF_BASE/battenberg/probloci.txt \
-  -r $REF_BASE/genome.fa.fai \
-  -ig $REF_BASE/battenberg/ignore_contigs.txt \
-  -ge XX \
-  -tb $BAM_MT_TMP \
-  -nb $BAM_WT_TMP \
-  -p allelecount \
-  -t $CPU"
+if [ ! -z ${SKIPBB+x} ]; then
+  do_parallel[alleleCount]="echo 'BB allele count disabled by params'"
+else
+  do_parallel[alleleCount]="battenberg.pl \
+    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
+    -u $REF_BASE/battenberg/1000genomesloci \
+    -e $REF_BASE/battenberg/impute/impute_info.txt \
+    -c $REF_BASE/battenberg/probloci.txt \
+    -r $REF_BASE/genome.fa.fai \
+    -ig $REF_BASE/battenberg/ignore_contigs.txt \
+    -ge XX \
+    -tb $BAM_MT_TMP \
+    -nb $BAM_WT_TMP \
+    -p allelecount \
+    -nl 200 \
+    -t $CPU"
+fi
 
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
@@ -179,7 +200,7 @@ do_parallel[ascat]="ascat.pl \
  -r $REF_BASE/genome.fa \
  -q 20 \
  -g L \
- -rs $SPECIES \
+ -rs '$SPECIES' \
  -ra $ASSEMBLY \
  -pr $PROTOCOL \
  -pl ILLUMINA \
@@ -197,11 +218,43 @@ do_parallel[cgpPindel]="pindel.pl \
  -g $REF_BASE/vagrent/codingexon_regions.indel.bed.gz \
  -st $PROTOCOL \
  -as $ASSEMBLY \
- -sp $SPECIES \
+ -sp '$SPECIES' \
  -e $PINDEL_EXCLUDE \
  -b $REF_BASE/pindel/HiDepth.bed.gz \
  -c $CPU \
  -sf $REF_BASE/pindel/softRules.lst"
+
+echo -e "\t[Parallel block 2] BRASS_input added..."
+do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
+ -d $REF_BASE/brass/HiDepth.bed.gz \
+ -f $REF_BASE/brass/brass_np.groups.gz \
+ -g $REF_BASE/genome.fa \
+ -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
+ -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
+ -vi $REF_BASE/brass/viral.1.1.genomic.fa \
+ -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
+ -ct $REF_BASE/brass/CentTelo.tsv \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
+ -p input"
+
+echo -e "\t[Parallel block 2] BRASS_cover added..."
+do_parallel[BRASS_cover]="brass.pl -j 4 -k 4 -c $CPU \
+ -d $REF_BASE/brass/HiDepth.bed.gz \
+ -f $REF_BASE/brass/brass_np.groups.gz \
+ -g $REF_BASE/genome.fa \
+ -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
+ -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
+ -vi $REF_BASE/brass/viral.1.1.genomic.fa \
+ -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
+ -ct $REF_BASE/brass/CentTelo.tsv \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
+ -p cover"
 
 echo "Starting Parallel block 2: `date`"
 run_parallel do_parallel
@@ -234,7 +287,7 @@ do_parallel[CaVEMan]="caveman.pl \
  -b $REF_BASE/caveman/flagging \
  -ab $REF_BASE/vagrent \
  -u $REF_BASE/caveman \
- -s $SPECIES \
+ -s '$SPECIES' \
  -sa $ASSEMBLY \
  -t $CPU \
  -st $PROTOCOL \

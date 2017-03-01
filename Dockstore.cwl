@@ -19,11 +19,11 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:0.1.1"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:0.1.2"
 
 hints:
   - class: ResourceRequirement
-    coresMin: 1 # works but long, 8 recommended
+    coresMin: 1 # works but long, 24 recommended
     ramMin: 32000
     outdirMin: 20000
 
@@ -118,6 +118,14 @@ inputs:
       position: 10
       separate: true
       shellQuote: true
+
+  skipbb:
+    type: boolean?
+    doc: "Skip Battenberg allele counts"
+    inputBinding:
+      prefix: -skipbb
+      position: 11
+      separate: true
 
 outputs:
   run_params:
