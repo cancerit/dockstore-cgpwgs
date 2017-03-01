@@ -224,6 +224,38 @@ do_parallel[cgpPindel]="pindel.pl \
  -c $CPU \
  -sf $REF_BASE/pindel/softRules.lst"
 
+echo -e "\t[Parallel block 2] BRASS_input added..."
+do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
+ -d $REF_BASE/brass/HiDepth.bed.gz \
+ -f $REF_BASE/brass/brass_np.groups.gz \
+ -g $REF_BASE/genome.fa \
+ -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
+ -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
+ -vi $REF_BASE/brass/viral.1.1.genomic.fa \
+ -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
+ -ct $REF_BASE/brass/CentTelo.tsv \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
+ -p input"
+
+echo -e "\t[Parallel block 2] BRASS_cover added..."
+do_parallel[BRASS_cover]="brass.pl -j 4 -k 4 -c $CPU \
+ -d $REF_BASE/brass/HiDepth.bed.gz \
+ -f $REF_BASE/brass/brass_np.groups.gz \
+ -g $REF_BASE/genome.fa \
+ -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
+ -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
+ -vi $REF_BASE/brass/viral.1.1.genomic.fa \
+ -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
+ -ct $REF_BASE/brass/CentTelo.tsv \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
+ -p cover"
+
 echo "Starting Parallel block 2: `date`"
 run_parallel do_parallel
 
