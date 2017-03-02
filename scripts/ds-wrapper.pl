@@ -107,7 +107,8 @@ close $FH;
 
 ### Ensure headless compatible R is used for images (cairo):
 open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
-print qq{options(bitmapType='cairo')\n};
+print $R_FH qq{options(bitmapType='cairo')\n};
+close $R_FH;
 
 make_path($ENV{HOME}.'/timings');
 my $cmd = "/usr/bin/time -o $ENV{HOME}/timings/analysisWGS.time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
