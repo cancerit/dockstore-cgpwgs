@@ -89,7 +89,7 @@ open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
 print $FH "PCAP_THREADED_NO_SCRIPT=1\n";
 print $FH "PCAP_THREADED_FORCE_SYNC=1\n";
-print $FH "PCAP_THREADED_LOADBACKOFF=1\n";
+#print $FH "PCAP_THREADED_LOADBACKOFF=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
