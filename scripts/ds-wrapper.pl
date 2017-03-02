@@ -110,7 +110,7 @@ open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
 print qq{options(bitmapType='cairo')\n};
 
 make_path($ENV{HOME}.'/timings');
-my $cmd = "/usr/bin/time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
+my $cmd = "/usr/bin/time -o $ENV{HOME}/timings/analysisWGS.time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
 exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
