@@ -115,6 +115,29 @@ ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
 ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
 
+## Make fake copynumber so we can run early steps of caveman
+perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
+## do setup, it runs for about 1 second, note germline bed removed from options
+caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
+ -b $REF_BASE/caveman/flagging \
+ -ab $REF_BASE/vagrent \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
+ -c $SNVFLAG \
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -p setup
+
 if [ ! -z ${SKIPBB+x} ]; then
   echo 'BB allele count disabled by params'
 else
@@ -152,14 +175,14 @@ else
 fi
 
 echo -e "\t[Parallel block 1] Genotype Check added..."
-do_parallel[geno]="compareBamGenotypes.pl \
+do_parallel[geno]="nice -n 10 compareBamGenotypes.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
  -nb $BAM_WT_TMP \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
  -tb $BAM_MT_TMP"
 
 echo -e "\t[Parallel block 1] VerifyBam Normal added..."
-do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
+do_parallel[verify_WT]="nice -n 10 verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
@@ -192,7 +215,7 @@ declare -A do_parallel
 echo -e "\nSetting up Parallel block 2"
 
 echo -e "\t[Parallel block 2] ASCAT added..."
-do_parallel[ascat]="ascat.pl \
+do_parallel[ascat]="nice -n 10 ascat.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
@@ -241,7 +264,7 @@ do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
  -p input"
 
 echo -e "\t[Parallel block 2] BRASS_cover added..."
-do_parallel[BRASS_cover]="brass.pl -j 4 -k 4 -c $CPU \
+do_parallel[BRASS_cover]="nice -n 10 brass.pl -j 4 -k 4 -c $CPU \
  -d $REF_BASE/brass/HiDepth.bed.gz \
  -f $REF_BASE/brass/brass_np.groups.gz \
  -g $REF_BASE/genome.fa \
@@ -255,6 +278,27 @@ do_parallel[BRASS_cover]="brass.pl -j 4 -k 4 -c $CPU \
  -n $BAM_WT_TMP \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
  -p cover"
+
+echo -e "\t[Parallel block 2] CaVEMan split added..."
+do_parallel[CaVEMan_split]="nice -n 10 caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
+ -b $REF_BASE/caveman/flagging \
+ -ab $REF_BASE/vagrent \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
+ -c $SNVFLAG \
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -p split"
 
 echo "Starting Parallel block 2: `date`"
 run_parallel do_parallel
@@ -274,7 +318,7 @@ declare -A do_parallel
 echo -e "\nSetting up Parallel block 3"
 
 echo -e "\t[Parallel block 3] VerifyBam Tumour added..."
-do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
+do_parallel[verify_MT]="nice -n 10 verifyBamHomChk.pl -d 25 \
  -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
  -b $BAM_MT_TMP \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \

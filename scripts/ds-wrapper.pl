@@ -89,7 +89,7 @@ open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
 print $FH "PCAP_THREADED_NO_SCRIPT=1\n";
 print $FH "PCAP_THREADED_FORCE_SYNC=1\n";
-print $FH "PCAP_THREADED_LOADBACKOFF=1\n";
+#print $FH "PCAP_THREADED_LOADBACKOFF=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
@@ -107,10 +107,11 @@ close $FH;
 
 ### Ensure headless compatible R is used for images (cairo):
 open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
-print qq{options(bitmapType='cairo')\n};
+print $R_FH qq{options(bitmapType='cairo')\n};
+close $R_FH;
 
 make_path($ENV{HOME}.'/timings');
-my $cmd = "/usr/bin/time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
+my $cmd = "/usr/bin/time -o $ENV{HOME}/timings/analysisWGS.time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
 exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {

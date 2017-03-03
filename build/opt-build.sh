@@ -16,7 +16,7 @@ VER_CGPNGSQC="v1.4.0"
 VER_VERIFYBAM="1.1.2"
 
 ### ascatNgs
-VER_ASCATNGS="v4.0.0"
+VER_ASCATNGS="v4.0.1"
 SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
 
 ### grass
