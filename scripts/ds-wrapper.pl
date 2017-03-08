@@ -67,6 +67,9 @@ if(!defined $opts{'as'}) {
   die "ERROR: Please define assembly, not found in [CR|B]AM headers.\n";
 }
 
+$opts{'mt_sm'} = sample_name_from_xam($opts{'t'});
+$opts{'wt_sm'} = sample_name_from_xam($opts{'n'});
+
 printf "Options loaded: \n%s\n",Dumper(\%opts);
 
 ## unpack the reference area:
@@ -110,8 +113,7 @@ open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
 print $R_FH qq{options(bitmapType='cairo')\n};
 close $R_FH;
 
-make_path($ENV{HOME}.'/timings');
-my $cmd = "/usr/bin/time -o $ENV{HOME}/timings/analysisWGS.time -v /opt/wtsi-cgp/bin/analysisWGS.sh";
+my $cmd = sprintf '/usr/bin/time -o %s/WGS_%s_vs_%s.time -v /opt/wtsi-cgp/bin/analysisWGS.sh', $ENV{HOME}, $opts{'mt_sm'}, $opts{'wt_sm'};
 exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
@@ -128,6 +130,25 @@ sub add_species_flag_ini {
   close $OUT;
   close $IN;
   return $ini_out;
+}
+
+sub sample_name_from_xam {
+  my $xam = shift;
+  my $sm;
+  open my $SAM, '-|', "samtools view -H $xam" or die $!;
+  while(my $line = <$SAM>) {
+    next unless($line =~ m/^\@RG/);
+    chomp $line;
+    $line .= "\t"; # simplify matching
+    if($line =~ m/SM:([^\t]+)\t/) {
+      my $smtmp = $1;
+      if(defined $sm && $smtmp ne $sm) {
+        die "Conflicting SM values found in different RG headers";
+      }
+      $sm = $smtmp;
+    }
+  }
+  return $sm;
 }
 
 sub species_assembly_from_xam {

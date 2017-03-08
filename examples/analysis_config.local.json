@@ -38,6 +38,10 @@
     "path": "/tmp/timings_WGS.tar.gz",
     "class": "File"
   },
+  "global_time": {
+    "path": "/tmp/global_WGS.time",
+    "class": "File"
+  },
   "run_params": {
     "path": "/tmp/params_WGS.params",
     "class": "File"

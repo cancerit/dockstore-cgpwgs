@@ -1,3 +1,7 @@
+### 1.0.2
+* Update BRASS to handle data that is _very_ quiet
+* Fix up the wrapper timings file so it is captured properly
+
 ### 1.0.1
 * Update dependencies (cgpPindel/ascatNgs) to reduce reliance on Capture::Tiny, apparent cause of some issues.
 
