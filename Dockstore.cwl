@@ -19,7 +19,7 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.1"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.2"
 
 hints:
   - class: ResourceRequirement
@@ -143,5 +143,10 @@ outputs:
     type: File
     outputBinding:
       glob: WGS_*_vs_*.timings.tar.gz
+
+  global_time:
+    type: File
+    outputBinding:
+      glob: WGS_*_vs_*.time
 
 baseCommand: ["/opt/wtsi-cgp/bin/ds-wrapper.pl"]

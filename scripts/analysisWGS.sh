@@ -114,6 +114,8 @@ ln -fs $BAM_MT $BAM_MT_TMP
 ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
 ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
+ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
+ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
@@ -158,22 +160,6 @@ fi
 
 echo "Setting up Parallel block 1"
 
-if [ ! -f "${BAM_MT}.bas" ]; then
-  echo -e "\t[Parallel block 1] BAS $NAME_MT added..."
-  do_parallel[bas_MT]="bam_stats -i $BAM_MT_TMP -o $BAM_MT_TMP.bas"
-else
-  ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
-  echo '#PRE EXISTING $NAME_MT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_MT
-fi
-
-if [ ! -f "${BAM_WT}.bas" ]; then
-  echo -e "\t[Parallel block 1] BAS $NAME_WT added..."
-  do_parallel[bas_WT]="bam_stats -i $BAM_WT_TMP -o $BAM_WT_TMP.bas"
-else
-  ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
-  echo '#PRE EXISTING $NAME_WT.bam.bas file found' > $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.bas_WT
-fi
-
 echo -e "\t[Parallel block 1] Genotype Check added..."
 do_parallel[geno]="nice -n 10 compareBamGenotypes.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
@@ -186,6 +172,25 @@ do_parallel[verify_WT]="nice -n 10 verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
+
+echo -e "\t[Parallel block 1] cgpPindel input added..."
+do_parallel[cgpPindel_input]="pindel.pl \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
+ -r $REF_BASE/genome.fa \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -s $REF_BASE/pindel/simpleRepeats.bed.gz \
+ -u $REF_BASE/pindel/pindel_np.gff3.gz \
+ -f $REF_BASE/pindel/${PROTOCOL}_Rules.lst \
+ -g $REF_BASE/vagrent/codingexon_regions.indel.bed.gz \
+ -st $PROTOCOL \
+ -as $ASSEMBLY \
+ -sp '$SPECIES' \
+ -e $PINDEL_EXCLUDE \
+ -b $REF_BASE/pindel/HiDepth.bed.gz \
+ -c $CPU \
+ -sf $REF_BASE/pindel/softRules.lst \
+ -p input"
 
 echo -e "\t[Parallel block 1] BB alleleCount added..."
 if [ ! -z ${SKIPBB+x} ]; then

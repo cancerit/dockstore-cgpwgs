@@ -23,7 +23,7 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="v5.3.1"
+VER_BRASS="v5.3.2"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
