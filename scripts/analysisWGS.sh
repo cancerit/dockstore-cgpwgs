@@ -114,6 +114,8 @@ ln -fs $BAM_MT $BAM_MT_TMP
 ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
 ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
+ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
+ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
