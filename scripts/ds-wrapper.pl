@@ -79,7 +79,7 @@ ref_unpack($ref_area, $opts{'r'});
 ref_unpack($ref_area, $opts{'a'});
 ref_unpack($ref_area, $opts{'si'});
 ref_unpack($ref_area, $opts{'cs'});
-ref_unpack($ref_area, $opts{'sc'}) if(exists $opts{'sb'});
+ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
