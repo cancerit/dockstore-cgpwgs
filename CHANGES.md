@@ -1,3 +1,8 @@
+### 1.0.3
+* Export the `PCAP_THREADED_*` variables
+* Fixed #8, #9, #10
+* Updated base image to pull in fix required for `PCAP_THREADED_LOADBACKOFF`
+
 ### 1.0.2
 * Update BRASS to handle data that is _very_ quiet
 * Fix up the wrapper timings file so it is captured properly

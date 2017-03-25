@@ -79,7 +79,7 @@ ref_unpack($ref_area, $opts{'r'});
 ref_unpack($ref_area, $opts{'a'});
 ref_unpack($ref_area, $opts{'si'});
 ref_unpack($ref_area, $opts{'cs'});
-ref_unpack($ref_area, $opts{'sc'});
+ref_unpack($ref_area, $opts{'sc'}) if(exists $opts{'sb'});
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
@@ -90,9 +90,9 @@ copy('/home/ubuntu/.Rprofile', $ENV{HOME}.'/.Rprofile');
 my $run_file = $ENV{HOME}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
-print $FH "PCAP_THREADED_NO_SCRIPT=1\n";
-print $FH "PCAP_THREADED_FORCE_SYNC=1\n";
-#print $FH "PCAP_THREADED_LOADBACKOFF=1\n";
+print $FH "export PCAP_THREADED_NO_SCRIPT=1\n";
+print $FH "export PCAP_THREADED_FORCE_SYNC=1\n";
+print $FH "export PCAP_THREADED_LOADBACKOFF=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
