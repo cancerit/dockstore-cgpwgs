@@ -29,7 +29,7 @@ run_parallel () {
 
     if [ $BAD_JOBS -ne 0 ]; then
       DISPLAY_BAD=`grep -LF 'WRAPPER_EXIT: 0' $OUTPUT_DIR/*.wrapper.log`
-      >&2 echo -e "ERRORS OCCURED:\n$DISPLAY_BAD"
+      >&2 echo -e "ERRORS OCCURRED:\n$DISPLAY_BAD"
       exit 1
     fi
 
@@ -61,6 +61,7 @@ if [ ! -f $PARAM_FILE ]; then
   exit 1
 fi
 source $PARAM_FILE
+env
 
 TMP=$OUTPUT_DIR/tmp
 mkdir -p $TMP
