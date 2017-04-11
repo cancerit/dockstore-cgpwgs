@@ -1,3 +1,10 @@
+### 1.0.5
+* Improved handling of CPU oversubscription via PCAP-core update in base image
+* Update cgpCaVEManWrapper to expose extra options (specifically split size)
+
+### 1.0.4
+Fix an error in param capture test
+
 ### 1.0.3
 * Export the `PCAP_THREADED_*` variables
 * Fixed #8, #9, #10
