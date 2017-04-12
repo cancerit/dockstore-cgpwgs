@@ -27,7 +27,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
-            'cr|cavereads' => \$opts{'cr'},
+            'cr|cavereads=i' => \$opts{'cr'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
