@@ -27,6 +27,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
+            'cr|cavereads=i' => \$opts{'cr'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -93,6 +94,7 @@ open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 print $FH "export PCAP_THREADED_NO_SCRIPT=1\n";
 print $FH "export PCAP_THREADED_FORCE_SYNC=1\n";
 print $FH "export PCAP_THREADED_LOADBACKOFF=1\n";
+print $FH "export PCAP_THREADED_REM_LOGS=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
@@ -103,6 +105,7 @@ printf $FH "BAM_WT='%s'\n", $opts{'n'};
 printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
+printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
 printf $FH "SNVFLAG='%s'\n", $ini;
 # Options to disable algorithms
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});

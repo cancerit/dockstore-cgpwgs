@@ -19,7 +19,7 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.4"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.5"
 
 hints:
   - class: ResourceRequirement
@@ -125,6 +125,15 @@ inputs:
     inputBinding:
       prefix: -skipbb
       position: 11
+      separate: true
+
+  cavereads:
+    type: int?
+    doc: "Number of reads in a split section for CaVEMan"
+    default: 350000
+    inputBinding:
+      prefix: -cavereads
+      position: 12
       separate: true
 
 outputs:
