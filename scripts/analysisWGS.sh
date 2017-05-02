@@ -138,6 +138,7 @@ caveman.pl \
  -nb $BAM_WT_TMP \
  -c $SNVFLAG \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -p setup
 
@@ -303,6 +304,7 @@ do_parallel[CaVEMan_split]="nice -n 10 caveman.pl \
  -nb $BAM_WT_TMP \
  -c $SNVFLAG \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -p split"
 
@@ -349,6 +351,7 @@ do_parallel[CaVEMan]="caveman.pl \
  -nb $BAM_WT_TMP \
  -c $SNVFLAG \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman"
 
 echo -e "\t[Parallel block 3] BRASS added..."
