@@ -1,3 +1,7 @@
+### 1.0.6
+* Fixes #13 - Parsing of sample name from BAM headers fails is sample at end of line
+* Update dockstore-cgpwxs to [2.0.7](https://github.com/cancerit/dockstore-cgpwxs/releases/tag/2.0.7) - Fixes bug in pindel core.
+
 ### 1.0.5
 * Improved handling of CPU oversubscription via PCAP-core update in base image
 * Update cgpCaVEManWrapper to expose extra options (specifically split size)
