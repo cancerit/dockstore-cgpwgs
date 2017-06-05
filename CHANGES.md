@@ -1,3 +1,7 @@
+### 1.0.7
+* Update [BRASS to v5.4.0](https://github.com/cancerit/BRASS/releases/tag/v5.4.0)
+  * Specifically fixes a vector merge bug which produces warnings (but no apparent change to results).
+
 ### 1.0.6
 * Fixes #13 - Parsing of sample name from BAM headers fails is sample at end of line
 * Update dockstore-cgpwxs to [2.0.7](https://github.com/cancerit/dockstore-cgpwxs/releases/tag/2.0.7) - Fixes bug in pindel core.
