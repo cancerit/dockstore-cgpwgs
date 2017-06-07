@@ -16,5 +16,5 @@ biocLite("RColorBrewer", ask=FALSE, lib=instLib)
 # use custom fix for copynumber library
 install.packages("devtools", lib=instLib)
 library(devtools)
-options(download.file.method = "wget")
+options(download.file.method = "auto")
 install_github("sb43/copynumber", ref="c15c1ed")
