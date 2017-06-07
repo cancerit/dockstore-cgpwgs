@@ -32,6 +32,10 @@ COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-wrapper.pl
 
+### security upgrades and cleanup
+RUN apt-get -yq install unattended-upgrades
+RUN unattended-upgrades
+
 USER    ubuntu
 WORKDIR /home/ubuntu
 
