@@ -12,4 +12,9 @@ biocLite("stringr", ask=FALSE, lib=instLib)
 biocLite("poweRlaw", ask=FALSE, lib=instLib)
 biocLite("zlibbioc", ask=FALSE, lib=instLib)
 biocLite("RColorBrewer", ask=FALSE, lib=instLib)
-biocLite("copynumber", ask=FALSE, lib=instLib)
+
+# use custom fix for copynumber library
+install.packages("devtools", lib=instLib)
+library(devtools)
+options(download.file.method = "wget")
+install_github("sb43/copynumber", ref="c15c1ed")
