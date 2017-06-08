@@ -83,7 +83,7 @@ ref_unpack($ref_area, $opts{'si'});
 ref_unpack($ref_area, $opts{'cs'});
 ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
 
-copy $opts{'svc'}, $ref_area/brass/cytoband.txt;
+copy $opts{'svc'}, "$ref_area/brass/cytoband.txt";
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
