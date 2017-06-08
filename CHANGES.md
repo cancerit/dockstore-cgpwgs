@@ -1,3 +1,8 @@
+### 1.0.8
+* Update [Brass to v5.4.1](https://github.com/cancerit/BRASS/releases/tag/v5.4.1)
+  * Provide additional reference file rather than attempt to decode species/build
+  due to the may ways a species can be defined.
+
 ### 1.0.7
 * Update [BRASS to v5.4.0](https://github.com/cancerit/BRASS/releases/tag/v5.4.0)
   * Specifically fixes a vector merge bug which produces warnings (but no apparent change to results).

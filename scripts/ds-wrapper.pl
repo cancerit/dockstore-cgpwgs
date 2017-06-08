@@ -28,6 +28,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'as|assembly=s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
             'cr|cavereads=i' => \$opts{'cr'},
+            'svc|sv_cyto=s' => \$opts{'svc'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -81,6 +82,8 @@ ref_unpack($ref_area, $opts{'a'});
 ref_unpack($ref_area, $opts{'si'});
 ref_unpack($ref_area, $opts{'cs'});
 ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
+
+copy $opts{'svc'}, $ref_area/brass/cytoband.txt;
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");

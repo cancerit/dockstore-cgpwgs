@@ -136,6 +136,14 @@ inputs:
       position: 12
       separate: true
 
+  sv_cyto:
+    type: File
+    doc: "Cytoband file"
+    inputBinding:
+      prefix: -sv_cyto
+      position: 13
+      separate: true
+
 outputs:
   run_params:
     type: File
