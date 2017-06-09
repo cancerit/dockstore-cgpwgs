@@ -15,6 +15,10 @@
     "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5.tar.gz",
     "class": "File"
   },
+  "sv_cyto": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/cytoband_GRCh37d5.txt",
+    "class": "File"
+  },
   "subcl": {
     "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
     "class": "File"

@@ -19,7 +19,7 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.7"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.8"
 
 hints:
   - class: ResourceRequirement
@@ -134,6 +134,14 @@ inputs:
     inputBinding:
       prefix: -cavereads
       position: 12
+      separate: true
+
+  sv_cyto:
+    type: File
+    doc: "Cytoband file"
+    inputBinding:
+      prefix: -sv_cyto
+      position: 13
       separate: true
 
 outputs:
