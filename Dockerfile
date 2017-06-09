@@ -3,7 +3,7 @@ FROM  quay.io/wtsicgp/dockstore-cgpwxs:2.0.7
 MAINTAINER  keiranmraine@gmail.com
 
 LABEL uk.ac.sanger.cgp="Cancer Genome Project, Wellcome Trust Sanger Institute" \
-      version="1.0.7" \
+      version="1.0.8" \
       description="The CGP WGS pipeline for dockstore.org"
 
 USER  root
@@ -31,6 +31,10 @@ RUN bash build/opt-build.sh $OPT
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-wrapper.pl
+
+### security upgrades and cleanup
+RUN apt-get -yq install unattended-upgrades
+RUN unattended-upgrades
 
 USER    ubuntu
 WORKDIR /home/ubuntu

@@ -265,6 +265,7 @@ do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
  -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
+ -cb $REF_BASE/brass/cytoband.txt \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
@@ -281,6 +282,7 @@ do_parallel[BRASS_cover]="nice -n 10 brass.pl -j 4 -k 4 -c $CPU \
  -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
+ -cb $REF_BASE/brass/cytoband.txt \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
@@ -365,6 +367,7 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
+ -cb $REF_BASE/brass/cytoband.txt \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
  -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/*.samplestatistics.txt \
