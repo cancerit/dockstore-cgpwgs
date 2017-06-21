@@ -1,3 +1,9 @@
+### 1.0.9
+* Update [Brass to v6.0.0](https://github.com/cancerit/BRASS/releases/tag/v6.0.0)
+  * Significantly reduces the run time of brass_group phase.
+  * Requires new version of the CNV_SV reference archive
+    * example json updated accordingly.
+
 ### 1.0.8
 * Update [Brass to v5.4.1](https://github.com/cancerit/BRASS/releases/tag/v5.4.1)
   * Provide additional reference file rather than attempt to decode species/build
