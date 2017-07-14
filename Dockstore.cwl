@@ -10,7 +10,10 @@ cwlVersion: v1.0
 
 doc: |
     ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
-    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs) website for more information.
+    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
+    website for information relating to reference files.
+
+    Example `json` run files are included in the repository.
 
 dct:creator:
   "@id": "http://orcid.org/0000-0002-5634-1539"
