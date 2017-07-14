@@ -261,8 +261,8 @@ do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
@@ -278,8 +278,8 @@ do_parallel[BRASS_cover]="nice -n 10 brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
@@ -363,8 +363,8 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
