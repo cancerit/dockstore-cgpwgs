@@ -30,6 +30,7 @@
   "exclude": "NC_007605,hs37d5,GL%",
   "species": "human",
   "assembly": "GRCh37d5",
+  "cavereads": 800000,
   "result_archive": {
     "path": "/tmp/result_WGS.tar.gz",
     "class": "File"
