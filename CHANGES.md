@@ -1,4 +1,4 @@
-### 1.0.9
+### 1.1.0
 BRASS updates
 * Significantly reduces the run time of brass_group phase
   * see [v6.0.0](https://github.com/cancerit/BRASS/releases/tag/v6.0.0)
