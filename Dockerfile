@@ -1,4 +1,4 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwxs:2.0.7
+FROM  quay.io/wtsicgp/dockstore-cgpwxs:2.1.0
 
 MAINTAINER  keiranmraine@gmail.com
 
