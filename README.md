@@ -15,16 +15,22 @@ Required input files are
 2. Normal BAM file
 3. Core reference archive (e.g. [core_ref_GRCh37d5.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
 4. WXS reference archive (e.g. [SNV_INDEL_ref_GRCh37d5.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
-... WIP ...
-5. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
+5. WGS reference archive (e.g. [CNV_SV_ref_GRCh37d5_brass6+.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
+6. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
+7. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz])(ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
+  * Only needed if `skipbb` is `false`
 
 Inputs 1&2 are expected to have been mapped using [dockstore-cgpmap](https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpmap).
 
-@TODO
-The data linked in the 'examples' area is a tiny section of chr21 from the cell line COLO-829.  This will generate a small number of INDEL and SNV variants.
-All the SNV variants do not pass filtering (several only fail as not in a gene footprint, 'F009').
+The data linked in the 'examples' area is from the cell line COLO-829.
 
-Please check the Wiki then raise an issue if you require additional information on how to generate your own reference files.  Much of this information is available on the individual algorithm pages.
+Please check the Wiki then raise an issue if you require additional information on how to generate your own reference files.  Much of this information is available on the individual algorithm wiki pages (or the subsequently linked protocols papers).
+
+* [BRASS](https://github.com/cancerit/BRASS/wiki)
+* [cgpCaVEManWrapper](https://github.com/cancerit/cgpCaVEManWrapper/wiki)
+* [cgpPindel](https://github.com/cancerit/cgpPindel/wiki)
+* [ascatNgs](https://github.com/cancerit/ascatNgs/wiki)
+* [VAGrENT](https://github.com/cancerit/VAGrENT/wiki)
 
 Release process
 ===============
