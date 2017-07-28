@@ -120,8 +120,11 @@ ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
-## do setup, it runs for about 1 second, note germline bed removed from options
-caveman.pl \
+
+echo "Setting up Parallel block 1"
+
+echo -e "\t[Parallel block 1] CaVEMan setup added..."
+do_parallel[CaVEMan_setup]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
  -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
@@ -140,14 +143,13 @@ caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
- -p setup
+ -p setup"
 
-BB_SPLIT=50
-
+echo -e "\t[Parallel block 1] BB splitlocifiles added..."
 if [ ! -z ${SKIPBB+x} ]; then
-  echo 'BB allele count disabled by params'
+  do_parallel[splitlocifiles]="echo 'BB splitlocifiles count disabled by params'"
 else
-  battenberg.pl \
+  do_parallel[splitlocifiles]="battenberg.pl \
     -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
     -u $REF_BASE/battenberg/1000genomesloci \
     -e $REF_BASE/battenberg/impute/impute_info.txt \
@@ -157,64 +159,28 @@ else
     -ge XX \
     -tb $BAM_MT_TMP \
     -nb $BAM_WT_TMP \
-    -p splitlocifiles \
-    -nl $BB_SPLIT \
-    -t $CPU
+    -p allelecount \
+    -nl 50 \
+    -t $CPU"
 fi
 
-echo "Setting up Parallel block 1"
-
 echo -e "\t[Parallel block 1] Genotype Check added..."
-do_parallel[geno]="nice -n 10 compareBamGenotypes.pl \
+do_parallel[geno]="compareBamGenotypes.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
  -nb $BAM_WT_TMP \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
  -tb $BAM_MT_TMP"
 
 echo -e "\t[Parallel block 1] VerifyBam Normal added..."
-do_parallel[verify_WT]="nice -n 10 verifyBamHomChk.pl -d 25 \
+do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
 
-echo -e "\t[Parallel block 1] cgpPindel input added..."
-do_parallel[cgpPindel_input]="pindel.pl \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
- -r $REF_BASE/genome.fa \
- -t $BAM_MT_TMP \
- -n $BAM_WT_TMP \
- -s $REF_BASE/pindel/simpleRepeats.bed.gz \
- -u $REF_BASE/pindel/pindel_np.gff3.gz \
- -f $REF_BASE/pindel/${PROTOCOL}_Rules.lst \
- -g $REF_BASE/vagrent/codingexon_regions.indel.bed.gz \
- -st $PROTOCOL \
- -as $ASSEMBLY \
- -sp '$SPECIES' \
- -e $PINDEL_EXCLUDE \
- -b $REF_BASE/pindel/HiDepth.bed.gz \
- -c $CPU \
- -sf $REF_BASE/pindel/softRules.lst \
- -p input"
-
-echo -e "\t[Parallel block 1] ASCAT added..."
-do_parallel[ascat]="nice -n 10 ascat.pl \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat \
- -t $BAM_MT_TMP \
- -n $BAM_WT_TMP \
- -sg $REF_BASE/ascat/SnpGcCorrections.tsv \
- -r $REF_BASE/genome.fa \
- -q 20 \
- -g L \
- -rs '$SPECIES' \
- -ra $ASSEMBLY \
- -pr $PROTOCOL \
- -pl ILLUMINA \
- -c $CPU"
-
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
 
-# unset and redeclare the parallel array ready for block 2
+# unset and redeclare the parallel array ready next block
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 2"
@@ -234,12 +200,12 @@ else
     -tb $BAM_MT_TMP \
     -nb $BAM_WT_TMP \
     -p allelecount \
-    -nl $BB_SPLIT \
+    -nl 50 \
     -t $CPU"
 fi
 
 echo -e "\t[Parallel block 2] CaVEMan split added..."
-do_parallel[CaVEMan_split]="nice -n 10 caveman.pl \
+do_parallel[CaVEMan_split]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
  -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
@@ -263,28 +229,25 @@ do_parallel[CaVEMan_split]="nice -n 10 caveman.pl \
 echo "Starting Parallel block 2: `date`"
 run_parallel do_parallel
 
-# unset and redeclare the parallel array ready for block 3
+# unset and redeclare the parallel array ready for next block
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 3"
 
-echo -e "\t[Parallel block 3] cgpPindel added..."
-do_parallel[cgpPindel]="pindel.pl \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
- -r $REF_BASE/genome.fa \
+echo -e "\t[Parallel block 3] ASCAT added..."
+do_parallel[ascat]="ascat.pl \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
- -s $REF_BASE/pindel/simpleRepeats.bed.gz \
- -u $REF_BASE/pindel/pindel_np.gff3.gz \
- -f $REF_BASE/pindel/${PROTOCOL}_Rules.lst \
- -g $REF_BASE/vagrent/codingexon_regions.indel.bed.gz \
- -st $PROTOCOL \
- -as $ASSEMBLY \
- -sp '$SPECIES' \
- -e $PINDEL_EXCLUDE \
- -b $REF_BASE/pindel/HiDepth.bed.gz \
- -c $CPU \
- -sf $REF_BASE/pindel/softRules.lst"
+ -sg $REF_BASE/ascat/SnpGcCorrections.tsv \
+ -r $REF_BASE/genome.fa \
+ -q 20 \
+ -g L \
+ -rs '$SPECIES' \
+ -ra $ASSEMBLY \
+ -pr $PROTOCOL \
+ -pl ILLUMINA \
+ -c $CPU"
 
 echo -e "\t[Parallel block 3] BRASS_input added..."
 do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
@@ -320,13 +283,6 @@ do_parallel[BRASS_cover]="nice -n 10 brass.pl -j 4 -k 4 -c $CPU \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass \
  -p cover"
 
-echo -e "\t[Parallel block 3] VerifyBam Tumour added..."
-do_parallel[verify_MT]="nice -n 10 verifyBamHomChk.pl -d 25 \
- -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
- -b $BAM_MT_TMP \
- -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
- -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
-
 echo "Starting Parallel block 3: `date`"
 run_parallel do_parallel
 
@@ -335,17 +291,33 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
-# ensure no annotated pindel
-rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
 set +x
 
-# unset and redeclare the parallel array ready for block 4
+# unset and redeclare the parallel array ready for next block
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 4"
 
+echo -e "\t[Parallel block 4] cgpPindel added..."
+do_parallel[cgpPindel]="nice -n 10 pindel.pl \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
+ -r $REF_BASE/genome.fa \
+ -t $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -s $REF_BASE/pindel/simpleRepeats.bed.gz \
+ -u $REF_BASE/pindel/pindel_np.gff3.gz \
+ -f $REF_BASE/pindel/${PROTOCOL}_Rules.lst \
+ -g $REF_BASE/vagrent/codingexon_regions.indel.bed.gz \
+ -st $PROTOCOL \
+ -as $ASSEMBLY \
+ -sp '$SPECIES' \
+ -e $PINDEL_EXCLUDE \
+ -b $REF_BASE/pindel/HiDepth.bed.gz \
+ -c $CPU \
+ -sf $REF_BASE/pindel/softRules.lst"
+
 echo -e "\t[Parallel block 4] CaVEMan added..."
-do_parallel[CaVEMan]="caveman.pl \
+do_parallel[CaVEMan_split]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
  -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
@@ -355,7 +327,6 @@ do_parallel[CaVEMan]="caveman.pl \
  -sa $ASSEMBLY \
  -t $CPU \
  -st $PROTOCOL \
- -in $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed \
  -tc $TMP/tum.cn.bed \
  -nc $TMP/norm.cn.bed \
  -td 5 -nd 2 \
@@ -364,9 +335,18 @@ do_parallel[CaVEMan]="caveman.pl \
  -c $SNVFLAG \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman"
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -no-flagging"
 
-echo -e "\t[Parallel block 4] BRASS added..."
+echo "Starting Parallel block 4: `date`"
+run_parallel do_parallel
+
+# unset and redeclare the parallel array ready for next block
+unset do_parallel
+declare -A do_parallel
+echo -e "\nSetting up Parallel block 5"
+
+echo -e "\t[Parallel block 5] BRASS added..."
 do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -d $REF_BASE/brass/HiDepth.bed.gz \
  -f $REF_BASE/brass/brass_np.groups.gz \
@@ -383,28 +363,52 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/*.samplestatistics.txt \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass"
 
- # annotate pindel
- rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
- echo -e "\t[Parallel block 4] Pindel_annot added..."
- do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache.gz \
-  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
-  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
+# ensure no annotated pindel
+rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf.gz*
 
-echo "Starting Parallel block 4: `date`"
+echo -e "\t[Parallel block 5] Pindel_annot added..."
+do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache.gz \
+ -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
+
+echo -e "\t[Parallel block 5] cgpFlagCaVEMan added..."
+do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
+ -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.muts.ids.vcf.gz \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz \
+ -s '$SPECIES' \
+ -m $BAM_MT_TMP \
+ -n $BAM_WT_TMP \
+ -b $REF_BASE/caveman/flagging \
+ -g $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed \
+ -umv $REF_BASE/caveman \
+ -ab $REF_BASE/vagrent \
+ -ref $REF_BASE/genome.fa.fai \
+ -c $SNVFLAG \
+ -v $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini"
+
+echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
 
-# unset and redeclare the parallel array ready for block 4
+# unset and redeclare the parallel array ready for next block
 unset do_parallel
 declare -A do_parallel
+echo -e "\nSetting up Parallel block 6"
 
 # annotate caveman
 rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf.gz*
-echo -e "\t[Parallel block 5] CaVEMan_annot added..."
+echo -e "\t[Parallel block 6] CaVEMan_annot added..."
 do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache.gz \
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
-echo "Starting Parallel block 5: `date`"
+echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
+do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
+ -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
+ -b $BAM_MT_TMP \
+ -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
+ -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
+
+echo "Starting Parallel block 6: `date`"
 run_parallel do_parallel
 
 # clean up log files
