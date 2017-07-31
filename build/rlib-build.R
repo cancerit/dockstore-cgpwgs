@@ -5,13 +5,18 @@ r["CRAN"] = "http://cran.uk.r-project.org"
 options(repos = r)
 rm(r)
 source("http://bioconductor.org/biocLite.R")
-biocLite("data.table", ask=FALSE, lib=instLib)
-biocLite("gam", ask=FALSE, lib=instLib)
-biocLite("VGAM", ask=FALSE, lib=instLib)
-biocLite("stringr", ask=FALSE, lib=instLib)
-biocLite("poweRlaw", ask=FALSE, lib=instLib)
-biocLite("zlibbioc", ask=FALSE, lib=instLib)
-biocLite("RColorBrewer", ask=FALSE, lib=instLib)
+
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) {
+    biocLite(new.pkg, ask=FALSE, lib=instLib)
+    library(new.pkg, character.only = TRUE)
+  }
+}
+
+# usage
+biocPackages <- c("data.table", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
+ipak(biocPackages)
 
 # use custom fix for copynumber library
 install.packages("devtools", lib=instLib)

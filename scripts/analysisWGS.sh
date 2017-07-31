@@ -159,7 +159,7 @@ else
     -ge XX \
     -tb $BAM_MT_TMP \
     -nb $BAM_WT_TMP \
-    -p allelecount \
+    -p splitlocifiles \
     -nl 50 \
     -t $CPU"
 fi
@@ -317,7 +317,7 @@ do_parallel[cgpPindel]="nice -n 10 pindel.pl \
  -sf $REF_BASE/pindel/softRules.lst"
 
 echo -e "\t[Parallel block 4] CaVEMan added..."
-do_parallel[CaVEMan_split]="caveman.pl \
+do_parallel[CaVEMan]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
  -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \

@@ -1,4 +1,4 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwxs:2.1.0
+FROM  quay.io/wtsicgp/dockstore-cgpwxs:2.1.1
 
 MAINTAINER  keiranmraine@gmail.com
 
@@ -18,9 +18,8 @@ ENV R_LIBS_USER $R_LIBS
 COPY build/apt-build.sh build/
 RUN bash build/apt-build.sh
 
-COPY build/r-build.sh build/
 COPY build/rlib-build.R build/
-RUN bash build/r-build.sh $OPT 1
+RUN mkdir -p $R_LIBS_USER && Rscript build/rlib-build.R $R_LIBS_USER
 
 COPY build/perllib-build.sh build/
 RUN bash build/perllib-build.sh
@@ -33,9 +32,9 @@ COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-wrapper.pl
 
 ### security upgrades and cleanup
-RUN apt-get -yq update
-RUN apt-get -yq install unattended-upgrades
-RUN unattended-upgrades
+RUN apt-get -yq update && \
+    apt-get -yq install unattended-upgrades && \
+    unattended-upgrades
 
 USER    ubuntu
 WORKDIR /home/ubuntu
