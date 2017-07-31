@@ -374,7 +374,7 @@ do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cac
 echo -e "\t[Parallel block 5] cgpFlagCaVEMan added..."
 do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.muts.ids.vcf.gz \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf \
  -s '$SPECIES' \
  -m $BAM_MT_TMP \
  -n $BAM_WT_TMP \
@@ -388,6 +388,10 @@ do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
 
 echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
+
+# compress and index flagged caveman
+bgzip $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf
+tabix -p vcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz
 
 # unset and redeclare the parallel array ready for next block
 unset do_parallel
