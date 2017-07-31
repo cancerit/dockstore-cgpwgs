@@ -8,10 +8,9 @@ source("http://bioconductor.org/biocLite.R")
 
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-  if (length(new.pkg)) {
+  if (length(new.pkg))
     biocLite(new.pkg, ask=FALSE, lib=instLib)
-    library(new.pkg, character.only = TRUE)
-  }
+  sapply(pkg, library, character.only = TRUE)
 }
 
 # usage
