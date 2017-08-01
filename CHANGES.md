@@ -1,3 +1,27 @@
+### 1.1.0
+BRASS updates
+* Significantly reduces the run time of brass_group phase
+  * see [v6.0.0](https://github.com/cancerit/BRASS/releases/tag/v6.0.0)
+  * Requires new version of the CNV_SV reference archive
+* Ensure stable result between replicate runs:
+  * see [v6.0.2](https://github.com/cancerit/BRASS/releases/tag/v6.0.2)
+
+Other dependency updates
+* Based on [dockstore-cgpwxs:2.1.1](https://github.com/cancerit/dockstore-cgpwxs/releases/tag/2.1.1)
+  * Update caveman, pindel and vagrent to improve reproducibility.
+  * Reduced I/O in caveman.
+* Updates to [alleleCount:v3.3.0](https://github.com/cancerit/alleleCount/releases/tag/v3.3.0) to improve access pattens for dense loci counting, resulting upgrades to:
+  * [ascatNgs:v4.1.0](https://github.com/cancerit/ascatNgs/releases)
+  * [cgpBattenberg:v3.1.0](https://github.com/cancerit/cgpBattenberg/releases/tag/v3.1.0)
+
+Workflow updates:
+* Reorganisation of some processes to reduce run-time:
+  * Changes to alleleCount have vastly improved I/O pattern and reduced runtime for
+ascat and IMPUTE-allele counts (pre-Battenberg).
+  * Reduced number of split files for IMPUTE-allele counts as reduced run time negates need for large spread
+  * Reduced alleleCount runtim allowed reorganisation of processes reducing runtime on example data from 23h to 19.5h (28cpu).
+* Added `cavereads` to example json specifying a higher value than default to reduce jobs required.
+
 ### 1.0.8
 * Update [Brass to v5.4.1](https://github.com/cancerit/BRASS/releases/tag/v5.4.1)
   * Provide additional reference file rather than attempt to decode species/build
