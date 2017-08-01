@@ -159,7 +159,7 @@ else
     -ge XX \
     -tb $BAM_MT_TMP \
     -nb $BAM_WT_TMP \
-    -p allelecount \
+    -p splitlocifiles \
     -nl 50 \
     -t $CPU"
 fi
@@ -256,8 +256,8 @@ do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
@@ -273,8 +273,8 @@ do_parallel[BRASS_cover]="nice -n 10 brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
@@ -317,7 +317,7 @@ do_parallel[cgpPindel]="nice -n 10 pindel.pl \
  -sf $REF_BASE/pindel/softRules.lst"
 
 echo -e "\t[Parallel block 4] CaVEMan added..."
-do_parallel[CaVEMan_split]="caveman.pl \
+do_parallel[CaVEMan]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
  -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
@@ -353,8 +353,8 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -g $REF_BASE/genome.fa \
  -s '$SPECIES' -as $ASSEMBLY -pr $PROTOCOL -pl ILLUMINA \
  -g_cache $REF_BASE/vagrent/vagrent.cache.gz \
- -vi $REF_BASE/brass/viral.1.1.genomic.fa \
- -mi $REF_BASE/brass/all_ncbi_bacteria.20150703 \
+ -vi $REF_BASE/brass/viral.genomic.fa.2bit \
+ -mi $REF_BASE/brass/all_ncbi_bacteria \
  -b $REF_BASE/brass/500bp_windows.gc.bed.gz \
  -ct $REF_BASE/brass/CentTelo.tsv \
  -cb $REF_BASE/brass/cytoband.txt \
@@ -374,7 +374,7 @@ do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cac
 echo -e "\t[Parallel block 5] cgpFlagCaVEMan added..."
 do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.muts.ids.vcf.gz \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf \
  -s '$SPECIES' \
  -m $BAM_MT_TMP \
  -n $BAM_WT_TMP \
@@ -388,6 +388,10 @@ do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
 
 echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
+
+# compress and index flagged caveman
+bgzip $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf
+tabix -p vcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz
 
 # unset and redeclare the parallel array ready for next block
 unset do_parallel

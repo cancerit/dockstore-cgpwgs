@@ -9,26 +9,26 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="v3.2.3"
+VER_ALLELECOUNT="v3.3.0"
 
 ### cgpNgsQc
 VER_CGPNGSQC="v1.4.0"
 VER_VERIFYBAM="1.1.2"
 
 ### ascatNgs
-VER_ASCATNGS="v4.0.1"
+VER_ASCATNGS="v4.1.0"
 SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
 
 ### grass
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="v5.4.1"
+VER_BRASS="v6.0.2"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
 ### cgpBattenberg
-VER_CGPBB="2.0.0"
+VER_CGPBB="v3.1.0"
 
 
 if [ "$#" -lt "1" ] ; then

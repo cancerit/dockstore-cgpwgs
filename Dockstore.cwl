@@ -10,7 +10,10 @@ cwlVersion: v1.0
 
 doc: |
     ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
-    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs) website for more information.
+    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
+    website for information relating to reference files.
+
+    Example `json` run files are included in the repository.
 
 dct:creator:
   "@id": "http://orcid.org/0000-0002-5634-1539"
@@ -19,7 +22,7 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.0.8"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.1.0"
 
 hints:
   - class: ResourceRequirement
@@ -134,14 +137,6 @@ inputs:
     inputBinding:
       prefix: -cavereads
       position: 12
-      separate: true
-
-  sv_cyto:
-    type: File
-    doc: "Cytoband file"
-    inputBinding:
-      prefix: -sv_cyto
-      position: 13
       separate: true
 
 outputs:
