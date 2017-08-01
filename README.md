@@ -32,6 +32,12 @@ Please check the Wiki then raise an issue if you require additional information 
 * [ascatNgs](https://github.com/cancerit/ascatNgs/wiki)
 * [VAGrENT](https://github.com/cancerit/VAGrENT/wiki)
 
+## Diagram of internals
+
+This diagram was generated based on v1.1.0, it does not describe any of the file provisioning handled by a Dockstore run.
+
+![Internal flow of docker image](images/dockstore-cgpwgs.png)
+
 Release process
 ===============
 This project is maintained using HubFlow.
