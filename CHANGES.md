@@ -1,3 +1,8 @@
+### 1.1.1
+* Stable results between replicate runs:
+  * see [v6.0.3](https://github.com/cancerit/BRASS/releases/tag/v6.0.3)
+  * took multiple executions of 29 datasets to find this edge-case.
+
 ### 1.1.0
 BRASS updates
 * Significantly reduces the run time of brass_group phase
