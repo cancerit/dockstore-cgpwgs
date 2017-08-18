@@ -1,3 +1,7 @@
+### 1.1.2
+* BRASS, random seed fixed to make noisy data have a reproducible result:
+  * see [v6.0.4](https://github.com/cancerit/BRASS/releases/tag/v6.0.4)
+
 ### 1.1.1
 * Stable results between replicate runs:
   * see [v6.0.3](https://github.com/cancerit/BRASS/releases/tag/v6.0.3)
