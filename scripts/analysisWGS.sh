@@ -123,6 +123,12 @@ perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee
 
 echo "Setting up Parallel block 1"
 
+## prime the cache
+USER_CACHE=$OUTPUT_DIR/ref_cache
+export REF_CACHE=$USER_CACHE/%2s/%2s/%s
+export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
+do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
+
 echo -e "\t[Parallel block 1] CaVEMan setup added..."
 do_parallel[CaVEMan_setup]="caveman.pl \
  -r $REF_BASE/genome.fa.fai \
@@ -424,6 +430,9 @@ rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/
 # correct default filenames from contamination jobs
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_MT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}.time.verify_MT
+
+# cleanup ref cache
+rm -rf $USER_CACHE
 
 echo 'Package results'
 # timings first
