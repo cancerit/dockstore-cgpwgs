@@ -23,7 +23,7 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="v6.0.4"
+VER_BRASS="v6.0.6"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
@@ -194,20 +194,20 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/velvet.success
   fi
 
-  if [ ! -e $SETUP_DIR/exonerate.success ]; then
-    cd $SETUP_DIR/distro/distros
-    tar zxf exonerate-2.2.0.tar.gz
-    cd exonerate-2.2.0
-    cp ../patches/exonerate_pthread-asneeded.diff .
-    patch -p1 < exonerate_pthread-asneeded.diff
-    ./configure --prefix=$INST_PATH
-    make    # don't do multi-threaded make
-    make check
-    make install
-    cd $SETUP_DIR/distro
-    rm -rf distros/exonerate-2.2.0
-    touch $SETUP_DIR/exonerate.success
-  fi
+  # if [ ! -e $SETUP_DIR/exonerate.success ]; then
+  #   cd $SETUP_DIR/distro/distros
+  #   tar zxf exonerate-2.2.0.tar.gz
+  #   cd exonerate-2.2.0
+  #   cp ../patches/exonerate_pthread-asneeded.diff .
+  #   patch -p1 < exonerate_pthread-asneeded.diff
+  #   ./configure --prefix=$INST_PATH
+  #   make    # don't do multi-threaded make
+  #   make check
+  #   make install
+  #   cd $SETUP_DIR/distro
+  #   rm -rf distros/exonerate-2.2.0
+  #   touch $SETUP_DIR/exonerate.success
+  # fi
 
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Graph
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase

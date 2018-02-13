@@ -2,13 +2,18 @@ FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.0.0-rc2 as builder
 
 USER  root
 
-RUB echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -qy --no-install-recommends lsb-release
+
+RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list
 RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
 RUN gpg -a --export E084DAB9 | apt-key add -
 
 RUN apt-get update
-RUN apt-get apt-get install -qy --no-install-recommends\
+RUN apt-get install -qy --no-install-recommends\
   locales\
+  libcurl4-openssl-dev\
+  libssl-dev\
   g++\
   make\
   gcc\
@@ -21,7 +26,9 @@ RUN apt-get apt-get install -qy --no-install-recommends\
   libboost-all-dev\
   libpstreams-dev\
   r-base\
-  libblas-dev
+  r-base-dev\
+  libblas-dev\
+  libbz2-dev
 
 RUN locale-gen en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
@@ -67,7 +74,8 @@ RUN apt-get install -yq --no-install-recommends\
   libboost-all\
   libpstreams\
   r-base\
-  libblas
+  libblas\
+  exonerate
 
 RUN locale-gen en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
