@@ -77,29 +77,8 @@ fi
 echo -e "\tBAM_MT : $BAM_MT"
 echo -e "\tBAM_WT : $BAM_WT"
 
-if [ ${#PRE_EXEC[@]} -eq 0 ]; then
-  PRE_EXEC='echo No PRE_EXEC defined'
-fi
-
-if [ ${#POST_EXEC[@]} -eq 0 ]; then
-  POST_EXEC='echo No POST_EXEC defined'
-fi
-
 set -u
 mkdir -p $OUTPUT_DIR
-
-# run any pre-exec step before attempting to access BAMs
-# logically the pre-exec could be pulling them
-if [ ! -f $OUTPUT_DIR/pre-exec.done ]; then
-  echo -e "\nRun PRE_EXEC: `date`"
-
-  for i in "${PRE_EXEC[@]}"; do
-    set -x
-    $i
-    { set +x; } 2> /dev/null
-  done
-  touch $OUTPUT_DIR/pre-exec.done
-fi
 
 ## get sample names from BAM headers
 NAME_MT=`samtools view -H $BAM_MT | perl -ne 'chomp; if($_ =~ m/^\@RG/) {($sm) = $_ =~m/\tSM:([^\t]+)/; print "$sm\n";}' | uniq`
@@ -108,26 +87,47 @@ NAME_WT=`samtools view -H $BAM_WT | perl -ne 'chomp; if($_ =~ m/^\@RG/) {($sm) =
 echo -e "\tNAME_MT : $NAME_MT"
 echo -e "\tNAME_WT : $NAME_WT"
 
-BAM_MT_TMP=$TMP/$NAME_MT.bam
-BAM_WT_TMP=$TMP/$NAME_WT.bam
+# capture index extension type (assuming same from both)
+ALN_EXTN='bam'
+IDX_EXTN=''
+if [[ "$IDX_MT" == *.bam.bai ]]; then
+  IDX_EXTN='bam.bai'
+elif [[ "$IDX_MT" == *.bam.csi ]]; then
+  IDX_EXTN='bam.csi'
+elif [[ "$IDX_MT" == *.cram.crai ]]; then
+  IDX_EXTN='cram.crai'
+  ALN_EXTN='cram'
+else
+  echo "Alignment is not BAM or CRAM file: $" >&2
+  exit 1
+fi
+
+BAM_MT_TMP=$TMP/$NAME_MT.$ALN_EXTN
+IDX_MT_TMP=$TMP/$NAME_MT.$IDX_EXTN
+BAM_WT_TMP=$TMP/$NAME_WT.$ALN_EXTN
+IDX_WT_TMP=$TMP/$NAME_WT.$IDX_EXTN
+
+## BAS files are not generated in this flow due to siginifcant run time overhead.
 
 ln -fs $BAM_MT $BAM_MT_TMP
-ln -fs $BAM_WT $BAM_WT_TMP
-ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
-ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
 ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
+ln -fs $IDX_MT $IDX_MT_TMP
+ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
+ln -fs $IDX_WT $IDX_WT_TMP
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
 
 echo "Setting up Parallel block 1"
 
-## prime the cache
-USER_CACHE=$OUTPUT_DIR/ref_cache
-export REF_CACHE=$USER_CACHE/%2s/%2s/%s
-export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
-do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
+if [ "$ALN_EXTN" == "cram" ]; then
+  ## prime the cache
+  USER_CACHE=$OUTPUT_DIR/ref_cache
+  export REF_CACHE=$USER_CACHE/%2s/%2s/%s
+  export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
+  do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
+fi
 
 echo -e "\t[Parallel block 1] CaVEMan setup added..."
 do_parallel[CaVEMan_setup]="caveman.pl \
@@ -432,6 +432,11 @@ rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_MT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}.time.verify_MT
 
+# cleanup reference area, see ds-cgpwxs.pl
+if [ ! -z ${CLEAN_REF+x} ]; then
+  rm -rf $REF_BASE
+fi
+
 # cleanup ref cache
 rm -rf $USER_CACHE
 
@@ -440,13 +445,5 @@ echo 'Package results'
 tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
 tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
 cp $PARAM_FILE ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
-
-# run any post-exec step
-echo -e "\nRun POST_EXEC: `date`"
-for i in "${POST_EXEC[@]}"; do
-  set -x
-  $i
-  set +x
-done
 
 echo -e "\nWorkflow end: `date`"
