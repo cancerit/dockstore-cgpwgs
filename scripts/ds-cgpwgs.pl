@@ -12,7 +12,11 @@ use warnings FATAL => 'all';
 pod2usage(-verbose => 1, -exitval => 1) if(@ARGV == 0);
 
 # set defaults
-my %opts = ();
+my %opts = ('c' => undef,
+            'o' => $ENV{HOME},
+            'sp' => undef,
+            'as' => undef,
+            );
 
 GetOptions( 'h|help' => \$opts{'h'},
             'm|man' => \$opts{'m'},
@@ -24,10 +28,12 @@ GetOptions( 'h|help' => \$opts{'h'},
             't|tumour=s' => \$opts{'t'},
             'n|normal=s' => \$opts{'n'},
             'e|exclude=s' => \$opts{'e'},
-            'sp|species=s' => \$opts{'sp'},
-            'as|assembly=s' => \$opts{'as'},
+            'sp|species:s' => \$opts{'sp'},
+            'as|assembly:s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
-            'cr|cavereads=i' => \$opts{'cr'}
+            'cr|cavereads=i' => \$opts{'cr'},
+            'c|cores:i' => \$opts{'c'},
+            'o|outdir:s' => \$opts{'o'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -102,11 +108,13 @@ printf $FH "OUTPUT_DIR='%s'\n", $ENV{HOME};
 printf $FH "REF_BASE='%s'\n", $ref_area;
 printf $FH "BAM_MT='%s'\n", $opts{'t'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
-printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
+printf $FH "CONTIG_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
 printf $FH "SNVFLAG='%s'\n", $ini;
+printf $FH "CPU=%d\n", $opts{'c'} if(defined $opts{'c'});
+printf $FH "CLEAN_REF=1\n" if($ref_unpack);
 # Options to disable algorithms
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
@@ -217,13 +225,15 @@ dh-wrapper.pl [options] [file(s)...]
     -subcl       -sc  Path to SUBCL*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
     -normal      -n   Normal [CR|B]AM file
-    -exclude     -e   Exclude these contigs from pindel analysis
+    -exclude     -e   Exclude these contigs from SNV/Indel analysis
                         e.g. NC_007605,hs37d5,GL%
 
   Optional parameters
     -species     -sp  Species name (may require quoting)
     -assembly    -a   Reference assembly
     -skipbb      -sb  Skip Battenberg allele counts
+    -outdir      -o   Set the output folder [$HOME]
+    -cores       -c   Set the number of cpu/cores available [default all].
 
   Other:
     -help        -h   Brief help message.
@@ -282,6 +292,17 @@ Specify overriding assembly, by default will select the most prevelant entry in
 =item B<-skipbb>
 
 Disables the Battenberg allele count generation
+
+=item B<-outdir>
+
+Set the output directory.  Defaults to $HOME.
+
+NOTE: Should B<NOT> be set when working with dockstore wrapper.
+
+=item B<-cores>
+
+Sets the number of cores to be used during processing.  Default to use all at appropriate
+points in analysis.
 
 =back
 

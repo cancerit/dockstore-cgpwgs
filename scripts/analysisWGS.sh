@@ -149,6 +149,7 @@ do_parallel[CaVEMan_setup]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -p setup"
 
 echo -e "\t[Parallel block 1] BB splitlocifiles added..."
@@ -317,7 +318,7 @@ do_parallel[cgpPindel]="nice -n 10 pindel.pl \
  -st $PROTOCOL \
  -as $ASSEMBLY \
  -sp '$SPECIES' \
- -e $PINDEL_EXCLUDE \
+ -e $CONTIG_EXCLUDE \
  -b $REF_BASE/pindel/HiDepth.bed.gz \
  -c $CPU \
  -sf $REF_BASE/pindel/softRules.lst"

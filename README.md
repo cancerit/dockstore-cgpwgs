@@ -1,45 +1,69 @@
-dockstore-cgpwgs
-======
-`dockstore-cgpwgs` provides a complete multi threaded WGS analysis for SNV, INDEL, SV and Copynumber variation with associated annotation of VCF files.  This has been packaged specifically for use with the [Dockstore.org](https://dockstore.org/) framework.
+# dockstore-cgpwgs
 
-[![Join the chat at https://gitter.im/dockstore-cgpwgs/general](https://badges.gitter.im/dockstore-cgpwgs/general.svg)](https://gitter.im/dockstore-cgpwgs/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+`dockstore-cgpwgs` provides a complete multi threaded WGS analysis for SNV, INDEL, SV and Copynumber
+variation with associated annotation of VCF files.  This has been packaged specifically for use with
+the [Dockstore.org](https://dockstore.org/) framework.
 
-[![Docker Repository on Quay](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status "Docker Repository on Quay")](https://quay.io/repository/wtsicgp/dockstore-cgpwgs)
+[![Gitter Badge][gitter-svg]][gitter-badge]
 
-[![Build Status](https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=master)](https://travis-ci.org/cancerit/dockstore-cgpwgs) : master  
-[![Build Status](https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=develop)](https://travis-ci.org/cancerit/dockstore-cgpwgs) : develop
+[![Quay Badge][quay-status]][quay-repo]
+
+| Master                                        | Develop                                         |
+| --------------------------------------------- | ----------------------------------------------- |
+| [![Master Badge][travis-master]][travis-base] | [![Develop Badge][travis-develop]][travis-base] |
+
+## Usage
+
+This is intended to be run using the Dockstore.org framework under docker but can be executed as a
+normal docker container (or imported into singularity.
+
+You should see the usage for the `ds-cgpwgs.pl` script for all parameters (or the `cwl` definition).
 
 Required input files are
 
 1. Tumour BAM file
-2. Normal BAM file
-3. Core reference archive (e.g. [core_ref_GRCh37d5.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
-4. WXS reference archive (e.g. [SNV_INDEL_ref_GRCh37d5.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
-5. WGS reference archive (e.g. [CNV_SV_ref_GRCh37d5_brass6+.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
-6. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz](ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
-7. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz])(ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/))
+1. Normal BAM file
+1. Core reference archive (e.g. [core_ref_GRCh37d5.tar.gz][ftp-ref])
+1. WXS reference archive (e.g. [SNV_INDEL_ref_GRCh37d5.tar.gz][ftp-ref])
+1. WGS reference archive (e.g. [CNV_SV_ref_GRCh37d5_brass6+.tar.gz][ftp-ref])
+1. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz][ftp-ref])
+1. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz][ftp-ref])
   * Only needed if `skipbb` is `false`
 
-Inputs 1&2 are expected to have been mapped using [dockstore-cgpmap](https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpmap).
+Inputs 1&2 are expected to have been mapped using [dockstore-cgpmap][dockstore-cgpmap]
+
+### Usable Cores
+
+When running outside of a docker container you can set the number of CPUs via:
+
+* `export CPU=N`
+* `-cores|-c` option of `ds-cgpwgs.pl`
+
+If not set detects available cores on system.
+
+## Example data
 
 The data linked in the 'examples' area is from the cell line COLO-829.
 
-Please check the Wiki then raise an issue if you require additional information on how to generate your own reference files.  Much of this information is available on the individual algorithm wiki pages (or the subsequently linked protocols papers).
+Please check the Wiki then raise an issue if you require additional information on how to generate
+your own reference files.  Much of this information is available on the individual algorithm wiki
+pages (or the subsequently linked protocols papers).
 
-* [BRASS](https://github.com/cancerit/BRASS/wiki)
-* [cgpCaVEManWrapper](https://github.com/cancerit/cgpCaVEManWrapper/wiki)
-* [cgpPindel](https://github.com/cancerit/cgpPindel/wiki)
-* [ascatNgs](https://github.com/cancerit/ascatNgs/wiki)
-* [VAGrENT](https://github.com/cancerit/VAGrENT/wiki)
+* [BRASS][brass-wiki]
+* [cgpCaVEManWrapper][caveman-wiki]
+* [cgpPindel][cgppindel-wiki]
+* [ascatNgs][ascatngs-wiki]
+* [VAGrENT][vagrent-wiki]
 
 ## Diagram of internals
 
-This diagram was generated based on v1.1.0, it does not describe any of the file provisioning handled by a Dockstore run.
+This diagram was generated based on v1.1.0, it does not describe any of the file provisioning
+handled by a Dockstore run.
 
 ![Internal flow of docker image](images/dockstore-cgpwgs.png)
 
-Release process
-===============
+## Release process
+
 This project is maintained using HubFlow.
 
 1. Make appropriate changes
@@ -47,12 +71,12 @@ This project is maintained using HubFlow.
 3. Push changes
 4. Check state on Travis
 5. Generate the release (add notes to GitHub)
-6. Confirm that image has been built on [quay.io](https://quay.io/repository/wtsicgp/dockstore-cgpwgs?tab=builds)
-7. Update the [dockstore](https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpwgs) entry, see [their docs](https://dockstore.org/docs/getting-started-with-dockstore).
+6. Confirm that image has been built on [quay.io][quay-builds]
+7. Update the [dockstore][dockstore-cgpwgs] entry, see [their docs][dockstore-get-started].
 
-LICENCE
-=======
+## LICENCE
 
+```
 Copyright (c) 2017 Genome Research Ltd.
 
 Author: Cancer Genome Project <cgpit@sanger.ac.uk>
@@ -81,3 +105,31 @@ reads ‘Copyright (c) 2005, 2007, 2008, 2009, 2011, 2012’ and a copyright
 statement that reads ‘Copyright (c) 2005-2012’ should be interpreted as being
 identical to a statement that reads ‘Copyright (c) 2005, 2006, 2007, 2008,
 2009, 2010, 2011, 2012’."
+```
+
+<!-- links -->
+[ftp-ref]: ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human
+[brass-wiki]: https://github.com/cancerit/BRASS/wiki
+[cgppindel-wiki]: https://github.com/cancerit/cgpPindel/wiki
+[caveman-wiki]: https://github.com/cancerit/cgpCaVEManWrapper/wiki
+[ascatngs-wiki]: https://github.com/cancerit/ascatNgs/wiki
+[vagrent-wiki]: https://github.com/cancerit/VAGrENT/wiki
+
+<!-- Travis -->
+[travis-base]: https://travis-ci.org/cancerit/dockstore-cgpwgs
+[travis-master]: https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=master
+[travis-develop]: https://travis-ci.org/cancerit/dockstore-cgpwgs.svg?branch=develop
+
+<!-- Gitter -->
+[gitter-svg]: https://badges.gitter.im/dockstore-cgpwgs/general.svg
+[gitter-badge]: https://gitter.im/dockstore-cgpwgs/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+<!-- Quay.io -->
+[quay-status]: https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status
+[quay-repo]: https://quay.io/repository/wtsicgp/dockstore-cgpwgs
+[quay-builds]: https://quay.io/repository/wtsicgp/dockstore-cgpwgs?tab=builds
+
+<!-- dockstore -->
+[dockstore-cgpwgs]: https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpwgs
+[dockstore-cgpmap]: https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpmap
+[dockstore-get-started]: https://dockstore.org/docs/getting-started-with-dockstore

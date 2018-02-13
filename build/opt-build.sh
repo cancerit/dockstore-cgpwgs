@@ -9,7 +9,7 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="v3.3.0"
+VER_ALLELECOUNT="feature/overlapping_reads"
 
 ### cgpNgsQc
 VER_CGPNGSQC="v1.4.0"
