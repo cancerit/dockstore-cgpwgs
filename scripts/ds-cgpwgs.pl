@@ -26,7 +26,9 @@ GetOptions( 'h|help' => \$opts{'h'},
             'cs|cnv_sv=s' => \$opts{'cs'},
             'sc|subcl=s' => \$opts{'sc'},
             't|tumour=s' => \$opts{'t'},
+            'tidx=s' => \$opts{'tidx'},
             'n|normal=s' => \$opts{'n'},
+            'nidx=s' => \$opts{'nidx'},
             'e|exclude=s' => \$opts{'e'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
@@ -114,10 +116,12 @@ print $FH "export PCAP_THREADED_REM_LOGS=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
-printf $FH "OUTPUT_DIR='%s'\n", $opts{'o'}};
+printf $FH "OUTPUT_DIR='%s'\n", $opts{'o'};
 printf $FH "REF_BASE='%s'\n", $ref_area;
 printf $FH "BAM_MT='%s'\n", $opts{'t'};
+printf $FH "IDX_MT='%s'\n", $opts{'tidx'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
+printf $FH "IDX_WT='%s'\n", $opts{'nidx'};
 printf $FH "CONTIG_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};

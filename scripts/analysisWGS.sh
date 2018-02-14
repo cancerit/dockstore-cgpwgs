@@ -348,6 +348,14 @@ do_parallel[CaVEMan]="caveman.pl \
 echo "Starting Parallel block 4: `date`"
 run_parallel do_parallel
 
+GERMLINE_BED=$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed
+if [ -f $GERMLINE_BED ]; then
+  # need to sort and index pindel germline
+  sort -k1,1 -k2,2n -k3,3n $GERMLINE_BED | bgzip -c > $GERMLINE_BED.gz
+  tabix -p bed $GERMLINE_BED.gz
+  rm -f $GERMLINE_BED
+fi
+
 # unset and redeclare the parallel array ready for next block
 unset do_parallel
 declare -A do_parallel
@@ -386,7 +394,7 @@ do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
  -m $BAM_MT_TMP \
  -n $BAM_WT_TMP \
  -b $REF_BASE/caveman/flagging \
- -g $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed \
+ -g $GERMLINE_BED.gz \
  -umv $REF_BASE/caveman \
  -ab $REF_BASE/vagrent \
  -ref $REF_BASE/genome.fa.fai \

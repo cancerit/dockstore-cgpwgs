@@ -90,6 +90,14 @@ inputs:
       position: 6
       separate: true
 
+  tumourIdx:
+    type: File
+    doc: "Tumour alignment file index [bai|csi|crai]"
+    inputBinding:
+      prefix: -tidx
+      position: 7
+      separate: true
+
   normal:
     type: File
     secondaryFiles:
@@ -98,7 +106,15 @@ inputs:
     doc: "Normal BAM or CRAM file"
     inputBinding:
       prefix: -normal
-      position: 7
+      position: 8
+      separate: true
+
+  normalIdx:
+    type: File
+    doc: "Normal alignment file index"
+    inputBinding:
+      prefix: -nidx
+      position: 9
       separate: true
 
   exclude:
@@ -106,7 +122,7 @@ inputs:
     doc: "Contigs to block during indel analysis"
     inputBinding:
       prefix: -exclude
-      position: 8
+      position: 10
       separate: true
       shellQuote: true
 
@@ -116,7 +132,7 @@ inputs:
     default: ''
     inputBinding:
       prefix: -species
-      position: 9
+      position: 11
       separate: true
       shellQuote: true
 
@@ -126,7 +142,7 @@ inputs:
     default: ''
     inputBinding:
       prefix: -assembly
-      position: 10
+      position: 12
       separate: true
       shellQuote: true
 
@@ -135,7 +151,7 @@ inputs:
     doc: "Skip Battenberg allele counts"
     inputBinding:
       prefix: -skipbb
-      position: 11
+      position: 13
       separate: true
 
   cavereads:
@@ -144,7 +160,7 @@ inputs:
     default: 350000
     inputBinding:
       prefix: -cavereads
-      position: 12
+      position: 14
       separate: true
 
 outputs:
