@@ -79,14 +79,24 @@ $opts{'wt_sm'} = sample_name_from_xam($opts{'n'});
 
 printf "Options loaded: \n%s\n",Dumper(\%opts);
 
-## unpack the reference area:
-my $ref_area = $ENV{HOME}.'/reference_files';
-
-ref_unpack($ref_area, $opts{'r'});
-ref_unpack($ref_area, $opts{'a'});
-ref_unpack($ref_area, $opts{'si'});
-ref_unpack($ref_area, $opts{'cs'});
-ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
+# figure out if ref already unpacked:
+my $ref_area = $opts{'o'}.'/reference_files';
+my $ref_unpack = 1;
+if($opts{'r'} eq $opts{'a'}
+  && $opts{'r'} eq $opts{'si'}
+  && $opts{'r'} eq $opts{'cs'}
+  && (exists $opts{'sb'} || $opts{'r'} eq $opts{'sc'})
+  && -d $opts{'r'}) {
+  $ref_area = $opts{'r'};
+  $ref_unpack = 0;
+}
+else {
+  ref_unpack($ref_area, $opts{'r'});
+  ref_unpack($ref_area, $opts{'a'});
+  ref_unpack($ref_area, $opts{'si'});
+  ref_unpack($ref_area, $opts{'cs'});
+  ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
+}
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
@@ -94,7 +104,7 @@ my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.W
 ## CWL changes $HOME so need to copy in relevant config for R
 copy('/home/ubuntu/.Rprofile', $ENV{HOME}.'/.Rprofile');
 
-my $run_file = $ENV{HOME}.'/run.params';
+my $run_file = $opts{'o'}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
 print $FH "export PCAP_THREADED_NO_SCRIPT=1\n";
@@ -104,7 +114,7 @@ print $FH "export PCAP_THREADED_REM_LOGS=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
-printf $FH "OUTPUT_DIR='%s'\n", $ENV{HOME};
+printf $FH "OUTPUT_DIR='%s'\n", $opts{'o'}};
 printf $FH "REF_BASE='%s'\n", $ref_area;
 printf $FH "BAM_MT='%s'\n", $opts{'t'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
@@ -124,14 +134,13 @@ open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
 print $R_FH qq{options(bitmapType='cairo')\n};
 close $R_FH;
 
-my $cmd = sprintf '/usr/bin/time -o %s/WGS_%s_vs_%s.time -v /opt/wtsi-cgp/bin/analysisWGS.sh', $ENV{HOME}, $opts{'mt_sm'}, $opts{'wt_sm'};
-exec($cmd); # I will never return to the perl code
+exec('analysisWGS.sh', $run_file); # I will never return to the perl code
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
   $species =~ s/ /_/g;
   $species = uc $species;
-  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WXS.ini';
+  my $ini_out = $opts{'o'}.'/flag.vcf.config.WXS.ini';
   open my $IN, '<', $ini_in;
   open my $OUT,'>',$ini_out;
   while(my $line = <$IN>) {
