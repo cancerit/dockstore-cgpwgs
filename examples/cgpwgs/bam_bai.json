@@ -8,7 +8,7 @@
     "class": "File"
   },
   "snv_indel": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5.tar.gz",
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz",
     "class": "File"
   },
   "cnv_sv": {
@@ -20,14 +20,14 @@
     "class": "File"
   },
   "tumour": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/COLO-829.sample.dupmarked.bam",
+    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829.bam",
     "class": "File"
   },
   "normal": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/COLO-829-BL.sample.dupmarked.bam",
+    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829-BL.bam",
     "class": "File"
   },
-  "exclude": "NC_007605,hs37d5,GL%",
+  "exclude": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,X,Y,MT,NC_007605,hs37d5,GL%",
   "species": "human",
   "assembly": "GRCh37d5",
   "cavereads": 800000,
