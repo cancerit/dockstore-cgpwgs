@@ -9,11 +9,19 @@ label: "CGP WGS analysis flow"
 cwlVersion: v1.0
 
 doc: |
-    ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
-    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
-    website for information relating to reference files.
+  ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
+  A Docker container for the CGP WXS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
+  website for more information.
 
-    Example `json` run files are included in the repository.
+  Please read the relevant [changes](https://github.com/cancerit/dockstore-cgpwgs/blob/master/CHANGES.md)
+  when upgrading.
+
+  Parameters for a CWL definition are generally described in a json file, but parameters can be provided on the command line.
+
+  To see the parameters descriptions please run: cwltool --tool-help path_to.cwl
+
+  WARNING: The usual setting for 'exclude' is 'NC_007605,hs37d5,GL%' (human GRCh37/NCBI37). Examples
+  are configured to run as quickly as possible.
 
 dct:creator:
   "@id": "http://orcid.org/0000-0002-5634-1539"
@@ -161,4 +169,4 @@ outputs:
     outputBinding:
       glob: WGS_*_vs_*.time
 
-baseCommand: ["/opt/wtsi-cgp/bin/ds-wrapper.pl"]
+baseCommand: ["/opt/wtsi-cgp/bin/ds-cgpwgs.pl"]
