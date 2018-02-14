@@ -3,6 +3,12 @@
 ## 2.0.0
 
 * Reorganisation to allow access of other tools or necessary bindings
+* See dockstore-cgpmap 3.0.0 (primarily adds mismatchQc)
+* See dockstore-cgpwxs 3.0.0 (fragment based analysis)
+  * You will need to update the reference pack to include the new flagging rules, see example `json`
+  files
+* Using build stages to shrink images.
+* remove legacy PRE/POST-EXEC from cgpbox days
 
 ## 1.1.2
 
