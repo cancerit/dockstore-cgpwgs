@@ -52,9 +52,9 @@ FROM  ubuntu:16.04
 
 MAINTAINER  keiranmraine@gmail.com
 
-LABEL uk.ac.sanger.cgp="Cancer Genome Project, Wellcome Trust Sanger Institute" \
-      version="2.0.0-rc1" \
-      description="The CGP WGS pipeline for dockstore.org"
+LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
+LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
+LABEL uk.ac.sanger.cgp.version="2.0.0-rc1"
 
 RUN apt-get -yq update
 RUN apt-get install -yq --no-install-recommends\
@@ -71,10 +71,7 @@ RUN apt-get install -yq --no-install-recommends\
   libncurses5\
   libcairo2\
   gfortran\
-  libboost-all\
-  libpstreams\
   r-base\
-  libblas\
   exonerate
 
 RUN locale-gen en_US.UTF-8
@@ -89,9 +86,12 @@ ENV LANG en_US.UTF-8
 ENV R_LIBS $OPT/R-lib
 ENV R_LIBS_USER $R_LIBS
 
+RUN mkdir -p $OPT
+COPY --from=builder $OPT $OPT
+
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
-COPY scripts/ds-wrapper.pl $OPT/bin/ds-wrapper.pl
-RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-wrapper.pl
+COPY scripts/ds-cgpwgs.pl $OPT/bin/ds-cgpwgs.pl
+RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-cgpwgs.pl
 
 USER    ubuntu
 WORKDIR /home/ubuntu
