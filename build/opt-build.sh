@@ -16,8 +16,8 @@ VER_CGPNGSQC="feature/cramAndCleanup"
 VER_VERIFYBAM="1.1.2"
 
 ### ascatNgs
-VER_ASCATNGS="v4.1.0"
-SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
+VER_ASCATNGS="feature/patchAndUpgradeAscat"
+SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5/ASCAT/R/ascat.R"
 
 ### grass
 VER_GRASS="v2.1.0"
@@ -118,7 +118,7 @@ if [ ! -e $SETUP_DIR/ascatNgs.success ]; then
 
   # add ascatSrc
   curl -sSL $SRC_ASCAT > share/ascat/ascat.R
-
+  patch share/ascat/ascat.R ../patches/ascat_singleSnp.patch
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
