@@ -231,6 +231,7 @@ do_parallel[CaVEMan_split]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -p split"
 
 echo "Starting Parallel block 2: `date`"
@@ -343,6 +344,7 @@ do_parallel[CaVEMan]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -no-flagging"
 
 echo "Starting Parallel block 4: `date`"
@@ -375,7 +377,7 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -cb $REF_BASE/brass/cytoband.txt \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
- -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/*.samplestatistics.txt \
+ -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.samplestatistics.txt \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass"
 
 # ensure no annotated pindel
@@ -440,13 +442,15 @@ rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_MT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}.time.verify_MT
 
-# cleanup reference area, see ds-cgpwxs.pl
+# cleanup reference area, see ds-cgpwgs.pl
 if [ ! -z ${CLEAN_REF+x} ]; then
   rm -rf $REF_BASE
 fi
 
 # cleanup ref cache
-rm -rf $USER_CACHE
+if [ "$ALN_EXTN" == "cram" ]; then
+  rm -rf $USER_CACHE
+fi
 
 echo 'Package results'
 # timings first

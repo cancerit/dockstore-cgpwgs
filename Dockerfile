@@ -34,7 +34,7 @@ RUN locale-gen en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
 
 ENV OPT /opt/wtsi-cgp
-ENV PATH $OPT/bin:$PATH
+ENV PATH $OPT/bin:$OPT/biobambam2/bin:$PATH
 ENV PERL5LIB $OPT/lib/perl5
 ENV LD_LIBRARY_PATH $OPT/lib
 ENV LC_ALL en_US.UTF-8
@@ -56,6 +56,13 @@ LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
 LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
 LABEL uk.ac.sanger.cgp.version="2.0.0-rc1"
 
+RUN apt-get update
+RUN apt-get install -qy --no-install-recommends lsb-release
+
+RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list
+RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
+RUN gpg -a --export E084DAB9 | apt-key add -
+
 RUN apt-get -yq update
 RUN apt-get install -yq --no-install-recommends\
   apt-transport-https\
@@ -72,13 +79,15 @@ RUN apt-get install -yq --no-install-recommends\
   libcairo2\
   gfortran\
   r-base\
-  exonerate
+  exonerate\
+  libboost-iostreams-dev\
+  p11-kit
 
 RUN locale-gen en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
 
 ENV OPT /opt/wtsi-cgp
-ENV PATH $OPT/bin:$PATH
+ENV PATH $OPT/bin:$OPT/biobambam2/bin:$PATH
 ENV PERL5LIB $OPT/lib/perl5
 ENV LD_LIBRARY_PATH $OPT/lib
 ENV LC_ALL en_US.UTF-8

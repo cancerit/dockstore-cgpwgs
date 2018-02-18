@@ -138,7 +138,8 @@ open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
 print $R_FH qq{options(bitmapType='cairo')\n};
 close $R_FH;
 
-exec('analysisWGS.sh', $run_file); # I will never return to the perl code
+my $cmd = sprintf '/usr/bin/time -o %s/WGS_%s_vs_%s.time -v /opt/wtsi-cgp/bin/analysisWGS.sh %s', $opts{'o'}, $opts{'mt_sm'}, $opts{'wt_sm'}, $run_file;
+exec($cmd); # I will never return to the perl code
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;

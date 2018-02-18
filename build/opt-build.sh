@@ -12,7 +12,7 @@ set -u
 VER_ALLELECOUNT="feature/overlapping_reads"
 
 ### cgpNgsQc
-VER_CGPNGSQC="v1.4.0"
+VER_CGPNGSQC="feature/cramAndCleanup"
 VER_VERIFYBAM="1.1.2"
 
 ### ascatNgs
