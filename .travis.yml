@@ -15,7 +15,7 @@ install:
 script:
  - set -e
  - echo 'Validate CWL file(s)'
- - cwltool --validate cwls/cgpwxs.cwl
+ - cwltool --validate cwls/cgpwgs.cwl
  - echo 'Build and check docker image'
  - docker build -t dockstore-cgpwgs .
  - docker images | grep -c dockstore-cgpwgs
