@@ -8,7 +8,40 @@ services:
   - docker
 
 install:
- - docker build -t dockstore-cgpwgs .
+ - virtualenv -p python3 venv
+ - source venv/bin/activate
+ - pip install html5lib cwltool
 
 script:
+ - set -e
+ - echo 'Validate CWL file(s)'
+ - cwltool --validate cwls/cgpwxs.cwl
+ - echo 'Build and check docker image'
+ - docker build -t dockstore-cgpwgs .
  - docker images | grep -c dockstore-cgpwgs
+ - echo 'Verify program from each inherited package is found (dockstore-cgpbigwig)'
+ - docker run -ti --rm dockstore-cgpmap bwjoin --version
+ - echo 'Verify program from each inherited package is found (dockstore-cgpmap)'
+ - docker run -ti --rm dockstore-cgpwgs ds-cgpmap.pl -h
+ - docker run -ti --rm dockstore-cgpwgs bwa_mem.pl -version
+ - docker run -ti --rm dockstore-cgpwgs bammarkduplicates2 --version
+ - docker run -ti --rm dockstore-cgpmap samtools --version
+ - docker run -ti --rm dockstore-cgpwgs bash -c 'bwa 2>&1 | grep Version'
+ - echo 'Verify program from each inherited package is found (dockstore-cgpwxs)'
+ - docker run -ti --rm dockstore-cgpwgs ds-cgpwxs.pl -h
+ - docker run -ti --rm dockstore-cgpwgs cgpVCFSplit.pl -version
+ - docker run -ti --rm dockstore-cgpwgs vcftools --version
+ - docker run -ti --rm dockstore-cgpwgs bedtools --version
+ - docker run -ti --rm dockstore-cgpwgs bash -c 'pindel 2>&1 | grep Welcome'
+ - docker run -ti --rm dockstore-cgpwgs pindel.pl -version
+ - docker run -ti --rm dockstore-cgpwgs caveman --version
+ - docker run -ti --rm dockstore-cgpwgs caveman.pl -version
+ - docker run -ti --rm dockstore-cgpwgs cgpFlagCaVEMan.pl -version
+ - docker run -ti --rm dockstore-cgpwgs AnnotateVcf.pl -version
+ - echo 'Verify a program from each new package is found (dockstore-cgpwgs)'
+ - docker run -ti --rm dockstore-cgpwgs ds-cgpwgs.pl -h
+ - docker run -ti --rm dockstore-cgpmap bash -c 'verifyBamId 2>&1 | grep verifyBamID'
+ - docker run -ti --rm dockstore-cgpwgs alleleCount --version
+ - docker run -ti --rm dockstore-cgpwgs brass.pl -version
+ - docker run -ti --rm dockstore-cgpwgs ascat.pl -version
+ - docker run -ti --rm dockstore-cgpwgs battenberg.pl -version
