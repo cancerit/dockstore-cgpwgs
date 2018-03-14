@@ -102,6 +102,9 @@ COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-cgpwgs.pl $OPT/bin/ds-cgpwgs.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-cgpwgs.pl
 
+## USER CONFIGURATION
+RUN adduser --disabled-password --gecos '' ubuntu && chsh -s /bin/bash && mkdir -p /home/ubuntu
+
 USER    ubuntu
 WORKDIR /home/ubuntu
 
