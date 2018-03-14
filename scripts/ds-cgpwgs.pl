@@ -83,9 +83,6 @@ else {
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
 
-## CWL changes $HOME so need to copy in relevant config for R
-copy('/home/ubuntu/.Rprofile', $ENV{HOME}.'/.Rprofile');
-
 my $run_file = $opts{'o'}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
