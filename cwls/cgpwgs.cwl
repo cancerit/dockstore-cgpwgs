@@ -23,11 +23,6 @@ doc: |
   WARNING: The usual setting for 'exclude' is 'NC_007605,hs37d5,GL%' (human GRCh37/NCBI37). Examples
   are configured to run as quickly as possible.
 
-dct:creator:
-  "@id": "http://orcid.org/0000-0002-5634-1539"
-  foaf:name: Keiran M Raine
-  foaf:mbox: "keiranmraine@gmail.com"
-
 requirements:
   - class: DockerRequirement
     dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.0.0-rc1"
@@ -163,6 +158,21 @@ inputs:
       position: 14
       separate: true
 
+  purity:
+    type: float?
+    doc: "Set the purity (rho) for ascat when default solution needs additional guidance. If set ploidy is also required."
+    inputBinding:
+      prefix: -pu
+      separate: true
+
+  ploidy:
+    type: float?
+    doc: "Set the ploidy (psi) for ascat when default solution needs additional guidance. If set purity is also required."
+    inputBinding:
+      prefix: -pl
+      separate: true
+
+
 outputs:
   run_params:
     type: File
@@ -186,3 +196,18 @@ outputs:
       glob: WGS_*_vs_*.time
 
 baseCommand: ["/opt/wtsi-cgp/bin/ds-cgpwgs.pl"]
+
+$schemas:
+  - http://schema.org/docs/schema_org_rdfa.html
+
+$namespaces:
+  s: http://schema.org/
+
+s:codeRepository: https://github.com/cancerit/dockstore-cgpwgs
+s:license: https://spdx.org/licenses/AGPL-3.0-only
+
+s:author:
+  - class: s:Person
+    s:identifier: https://orcid.org/0000-0002-5634-1539
+    s:email: mailto:cgphelp@sanger.ac.uk
+    s:name: Keiran Raine

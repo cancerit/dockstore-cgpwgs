@@ -63,10 +63,6 @@ fi
 source $PARAM_FILE
 env
 
-TMP=$OUTPUT_DIR/tmp
-mkdir -p $TMP
-mkdir -p $OUTPUT_DIR/timings
-
 if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
 fi
@@ -78,7 +74,9 @@ echo -e "\tBAM_MT : $BAM_MT"
 echo -e "\tBAM_WT : $BAM_WT"
 
 set -u
-mkdir -p $OUTPUT_DIR
+TMP=$OUTPUT_DIR/tmp
+mkdir -p $TMP
+mkdir -p $OUTPUT_DIR/timings
 
 ## get sample names from BAM headers
 NAME_MT=`samtools view -H $BAM_MT | perl -ne 'chomp; if($_ =~ m/^\@RG/) {($sm) = $_ =~m/\tSM:([^\t]+)/; print "$sm\n";}' | uniq`
@@ -115,6 +113,16 @@ ln -fs $IDX_MT $IDX_MT_TMP
 ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
 ln -fs $IDX_WT $IDX_WT_TMP
+
+ASCAT_ADD_ARGS = ''
+# ASCAT_PURITY set
+if [ ! -z ${ASCAT_PURITY+x} ]; then
+  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pu $ASCAT_PURITY"
+fi
+# ASCAT_PLOIDY set
+if [ ! -z ${ASCAT_PLOIDY+x} ]; then
+  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pl $ASCAT_PLOIDY"
+fi
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
@@ -182,6 +190,7 @@ echo -e "\t[Parallel block 1] VerifyBam Normal added..."
 do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
+  -t $CPU \
   -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
 
 echo "Starting Parallel block 1: `date`"
@@ -255,7 +264,8 @@ do_parallel[ascat]="ascat.pl \
  -ra $ASSEMBLY \
  -pr $PROTOCOL \
  -pl ILLUMINA \
- -c $CPU"
+ -c $CPU\
+ $ASCAT_ADD_ARGS"
 
 echo -e "\t[Parallel block 3] BRASS_input added..."
 do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
@@ -426,6 +436,7 @@ echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
  -b $BAM_MT_TMP \
+ -t $CPU \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
 
@@ -454,8 +465,8 @@ fi
 
 echo 'Package results'
 # timings first
-tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
-tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
-cp $PARAM_FILE ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
+tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
+tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+cp $PARAM_FILE $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
 
 echo -e "\nWorkflow end: `date`"
