@@ -9,21 +9,21 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="feature/overlapping_reads"
+VER_ALLELECOUNT="v4.0.0"
 
 ### cgpNgsQc
-VER_CGPNGSQC="feature/cramAndCleanup"
-VER_VERIFYBAM="1.1.2"
+VER_CGPNGSQC="v1.5.0"
+VER_VERIFYBAM="1.1.3"
 
 ### ascatNgs
-VER_ASCATNGS="feature/patchAndUpgradeAscat"
-SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5/ASCAT/R/ascat.R"
+VER_ASCATNGS="v4.2.0"
+SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/ASCAT/R/ascat.R"
 
 ### grass
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="v6.0.6"
+VER_BRASS="feature/cleanup"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
@@ -118,7 +118,6 @@ if [ ! -e $SETUP_DIR/ascatNgs.success ]; then
 
   # add ascatSrc
   curl -sSL $SRC_ASCAT > share/ascat/ascat.R
-  patch share/ascat/ascat.R ../patches/ascat_singleSnp.patch
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
@@ -193,21 +192,6 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     rm -rf distros/velvet_1.2.10
     touch $SETUP_DIR/velvet.success
   fi
-
-  # if [ ! -e $SETUP_DIR/exonerate.success ]; then
-  #   cd $SETUP_DIR/distro/distros
-  #   tar zxf exonerate-2.2.0.tar.gz
-  #   cd exonerate-2.2.0
-  #   cp ../patches/exonerate_pthread-asneeded.diff .
-  #   patch -p1 < exonerate_pthread-asneeded.diff
-  #   ./configure --prefix=$INST_PATH
-  #   make    # don't do multi-threaded make
-  #   make check
-  #   make install
-  #   cd $SETUP_DIR/distro
-  #   rm -rf distros/exonerate-2.2.0
-  #   touch $SETUP_DIR/exonerate.success
-  # fi
 
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Graph
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
