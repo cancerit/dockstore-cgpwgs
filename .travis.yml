@@ -20,7 +20,7 @@ script:
  - docker build -t dockstore-cgpwgs .
  - docker images | grep -c dockstore-cgpwgs
  - echo 'Verify program from each inherited package is found (dockstore-cgpbigwig)'
- - docker run -ti --rm dockstore-cgpmap bwjoin --version
+ - docker run -ti --rm dockstore-cgpwgs bwjoin --version
  - echo 'Verify program from each inherited package is found (dockstore-cgpmap)'
  - docker run -ti --rm dockstore-cgpwgs ds-cgpmap.pl -h
  - docker run -ti --rm dockstore-cgpwgs bwa_mem.pl -version
