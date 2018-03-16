@@ -23,12 +23,12 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/A
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="feature/cleanup"
+VER_BRASS="v6.1.0"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
 ### cgpBattenberg
-VER_CGPBB="v3.1.0"
+VER_CGPBB="v3.2.2"
 
 
 if [ "$#" -lt "1" ] ; then
@@ -224,7 +224,9 @@ if [ ! -e $SETUP_DIR/cgpBB.success ]; then
   curl -sSL --retry 10 https://github.com/cancerit/cgpBattenberg/archive/${VER_CGPBB}.tar.gz > distro.tar.gz
   rm -rf distro/*
   tar --strip-components 1 -C distro -xzf distro.tar.gz
-  cd distro/perl
+  cd distro/Rsupport
+  ./setupR.sh $INST_PATH
+  cd $SETUP_DIR/distro/perl
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
