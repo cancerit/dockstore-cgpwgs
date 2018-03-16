@@ -12,7 +12,16 @@ the [Dockstore.org](https://dockstore.org/) framework.
 | --------------------------------------------- | ----------------------------------------------- |
 | [![Master Badge][travis-master]][travis-base] | [![Develop Badge][travis-develop]][travis-base] |
 
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [Usage](#usage)
+	- [Usable Cores](#usable-cores)
+- [Example data](#example-data)
+- [Diagram of internals](#diagram-of-internals)
+- [Release process](#release-process)
+- [LICENCE](#licence)
+
+<!-- /TOC -->
 
 ## Usage
 
@@ -69,12 +78,13 @@ handled by a Dockstore run.
 This project is maintained using HubFlow.
 
 1. Make appropriate changes
-2. Bump version in `Dockerfile` and `Dockstore.cwl`
-3. Push changes
-4. Check state on Travis
-5. Generate the release (add notes to GitHub)
-6. Confirm that image has been built on [quay.io][quay-builds]
-7. Update the [dockstore][dockstore-cgpwgs] entry, see [their docs][dockstore-get-started].
+1. Bump version in `Dockerfile` and `Dockstore.cwl`
+1. Push changes
+1. Check state on Travis
+1. Update expected datasets
+1. Generate the release (add notes to GitHub)
+1. Confirm that image has been built on [quay.io][quay-builds]
+1. Update the [dockstore][dockstore-cgpwgs] entry, see [their docs][dockstore-get-started].
 
 ## LICENCE
 
