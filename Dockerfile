@@ -44,7 +44,8 @@ ENV R_LIBS $OPT/R-lib
 ENV R_LIBS_USER $R_LIBS
 
 COPY build/rlib-build.R build/
-RUN mkdir -p $R_LIBS_USER && Rscript build/rlib-build.R $R_LIBS_USER
+RUN mkdir -p $R_LIBS_USER
+RUN Rscript build/rlib-build.R $R_LIBS_USER 2>&1 | grep '^\*'
 
 COPY build/opt-build.sh build/
 RUN bash build/opt-build.sh $OPT

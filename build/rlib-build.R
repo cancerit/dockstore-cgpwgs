@@ -9,16 +9,21 @@ source("http://bioconductor.org/biocLite.R")
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg))
-    biocLite(new.pkg, ask=FALSE, lib=instLib)
+    biocLite(new.pkg, ask=FALSE, lib=instLib, lib.loc=instLib)
   sapply(pkg, library, character.only = TRUE)
 }
 
-# usage
+tmp <- c("devtools")
+ipak(tmp)
+library(devtools)
+options(download.file.method = "auto")
+
+# ASCAT and BRASS
 biocPackages <- c("data.table", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
 ipak(biocPackages)
 
-# use custom fix for copynumber library
-install.packages("devtools", lib=instLib)
-library(devtools)
-options(download.file.method = "auto")
 install_github("sb43/copynumber", ref="f1688edc154f1a0e3aacf7781090afe02882f623")
+
+# add for BB
+biocPackages <- c("stringi", "readr", "doParallel", "ggplot2", "gridExtra", "gtools")
+ipak(biocPackages)

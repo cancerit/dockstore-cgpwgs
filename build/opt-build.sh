@@ -28,7 +28,8 @@ SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 
 ### cgpBattenberg
-VER_CGPBB="v3.2.2"
+#VER_CGPBB="v3.2.2"
+VER_CGPBB="feature/docsAndRUpdates"
 
 
 if [ "$#" -lt "1" ] ; then
