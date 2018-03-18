@@ -13,7 +13,7 @@ VER_ALLELECOUNT="v4.0.0"
 
 ### cgpNgsQc
 VER_CGPNGSQC="v1.5.0"
-VER_VERIFYBAM="1.1.3"
+BIN_VERIFYBAMID='https://github.com/statgen/verifyBamID/releases/download/v1.1.3/verifyBamID'
 
 ### ascatNgs
 VER_ASCATNGS="v4.2.0"
@@ -96,8 +96,10 @@ fi
 ### cgpNgsQc
 if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
 
-  curl -sSL https://github.com/statgen/verifyBamID/releases/download/v${VER_VERIFYBAM}/verifyBamID.${VER_VERIFYBAM} > $OPT/bin/verifyBamId
-  chmod +x $OPT/bin/verifyBamId
+  curl -sSL $BIN_VERIFYBAMID > $OPT/bin/verifyBamID
+  chmod +x $OPT/bin/verifyBamID
+  # link to Id to handle misuse in cgpNgsQc
+  ln -s $OPT/bin/verifyBamID $OPT/bin/verifyBamId
 
   curl -sSL --retry 10 https://github.com/cancerit/cgpNgsQc/archive/${VER_CGPNGSQC}.tar.gz > distro.tar.gz
   rm -rf distro/*
