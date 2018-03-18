@@ -20,28 +20,28 @@ script:
  - docker build -t dockstore-cgpwgs .
  - docker images | grep -c dockstore-cgpwgs
  - echo 'Verify program from each inherited package is found (dockstore-cgpbigwig)'
- - docker run -ti --rm dockstore-cgpwgs bwjoin --version
+ - docker run -t --rm dockstore-cgpwgs bwjoin --version
  - echo 'Verify program from each inherited package is found (dockstore-cgpmap)'
- - docker run -ti --rm dockstore-cgpwgs ds-cgpmap.pl -h
- - docker run -ti --rm dockstore-cgpwgs bwa_mem.pl -version
- - docker run -ti --rm dockstore-cgpwgs bammarkduplicates2 --version
- - docker run -ti --rm dockstore-cgpwgs samtools --version
- - docker run -ti --rm dockstore-cgpwgs bash -c 'bwa 2>&1 | grep Version'
+ - docker run -t --rm dockstore-cgpwgs ds-cgpmap.pl -h
+ - docker run -t --rm dockstore-cgpwgs bwa_mem.pl -version
+ - docker run -t --rm dockstore-cgpwgs bammarkduplicates2 --version
+ - docker run -t --rm dockstore-cgpwgs samtools --version
+ - docker run -t --rm dockstore-cgpwgs bash -c 'bwa 2>&1 | grep Version'
  - echo 'Verify program from each inherited package is found (dockstore-cgpwxs)'
- - docker run -ti --rm dockstore-cgpwgs ds-cgpwxs.pl -h
- - docker run -ti --rm dockstore-cgpwgs cgpVCFSplit.pl -version
- - docker run -ti --rm dockstore-cgpwgs vcftools --version
- - docker run -ti --rm dockstore-cgpwgs bedtools --version
- - docker run -ti --rm dockstore-cgpwgs bash -c 'pindel 2>&1 | grep Welcome'
- - docker run -ti --rm dockstore-cgpwgs pindel.pl -version
- - docker run -ti --rm dockstore-cgpwgs caveman --version
- - docker run -ti --rm dockstore-cgpwgs caveman.pl -version
- - docker run -ti --rm dockstore-cgpwgs cgpFlagCaVEMan.pl -version
- - docker run -ti --rm dockstore-cgpwgs AnnotateVcf.pl -version
+ - docker run -t --rm dockstore-cgpwgs ds-cgpwxs.pl -h
+ - docker run -t --rm dockstore-cgpwgs cgpVCFSplit.pl -version
+ - docker run -t --rm dockstore-cgpwgs vcftools --version
+ - docker run -t --rm dockstore-cgpwgs bedtools --version
+ - docker run -t --rm dockstore-cgpwgs bash -c 'pindel 2>&1 | grep Welcome'
+ - docker run -t --rm dockstore-cgpwgs pindel.pl -version
+ - docker run -t --rm dockstore-cgpwgs caveman --version
+ - docker run -t --rm dockstore-cgpwgs caveman.pl -version
+ - docker run -t --rm dockstore-cgpwgs cgpFlagCaVEMan.pl -version
+ - docker run -t --rm dockstore-cgpwgs AnnotateVcf.pl -version
  - echo 'Verify a program from each new package is found (dockstore-cgpwgs)'
- - docker run -ti --rm dockstore-cgpwgs ds-cgpwgs.pl -h
- - docker run -ti --rm dockstore-cgpwgs bash -c 'verifyBamId 2>&1 | grep verifyBamID'
- - docker run -ti --rm dockstore-cgpwgs alleleCount --version
- - docker run -ti --rm dockstore-cgpwgs brass.pl -version
- - docker run -ti --rm dockstore-cgpwgs ascat.pl -version
- - docker run -ti --rm dockstore-cgpwgs battenberg.pl -version
+ - docker run -t --rm dockstore-cgpwgs ds-cgpwgs.pl -h
+ - docker run -t --rm dockstore-cgpwgs bash -c 'verifyBamID 2>&1 | grep verifyBamID'
+ - docker run -t --rm dockstore-cgpwgs alleleCounter --version
+ - docker run -t --rm dockstore-cgpwgs brass.pl -version
+ - docker run -t --rm dockstore-cgpwgs ascat.pl -version
+ - docker run -t --rm dockstore-cgpwgs battenberg.pl -version
