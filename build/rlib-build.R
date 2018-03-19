@@ -22,8 +22,8 @@ options(download.file.method = "auto")
 biocPackages <- c("data.table", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
 ipak(biocPackages)
 
-install_github("sb43/copynumber", ref="f1688edc154f1a0e3aacf7781090afe02882f623")
-
 # add for BB
 biocPackages <- c("stringi", "readr", "doParallel", "ggplot2", "gridExtra", "gtools")
 ipak(biocPackages)
+
+install_github("sb43/copynumber", ref="f1688edc154f1a0e3aacf7781090afe02882f623")
