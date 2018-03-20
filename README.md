@@ -16,8 +16,13 @@ the [Dockstore.org](https://dockstore.org/) framework.
 
 - [Usage](#usage)
 	- [Usable Cores](#usable-cores)
+- [Other uses](#other-uses)
+	- [Native docker](#native-docker)
+	- [Singularity](#singularity)
+- [Verifying your deployment](#verifying-your-deployment)
 - [Example data](#example-data)
 - [Diagram of internals](#diagram-of-internals)
+- [Development environment](#development-environment)
 - [Release process](#release-process)
 - [LICENCE](#licence)
 
@@ -27,6 +32,8 @@ the [Dockstore.org](https://dockstore.org/) framework.
 
 This is intended to be run using the Dockstore.org framework under docker but can be executed as a
 normal docker container (or imported into singularity.
+
+See the [dockstore execution method here][dockstore-cgpwgs].
 
 You should see the usage for the `ds-cgpwgs.pl` script for all parameters (or the `cwl` definition).
 
@@ -40,8 +47,22 @@ Required input files are
 1. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz][ftp-ref])
 1. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz][ftp-ref])
   * Only needed if `skipbb` is `false`
+1. QC reference archive (e.g. [qcGenotype_GRCh37d5.tar.gz][ftp-ref])
 
 Inputs 1&2 are expected to have been mapped using [dockstore-cgpmap][dockstore-cgpmap]
+
+Please check the Wiki then raise an issue if you require additional information on how to generate
+your own reference files.  Much of this information is available on the individual algorithm wiki
+pages (or the subsequently linked protocols papers).
+
+* Specific to dockstore-cgpwgs:
+	* [BRASS][brass-wiki]
+	* [ascatNgs][ascatngs-wiki]
+* Inherited from dockstore-cgpwxs:
+	* [cgpCaVEManWrapper][caveman-wiki]
+	* [cgpPindel][cgppindel-wiki]
+	* [VAGrENT][vagrent-wiki]
+
 
 ### Usable Cores
 
@@ -52,19 +73,65 @@ When running outside of a docker container you can set the number of CPUs via:
 
 If not set detects available cores on system.
 
+## Other uses
+
+### Native docker
+
+All of the tools installed as part of [dockstore-cgpmap][dockstore-cgpmap] and
+[dockstore-cgpwxs][dockstore-cgpwxs] and the above packages are available for direct use.
+
+```
+export CGPWGS_VER=X.X.X
+docker pull quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
+docker --rm -ti [--volume ...] quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER bash
+```
+
+### Singularity
+
+The resulting docker container has been tested with Singularity.  The command to exec is:
+
+```
+ds-cgpwgs.pl -h
+```
+
+Expected use would be along the lines of:
+
+```
+export CGPWGS_VER=X.X.X
+singularity pull docker://quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
+
+singularity exec\
+ --workdir /.../workspace  \
+ --home /.../workspace:/home  \
+ --bind /.../ref/human:/var/spool/ref:ro  \
+ --bind /.../example_data/cgpwgs:/var/spool/data:ro  \
+ dockstore-cgpwgs-${CGPWGS_VER}.simg  \
+  ds-cgpwgs.pl \
+   -reference /var/spool/ref/core_ref_GRCh37d5.tar.gz \
+   -annot /var/spool/ref/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz \
+   -snv_indel /var/spool/ref/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz \
+   -tumour /var/spool/data/COLO-829_ex.cram \
+   ...
+```
+
+For a system automatically attaching _all local mount points_ (not default singularity behaviour)
+you need not specify any `exec` params (workdir, home, bind) but you should specify the `-outdir`
+option for `ds-cgpwgs.pl` to prevent data being written to your home directory.
+
+By default results are written to the home directory of the container so ensure you bind
+a large volume and set the `-home` variable.  As indicated above the location can be overridden
+via the options of `ds-cgpwgs.pl`
+
+## Verifying your deployment
+
+The `examples/` tree contains test json files populated with data that can be used to verify the
+tool.  More details can be found [here](examples/README.md).
+
+The `expected/` tree contains the expected output for each tool.  More details can be found [here](expected/README.md).
+
 ## Example data
 
 The data linked in the 'examples' area is from the cell line COLO-829.
-
-Please check the Wiki then raise an issue if you require additional information on how to generate
-your own reference files.  Much of this information is available on the individual algorithm wiki
-pages (or the subsequently linked protocols papers).
-
-* [BRASS][brass-wiki]
-* [cgpCaVEManWrapper][caveman-wiki]
-* [cgpPindel][cgppindel-wiki]
-* [ascatNgs][ascatngs-wiki]
-* [VAGrENT][vagrent-wiki]
 
 ## Diagram of internals
 
@@ -73,11 +140,26 @@ handled by a Dockstore run.
 
 ![Internal flow of docker image](images/dockstore-cgpwgs.png)
 
+## Development environment
+
+This project uses git pre-commit hooks.  Please enable them to prevent inappropriate large files
+being included.  Any pull request found not to have adhered to this will be rejected and the branch
+will need to be manually cleaned to keep the repo size down.
+
+Activate the hooks with
+
+```
+git config core.hooksPath git-hooks
+```
+
 ## Release process
 
 This project is maintained using HubFlow.
 
 1. Make appropriate changes
+1. Build image locally
+1. Run all example inputs and verify any changes are acceptable
+1. Update `expected/` tree with output of last step
 1. Bump version in `Dockerfile` and `Dockstore.cwl`
 1. Push changes
 1. Check state on Travis
@@ -143,5 +225,6 @@ identical to a statement that reads ‘Copyright (c) 2005, 2006, 2007, 2008,
 
 <!-- dockstore -->
 [dockstore-cgpwgs]: https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpwgs
+[dockstore-cgpwxs]: https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpwxs
 [dockstore-cgpmap]: https://dockstore.org/containers/quay.io/wtsicgp/dockstore-cgpmap
 [dockstore-get-started]: https://dockstore.org/docs/getting-started-with-dockstore
