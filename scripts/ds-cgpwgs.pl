@@ -17,7 +17,7 @@ my %opts = ('c' => undef,
             'sp' => undef,
             'as' => undef,
             'pu' => undef,
-            'pl' => undef,
+            'pi' => undef,
             );
 
 GetOptions( 'h|help' => \$opts{'h'},
@@ -27,6 +27,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'si|snv_indel=s' => \$opts{'si'},
             'cs|cnv_sv=s' => \$opts{'cs'},
             'sc|subcl=s' => \$opts{'sc'},
+            'qc|qcset=s' => \$opts{'qc'},
             't|tumour=s' => \$opts{'t'},
             'tidx=s' => \$opts{'tidx'},
             'n|normal=s' => \$opts{'n'},
@@ -39,13 +40,13 @@ GetOptions( 'h|help' => \$opts{'h'},
             'c|cores:i' => \$opts{'c'},
             'o|outdir:s' => \$opts{'o'},
             'pu|purity:f' => \$opts{'pu'},
-            'pl|ploidy:f' => \$opts{'pl'},
+            'pi|ploidy:f' => \$opts{'pi'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
 pod2usage(-verbose => 2, -exitval => 0) if(defined $opts{'m'});
 
-if((defined($opts{'pu'}) && !defined($opts{'pl'})) || (!defined($opts{'pu'}) && defined($opts{'pl'}))) {
+if((defined($opts{'pu'}) && !defined($opts{'pi'})) || (!defined($opts{'pu'}) && defined($opts{'pi'}))) {
   pod2usage(-msg  => "\nERROR: If one of purity/ploidy are defined, both should be defined.\n",
             -verbose => 1,  -output => \*STDERR);
 }
@@ -67,6 +68,7 @@ my $ref_unpack = 1;
 if($opts{'r'} eq $opts{'a'}
   && $opts{'r'} eq $opts{'si'}
   && $opts{'r'} eq $opts{'cs'}
+  && $opts{'r'} eq $opts{'qc'}
   && (exists $opts{'sb'} || $opts{'r'} eq $opts{'sc'})
   && -d $opts{'r'}) {
   $ref_area = $opts{'r'};
@@ -77,6 +79,7 @@ else {
   ref_unpack($ref_area, $opts{'a'});
   ref_unpack($ref_area, $opts{'si'});
   ref_unpack($ref_area, $opts{'cs'});
+  ref_unpack($ref_area, $opts{'qc'});
   ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
 }
 
@@ -105,7 +108,7 @@ printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
 printf $FH "SNVFLAG='%s'\n", $ini;
 printf $FH "CPU=%d\n", $opts{'c'} if(defined $opts{'c'});
-printf $FH "ASCAT_PLOIDY=%.5f\n", $opts{'pl'} if(defined $opts{'pl'});
+printf $FH "ASCAT_PLOIDY=%.5f\n", $opts{'pi'} if(defined $opts{'pi'});
 printf $FH "ASCAT_PURITY=%.5f\n", $opts{'pu'} if(defined $opts{'pu'});
 printf $FH "CLEAN_REF=1\n" if($ref_unpack);
 # Options to disable algorithms

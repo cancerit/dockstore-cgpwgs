@@ -114,14 +114,14 @@ ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
 ln -fs $IDX_WT $IDX_WT_TMP
 
-ASCAT_ADD_ARGS = ''
+ASCAT_ADD_ARGS=''
 # ASCAT_PURITY set
 if [ ! -z ${ASCAT_PURITY+x} ]; then
   ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pu $ASCAT_PURITY"
 fi
 # ASCAT_PLOIDY set
 if [ ! -z ${ASCAT_PLOIDY+x} ]; then
-  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pl $ASCAT_PLOIDY"
+  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pi $ASCAT_PLOIDY"
 fi
 
 ## Make fake copynumber so we can run early steps of caveman
@@ -184,14 +184,17 @@ do_parallel[geno]="compareBamGenotypes.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
  -nb $BAM_WT_TMP \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
- -tb $BAM_MT_TMP"
+ -tb $BAM_MT_TMP \
+ -s $REF_BASE/general.tsv \
+ -g $REF_BASE/gender.tsv"
 
 echo -e "\t[Parallel block 1] VerifyBam Normal added..."
 do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
   -t $CPU \
-  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
+  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json \
+  -s $REF_BASE/verifyBamID_snps.vcf.gz"
 
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
@@ -317,7 +320,7 @@ declare -A do_parallel
 echo -e "\nSetting up Parallel block 4"
 
 echo -e "\t[Parallel block 4] cgpPindel added..."
-do_parallel[cgpPindel]="nice -n 10 pindel.pl \
+do_parallel[cgpPindel]="pindel.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
  -r $REF_BASE/genome.fa \
  -t $BAM_MT_TMP \
@@ -438,7 +441,8 @@ do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -b $BAM_MT_TMP \
  -t $CPU \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
- -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
+ -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json \
+ -s $REF_BASE/verifyBamID_snps.vcf.gz"
 
 echo "Starting Parallel block 6: `date`"
 run_parallel do_parallel

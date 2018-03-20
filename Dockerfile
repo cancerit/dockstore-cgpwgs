@@ -14,6 +14,8 @@ RUN bash -c 'apt-get install -qy --no-install-recommends\
   locales\
   libcurl4-openssl-dev\
   libssl-dev\
+  libssh2-1-dev\
+  libxml2-dev\
   g++\
   make\
   gcc\
@@ -72,6 +74,7 @@ RUN bash -c 'apt-get install -yq --no-install-recommends\
   curl\
   ca-certificates\
   libperlio-gzip-perl\
+  libssh2-1\
   bzip2\
   psmisc\
   time\

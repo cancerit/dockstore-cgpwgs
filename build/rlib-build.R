@@ -19,7 +19,7 @@ library(devtools)
 options(download.file.method = "auto")
 
 # ASCAT and BRASS
-biocPackages <- c("data.table", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
+biocPackages <- c("data.table", "mgcv", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
 ipak(biocPackages)
 
 # add for BB

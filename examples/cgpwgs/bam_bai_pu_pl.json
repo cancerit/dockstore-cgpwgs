@@ -19,6 +19,10 @@
     "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
     "class": "File"
   },
+  "qcset": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/qcGenotype_GRCh37d5.tar.gz",
+    "class": "File"
+  },
   "tumour": {
     "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829.bam",
     "class": "File"

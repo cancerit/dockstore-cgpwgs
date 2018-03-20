@@ -12,7 +12,7 @@ set -u
 VER_ALLELECOUNT="v4.0.0"
 
 ### cgpNgsQc
-VER_CGPNGSQC="v1.5.0"
+VER_CGPNGSQC="hotfix/v1.5.1"
 BIN_VERIFYBAMID='https://github.com/statgen/verifyBamID/releases/download/v1.1.3/verifyBamID'
 
 ### ascatNgs
@@ -23,7 +23,7 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/A
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="v6.1.0"
+VER_BRASS="hotfix/v6.1.1"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
 

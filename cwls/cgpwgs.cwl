@@ -39,7 +39,6 @@ inputs:
     doc: "The core reference (fa, fai, dict) as tar.gz"
     inputBinding:
       prefix: -reference
-      position: 1
       separate: true
 
   annot:
@@ -47,7 +46,6 @@ inputs:
     doc: "The VAGrENT cache files"
     inputBinding:
       prefix: -annot
-      position: 2
       separate: true
 
   snv_indel:
@@ -55,7 +53,6 @@ inputs:
     doc: "Supporting files for SNV and INDEL analysis"
     inputBinding:
       prefix: -snv_indel
-      position: 3
       separate: true
 
   cnv_sv:
@@ -63,7 +60,6 @@ inputs:
     doc: "Supporting files for CNV and SV analysis"
     inputBinding:
       prefix: -cnv_sv
-      position: 4
       separate: true
 
   subcl:
@@ -71,7 +67,13 @@ inputs:
     doc: "Supporting files for allele counts used by Battenberg Subclonal CNV analysis"
     inputBinding:
       prefix: -subcl
-      position: 5
+      separate: true
+
+  qcset:
+    type: File
+    doc: "Supporting files for QC tools"
+    inputBinding:
+      prefix: -qcset
       separate: true
 
   tumour:
@@ -82,7 +84,6 @@ inputs:
     doc: "Tumour BAM or CRAM file"
     inputBinding:
       prefix: -tumour
-      position: 6
       separate: true
 
   tumourIdx:
@@ -90,7 +91,6 @@ inputs:
     doc: "Tumour alignment file index [bai|csi|crai]"
     inputBinding:
       prefix: -tidx
-      position: 7
       separate: true
 
   normal:
@@ -101,7 +101,6 @@ inputs:
     doc: "Normal BAM or CRAM file"
     inputBinding:
       prefix: -normal
-      position: 8
       separate: true
 
   normalIdx:
@@ -109,7 +108,6 @@ inputs:
     doc: "Normal alignment file index"
     inputBinding:
       prefix: -nidx
-      position: 9
       separate: true
 
   exclude:
@@ -117,7 +115,6 @@ inputs:
     doc: "Contigs to block during indel analysis"
     inputBinding:
       prefix: -exclude
-      position: 10
       separate: true
       shellQuote: true
 
@@ -127,7 +124,6 @@ inputs:
     default: ''
     inputBinding:
       prefix: -species
-      position: 11
       separate: true
       shellQuote: true
 
@@ -137,7 +133,6 @@ inputs:
     default: ''
     inputBinding:
       prefix: -assembly
-      position: 12
       separate: true
       shellQuote: true
 
@@ -146,7 +141,6 @@ inputs:
     doc: "Skip Battenberg allele counts"
     inputBinding:
       prefix: -skipbb
-      position: 13
       separate: true
 
   cavereads:
@@ -155,7 +149,6 @@ inputs:
     default: 350000
     inputBinding:
       prefix: -cavereads
-      position: 14
       separate: true
 
   purity:
@@ -169,7 +162,7 @@ inputs:
     type: float?
     doc: "Set the ploidy (psi) for ascat when default solution needs additional guidance. If set purity is also required."
     inputBinding:
-      prefix: -pl
+      prefix: -pi
       separate: true
 
 
