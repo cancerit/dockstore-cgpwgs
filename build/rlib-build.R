@@ -19,11 +19,21 @@ library(devtools)
 options(download.file.method = "auto")
 
 # ASCAT and BRASS
-biocPackages <- c("data.table", "mgcv", "gam", "VGAM", "stringr", "poweRlaw", "zlibbioc", "RColorBrewer")
-ipak(biocPackages)
+ipak(c("data.table"))
+ipak(c("mgcv"))
+ipak(c("gam"))
+ipak(c("VGAM"))
+ipak(c("stringr"))
+ipak(c("poweRlaw"))
+ipak(c("zlibbioc"))
+ipak(c("RColorBrewer"))
 
 # add for BB
-biocPackages <- c("stringi", "readr", "doParallel", "ggplot2", "gridExtra", "gtools")
-ipak(biocPackages)
+ipak(c("stringi"))
+ipak(c("readr"))
+ipak(c("doParallel"))
+ipak(c("ggplot2"))
+ipak(c("gridExtra"))
+ipak(c("gtools"))
 
 install_github("sb43/copynumber", ref="f1688edc154f1a0e3aacf7781090afe02882f623")
