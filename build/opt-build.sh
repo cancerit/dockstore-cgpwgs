@@ -25,7 +25,7 @@ VER_GRASS="v2.1.0"
 ### BRASS
 VER_BRASS="hotfix/v6.1.1"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
-SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
+SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/fasta-v36.3.8g.tar.gz"
 
 ### cgpBattenberg
 #VER_CGPBB="v3.2.2"
