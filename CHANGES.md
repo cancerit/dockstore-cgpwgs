@@ -2,6 +2,7 @@
 
 ## 2.0.0
 
+* Full support for BAM+CSI and CRAM+CRAI as inputs
 * Reorganisation to allow access of other tools or necessary bindings
 * See dockstore-cgpmap 3.0.0 - 3.0.2 (primarily adds mismatchQc and threads to some tools)
 * See dockstore-cgpwxs 3.0.0 - 3.0.1 (fragment based analysis)
