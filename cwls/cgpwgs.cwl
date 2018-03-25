@@ -79,7 +79,6 @@ inputs:
   tumour:
     type: File
     secondaryFiles:
-    - .bai
     - .bas
     doc: "Tumour BAM or CRAM file"
     inputBinding:
@@ -96,7 +95,6 @@ inputs:
   normal:
     type: File
     secondaryFiles:
-    - .bai
     - .bas
     doc: "Normal BAM or CRAM file"
     inputBinding:
