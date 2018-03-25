@@ -159,7 +159,7 @@ sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
   $species =~ s/ /_/g;
   $species = uc $species;
-  my $ini_out = $opts{'o'}.'/flag.vcf.config.WXS.ini';
+  my $ini_out = $opts{'o'}.'/flag.vcf.config.WGS.ini';
   open my $IN, '<', $ini_in;
   open my $OUT,'>',$ini_out;
   while(my $line = <$IN>) {
