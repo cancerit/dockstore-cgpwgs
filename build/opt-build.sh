@@ -12,7 +12,7 @@ set -u
 VER_ALLELECOUNT="v4.0.0"
 
 ### cgpNgsQc
-VER_CGPNGSQC="hotfix/v1.5.1"
+VER_CGPNGSQC="v1.5.1"
 BIN_VERIFYBAMID='https://github.com/statgen/verifyBamID/releases/download/v1.1.3/verifyBamID'
 
 ### ascatNgs
@@ -23,14 +23,12 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/A
 VER_GRASS="v2.1.0"
 
 ### BRASS
-VER_BRASS="hotfix/v6.1.1"
+VER_BRASS="v6.1.1"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/fasta-v36.3.8g.tar.gz"
 
 ### cgpBattenberg
-#VER_CGPBB="v3.2.2"
-VER_CGPBB="feature/docsAndRUpdates"
-
+VER_CGPBB="v3.3.0"
 
 if [ "$#" -lt "1" ] ; then
   echo "Please provide an installation path such as /opt/ICGC"
@@ -96,7 +94,7 @@ fi
 ### cgpNgsQc
 if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
 
-  curl -sSL $BIN_VERIFYBAMID > $OPT/bin/verifyBamID
+  curl --fail -sSL $BIN_VERIFYBAMID > $OPT/bin/verifyBamID
   chmod +x $OPT/bin/verifyBamID
   # link to Id to handle misuse in cgpNgsQc
   ln -s $OPT/bin/verifyBamID $OPT/bin/verifyBamId
@@ -120,7 +118,7 @@ if [ ! -e $SETUP_DIR/ascatNgs.success ]; then
   cd distro/perl
 
   # add ascatSrc
-  curl -sSL $SRC_ASCAT > share/ascat/ascat.R
+  curl --fail -sSL $SRC_ASCAT > share/ascat/ascat.R
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
