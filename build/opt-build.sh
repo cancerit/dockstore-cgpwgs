@@ -16,14 +16,14 @@ VER_CGPNGSQC="v1.5.1"
 BIN_VERIFYBAMID='https://github.com/statgen/verifyBamID/releases/download/v1.1.3/verifyBamID'
 
 ### ascatNgs
-VER_ASCATNGS="v4.2.0"
+VER_ASCATNGS="v4.2.1"
 SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/ASCAT/R/ascat.R"
 
 ### grass
-VER_GRASS="v2.1.0"
+VER_GRASS="v2.1.1"
 
 ### BRASS
-VER_BRASS="v6.1.1"
+VER_BRASS="v6.1.2"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/fasta-v36.3.8g.tar.gz"
 
