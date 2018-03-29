@@ -67,6 +67,11 @@ if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
 fi
 
+PINDEL_CPU=$CPU
+if [ $PINDEL_CPU -gt 8 ];
+  PINDEL_CPU=8
+fi
+
 # create area which allows monitoring site to be started, not actively updated until after PRE-EXEC completes
 #cp -r /opt/wtsi-cgp/site $OUTPUT_DIR/site
 
@@ -334,7 +339,7 @@ do_parallel[cgpPindel]="pindel.pl \
  -sp '$SPECIES' \
  -e $CONTIG_EXCLUDE \
  -b $REF_BASE/pindel/HiDepth.bed.gz \
- -c $CPU \
+ -c $PINDEL_CPU \
  -sf $REF_BASE/pindel/softRules.lst"
 
 echo -e "\t[Parallel block 4] CaVEMan added..."
