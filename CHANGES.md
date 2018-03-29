@@ -1,3 +1,8 @@
+### 1.1.3
+
+* Limit max threads for pindel to prevent memory explosion on noisy datasets
+  * Minimal effect on run time as caveman processing is the limiting factor here
+
 ### 1.1.2
 * BRASS, random seed fixed to make noisy data have a reproducible result:
   * see [v6.0.4](https://github.com/cancerit/BRASS/releases/tag/v6.0.4)
