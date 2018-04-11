@@ -68,7 +68,7 @@ if [ -z ${CPU+x} ]; then
 fi
 
 PINDEL_CPU=$CPU
-if [ $PINDEL_CPU -gt 8 ];
+if [ $PINDEL_CPU -gt 8 ]; then
   PINDEL_CPU=8
 fi
 
