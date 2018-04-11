@@ -24,19 +24,19 @@
     "class": "File"
   },
   "tumour": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829.bam",
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829.bam",
     "class": "File"
   },
   "tumourIdx": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829.bam.bai",
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829.bam.bai",
     "class": "File"
   },
   "normal": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829-BL.bam",
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829-BL.bam",
     "class": "File"
   },
   "normalIdx": {
-    "path": "ftp://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/12x/COLO-829-BL.bam.bai",
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829-BL.bam.bai",
     "class": "File"
   },
   "exclude": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,X,Y,MT,NC_007605,hs37d5,GL%",

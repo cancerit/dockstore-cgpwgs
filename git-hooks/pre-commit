@@ -46,7 +46,7 @@ EOF
 fi
 
 ## Now we want to warn that certain files should have size==0
-TO_MINIMISE=`find expected -type f \( -iname \*.bai -o -iname \*.crai -o -iname \*.tbi -o -iname \*.md5 -o -iname prob_arr -o -iname \*.flagged.muts.vcf.gz -o -iname \*.muts.ids.vcf.gz -o -iname \*.flagged.vcf.gz \) -size +1c`
+TO_MINIMISE=`find expected -type f \( -iname \*.log -o -iname \*.brm.bam -o -iname \*.intermediates.tar.gz -o -iname \*.copynumber.txt.gz -o -iname \*.bw -o -iname \*.bai -o -iname \*.crai -o -iname \*.tbi -o -iname \*.md5 -o -iname prob_arr -o -iname \*.flagged.muts.vcf.gz -o -iname \*.muts.ids.vcf.gz -o -iname \*.flagged.vcf.gz \) -size +1c`
 
 if [ ! -z "$TO_MINIMISE" ]; then
 	>&2 cat << EOF
@@ -57,7 +57,7 @@ $TO_MINIMISE
 
   To do this quickly run:
 
-    find expected -type f \( -iname \*.bai -o -iname \*.crai -o -iname \*.tbi -o -iname \*.md5 -o -iname prob_arr -o -iname \*.flagged.muts.vcf.gz -o -iname \*.muts.ids.vcf.gz -o -iname \*.flagged.vcf.gz \) -size +1c -exec bash -c 'echo > {}' \;
+    find expected -type f \( -iname \*.log -o -iname \*.brm.bam -o -iname \*.intermediates.tar.gz -o -iname \*.copynumber.txt.gz -o -iname \*.bw -o -iname \*.bai -o -iname \*.crai -o -iname \*.tbi -o -iname \*.md5 -o -iname prob_arr -o -iname \*.flagged.muts.vcf.gz -o -iname \*.muts.ids.vcf.gz -o -iname \*.flagged.vcf.gz \) -size +1c -exec bash -c 'echo > {}' \;
 
 EOF
 	exit 1
