@@ -156,7 +156,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   fi
 
   if [ ! -e $SETUP_DIR/blat.success ]; then
-    curl -sSL --retry 10 $SOURCE_BLAT > distro.zip
+    curl -k -sSL --retry 10 $SOURCE_BLAT > distro.zip
     rm -rf distro/*
     unzip -d distro distro.zip
     cd distro/blatSrc
