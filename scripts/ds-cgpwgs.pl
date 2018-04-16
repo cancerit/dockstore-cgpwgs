@@ -62,6 +62,8 @@ $opts{'wt_sm'} = sample_name_from_xam($opts{'n'});
 
 printf "Options loaded: \n%s\n",Dumper(\%opts);
 
+make_path($opts{'o'}) unless(-d $opts{'o'});
+
 # figure out if ref already unpacked:
 my $ref_area = $opts{'o'}.'/reference_files';
 my $ref_unpack = 1;
