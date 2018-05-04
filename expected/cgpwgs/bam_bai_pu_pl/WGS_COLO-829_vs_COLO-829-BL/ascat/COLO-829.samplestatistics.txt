@@ -1,0 +1,7 @@
+NormalContamination 0.0100800364066352
+Ploidy 1.98395941206446
+rho 0.99
+psi 2
+goodnessOfFit 76.7600171579724
+GenderChr Y
+GenderChrFound Y

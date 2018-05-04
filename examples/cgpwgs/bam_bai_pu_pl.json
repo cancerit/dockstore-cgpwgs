@@ -1,0 +1,65 @@
+{
+  "reference": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/core_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "annot": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz",
+    "class": "File"
+  },
+  "snv_indel": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz",
+    "class": "File"
+  },
+  "cnv_sv": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5_brass6+.tar.gz",
+    "class": "File"
+  },
+  "subcl": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "qcset": {
+    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/qcGenotype_GRCh37d5.tar.gz",
+    "class": "File"
+  },
+  "tumour": {
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829.bam",
+    "class": "File"
+  },
+  "tumourIdx": {
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829.bam.bai",
+    "class": "File"
+  },
+  "normal": {
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829-BL.bam",
+    "class": "File"
+  },
+  "normalIdx": {
+    "path": "http://ngs.sanger.ac.uk/production/cancer/dockstore/cgpwgs/sampled/COLO-829-BL.bam.bai",
+    "class": "File"
+  },
+  "exclude": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,X,Y,MT,NC_007605,hs37d5,GL%",
+  "species": "human",
+  "assembly": "GRCh37d5",
+  "cavereads": 800000,
+  "skipbb": true,
+  "purity": 0.99,
+  "ploidy": 2,
+  "result_archive": {
+    "path": "/tmp/result_WGS.tar.gz",
+    "class": "File"
+  },
+  "timings": {
+    "path": "/tmp/timings_WGS.tar.gz",
+    "class": "File"
+  },
+  "global_time": {
+    "path": "/tmp/global_WGS.time",
+    "class": "File"
+  },
+  "run_params": {
+    "path": "/tmp/params_WGS.params",
+    "class": "File"
+  }
+}
