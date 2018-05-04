@@ -18,6 +18,7 @@ my %opts = ('c' => undef,
             'as' => undef,
             'pu' => undef,
             'pi' => undef,
+
             );
 
 GetOptions( 'h|help' => \$opts{'h'},
@@ -61,6 +62,26 @@ $opts{'mt_sm'} = sample_name_from_xam($opts{'t'});
 $opts{'wt_sm'} = sample_name_from_xam($opts{'n'});
 
 printf "Options loaded: \n%s\n",Dumper(\%opts);
+
+if(! defined $opts{'tidx'} || $opts{'tidx'} eq q{}) {
+  die "-tidx not defined";
+} elsif(! -e $opts{'tidx'}) {
+  die "File not found for -tidx ($opts{tidx})";
+}
+
+if(! defined $opts{'nidx'} || $opts{'nidx'} eq q{}) {
+  die "-nidx not defined";
+} elsif(! -e $opts{'nidx'}) {
+  die "File not found for -nidx ($opts{nidx})";
+}
+
+if(! -e $opts{'t'}.'.bas') {
+  die "No co-located bas file found for tumour, expected at $opts{t}.bas";
+}
+
+if(! -e $opts{'n'}.'.bas') {
+  die "No co-located bas file found for normal, expected at $opts{n}.bas";
+}
 
 make_path($opts{'o'}) unless(-d $opts{'o'});
 
@@ -254,7 +275,9 @@ dh-wrapper.pl [options] [file(s)...]
     -cnv_sv      -cs  Path to CNV_SV*.tar.gz
     -subcl       -sc  Path to SUBCL*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
+    -tidx             Tumour [CR|B]AM index (bai|csi|crai)
     -normal      -n   Normal [CR|B]AM file
+    -nidx             Normal [CR|B]AM index (bai|csi|crai)
     -exclude     -e   Exclude these contigs from SNV/Indel analysis
                         e.g. NC_007605,hs37d5,GL%
 
