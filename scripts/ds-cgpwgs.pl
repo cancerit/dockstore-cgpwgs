@@ -260,7 +260,7 @@ dh-wrapper.pl [options] [file(s)...]
 
   Optional parameters
     -species     -sp  Species name (may require quoting)
-    -assembly    -a   Reference assembly
+    -assembly    -as   Reference assembly
     -skipbb      -sb  Skip Battenberg allele counts
     -outdir      -o   Set the output folder [$HOME]
     -cores       -c   Set the number of cpu/cores available [default all].
