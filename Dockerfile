@@ -1,4 +1,4 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.0.2 as builder
+FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.0.3 as builder
 
 USER  root
 

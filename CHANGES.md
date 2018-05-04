@@ -4,8 +4,8 @@
 
 * Full support for BAM+CSI and CRAM+CRAI as inputs
 * Reorganisation to allow access of other tools or necessary bindings
-* See dockstore-cgpmap 3.0.0 - 3.0.2 (primarily adds mismatchQc and threads to some tools)
-* See dockstore-cgpwxs 3.0.0 - 3.0.1 (fragment based analysis)
+* See dockstore-cgpmap 3.0.0 - 3.0.4 (primarily adds mismatchQc and threads to some tools)
+* See dockstore-cgpwxs 3.0.0 - 3.0.3 (fragment based analysis)
   * You will need to update the reference pack to include the new flagging rules, see example `json`
   files
 * Using build stages to shrink images.
