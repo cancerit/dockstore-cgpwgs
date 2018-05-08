@@ -12,7 +12,14 @@ use warnings FATAL => 'all';
 pod2usage(-verbose => 1, -exitval => 1) if(@ARGV == 0);
 
 # set defaults
-my %opts = ();
+my %opts = ('c' => undef,
+            'o' => $ENV{HOME},
+            'sp' => undef,
+            'as' => undef,
+            'pu' => undef,
+            'pi' => undef,
+            'cr' => 350000,
+            );
 
 GetOptions( 'h|help' => \$opts{'h'},
             'm|man' => \$opts{'m'},
@@ -21,74 +28,88 @@ GetOptions( 'h|help' => \$opts{'h'},
             'si|snv_indel=s' => \$opts{'si'},
             'cs|cnv_sv=s' => \$opts{'cs'},
             'sc|subcl=s' => \$opts{'sc'},
+            'qc|qcset=s' => \$opts{'qc'},
             't|tumour=s' => \$opts{'t'},
+            'tidx=s' => \$opts{'tidx'},
             'n|normal=s' => \$opts{'n'},
+            'nidx=s' => \$opts{'nidx'},
             'e|exclude=s' => \$opts{'e'},
-            'sp|species=s' => \$opts{'sp'},
-            'as|assembly=s' => \$opts{'as'},
+            'sp|species:s' => \$opts{'sp'},
+            'as|assembly:s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
-            'cr|cavereads=i' => \$opts{'cr'}
+            'cr|cavereads:i' => \$opts{'cr'},
+            'c|cores:i' => \$opts{'c'},
+            'o|outdir:s' => \$opts{'o'},
+            'pu|purity:f' => \$opts{'pu'},
+            'pi|ploidy:f' => \$opts{'pi'},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
 pod2usage(-verbose => 2, -exitval => 0) if(defined $opts{'m'});
 
+if((defined($opts{'pu'}) && !defined($opts{'pi'})) || (!defined($opts{'pu'}) && defined($opts{'pi'}))) {
+  pod2usage(-msg  => "\nERROR: If one of purity/ploidy are defined, both should be defined.\n",
+            -verbose => 1,  -output => \*STDERR);
+}
+
 delete $opts{'h'};
 delete $opts{'m'};
-delete $opts{'sp'} if(! defined $opts{'sp'}  || length $opts{'sp'} == 0);
-delete $opts{'as'} if(! defined $opts{'as'}  || length $opts{'as'} == 0);
 delete $opts{'sb'} if(! defined $opts{'sb'}  || length $opts{'sb'} == 0);
 
-## read species/assembly from bam headers
-my ($mt_species, $mt_assembly) = species_assembly_from_xam($opts{'t'});
-my ($wt_species, $wt_assembly) = species_assembly_from_xam($opts{'n'});
-if($mt_species ne $wt_species) {
-  warn "WARN: Species mismatch between T/N [CR|B]AM headers\n";
-  if(!defined $opts{'sp'}) {
-    die "ERROR: Please define species to handle this mismatch\n";
-  }
-}
-elsif($mt_species ne q{}) {
-  $opts{'sp'} = $mt_species;
-}
-if(!defined $opts{'sp'}) {
-  die "ERROR: Please define species, not found in [CR|B]AM headers.\n";
-}
-
-if($mt_assembly ne $wt_assembly) {
-  warn "WARN: Assembly mismatch between T/N [CR|B]AM headers\n";
-  if(!defined $opts{'as'}) {
-    die "ERROR: Please define assembly to handle this mismatch\n";
-  }
-}
-elsif($mt_assembly ne q{}) {
-  $opts{'as'} = $mt_assembly;
-}
-if(!defined $opts{'as'}) {
-  die "ERROR: Please define assembly, not found in [CR|B]AM headers.\n";
-}
+resolve_sp_as(\%opts);
 
 $opts{'mt_sm'} = sample_name_from_xam($opts{'t'});
 $opts{'wt_sm'} = sample_name_from_xam($opts{'n'});
 
 printf "Options loaded: \n%s\n",Dumper(\%opts);
 
-## unpack the reference area:
-my $ref_area = $ENV{HOME}.'/reference_files';
+if(! defined $opts{'tidx'} || $opts{'tidx'} eq q{}) {
+  die "-tidx not defined";
+} elsif(! -e $opts{'tidx'}) {
+  die "File not found for -tidx ($opts{tidx})";
+}
 
-ref_unpack($ref_area, $opts{'r'});
-ref_unpack($ref_area, $opts{'a'});
-ref_unpack($ref_area, $opts{'si'});
-ref_unpack($ref_area, $opts{'cs'});
-ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
+if(! defined $opts{'nidx'} || $opts{'nidx'} eq q{}) {
+  die "-nidx not defined";
+} elsif(! -e $opts{'nidx'}) {
+  die "File not found for -nidx ($opts{nidx})";
+}
+
+if(! -e $opts{'t'}.'.bas') {
+  die "No co-located bas file found for tumour, expected at $opts{t}.bas";
+}
+
+if(! -e $opts{'n'}.'.bas') {
+  die "No co-located bas file found for normal, expected at $opts{n}.bas";
+}
+
+make_path($opts{'o'}) unless(-d $opts{'o'});
+
+# figure out if ref already unpacked:
+my $ref_area = $opts{'o'}.'/reference_files';
+my $ref_unpack = 1;
+if($opts{'r'} eq $opts{'a'}
+  && $opts{'r'} eq $opts{'si'}
+  && $opts{'r'} eq $opts{'cs'}
+  && $opts{'r'} eq $opts{'qc'}
+  && (exists $opts{'sb'} || $opts{'r'} eq $opts{'sc'})
+  && -d $opts{'r'}) {
+  $ref_area = $opts{'r'};
+  $ref_unpack = 0;
+}
+else {
+  ref_unpack($ref_area, $opts{'r'});
+  ref_unpack($ref_area, $opts{'a'});
+  ref_unpack($ref_area, $opts{'si'});
+  ref_unpack($ref_area, $opts{'cs'});
+  ref_unpack($ref_area, $opts{'qc'});
+  ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
+}
 
 ## now complete the caveman flaging file correctly
 my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.WGS.ini");
 
-## CWL changes $HOME so need to copy in relevant config for R
-copy('/home/ubuntu/.Rprofile', $ENV{HOME}.'/.Rprofile');
-
-my $run_file = $ENV{HOME}.'/run.params';
+my $run_file = $opts{'o'}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
 # Force explicit checking of file flush
 print $FH "export PCAP_THREADED_NO_SCRIPT=1\n";
@@ -98,15 +119,21 @@ print $FH "export PCAP_THREADED_REM_LOGS=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
 # required options
-printf $FH "OUTPUT_DIR='%s'\n", $ENV{HOME};
+printf $FH "OUTPUT_DIR='%s'\n", $opts{'o'};
 printf $FH "REF_BASE='%s'\n", $ref_area;
 printf $FH "BAM_MT='%s'\n", $opts{'t'};
+printf $FH "IDX_MT='%s'\n", $opts{'tidx'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
-printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
+printf $FH "IDX_WT='%s'\n", $opts{'nidx'};
+printf $FH "CONTIG_EXCLUDE='%s'\n", $opts{'e'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
 printf $FH "SNVFLAG='%s'\n", $ini;
+printf $FH "CPU=%d\n", $opts{'c'} if(defined $opts{'c'});
+printf $FH "ASCAT_PLOIDY=%.5f\n", $opts{'pi'} if(defined $opts{'pi'});
+printf $FH "ASCAT_PURITY=%.5f\n", $opts{'pu'} if(defined $opts{'pu'});
+printf $FH "CLEAN_REF=1\n" if($ref_unpack);
 # Options to disable algorithms
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
 close $FH;
@@ -116,14 +143,46 @@ open my $R_FH, '>', $ENV{HOME}.'/.Rprofile';
 print $R_FH qq{options(bitmapType='cairo')\n};
 close $R_FH;
 
-my $cmd = sprintf '/usr/bin/time -o %s/WGS_%s_vs_%s.time -v /opt/wtsi-cgp/bin/analysisWGS.sh', $ENV{HOME}, $opts{'mt_sm'}, $opts{'wt_sm'};
+my $cmd = sprintf '/usr/bin/time -o %s/WGS_%s_vs_%s.time -v /opt/wtsi-cgp/bin/analysisWGS.sh %s', $opts{'o'}, $opts{'mt_sm'}, $opts{'wt_sm'}, $run_file;
 exec($cmd); # I will never return to the perl code
+
+sub resolve_sp_as {
+  my $options = shift;
+  ## read species/assembly from bam headers
+  my ($mt_species, $mt_assembly) = species_assembly_from_xam($options->{'t'});
+  my ($wt_species, $wt_assembly) = species_assembly_from_xam($options->{'n'});
+  if($mt_species ne $wt_species) {
+    warn "WARN: Species mismatch between T/N [CR|B]AM headers\n";
+    if(!defined $options->{'sp'} || $options->{'sp'} eq q{}) {
+      die "ERROR: Please define species to handle this mismatch\n";
+    }
+  }
+  elsif($mt_species ne q{}) {
+    $options->{'sp'} = $mt_species;
+  }
+  if(!defined $options->{'sp'} || $options->{'sp'} eq q{}) {
+    die "ERROR: Please define species, not found in [CR|B]AM headers.\n";
+  }
+
+  if($mt_assembly ne $wt_assembly) {
+    warn "WARN: Assembly mismatch between T/N [CR|B]AM headers\n";
+    if(!defined $options->{'as'} || $options->{'as'} eq q{}) {
+      die "ERROR: Please define assembly to handle this mismatch\n";
+    }
+  }
+  elsif($mt_assembly ne q{}) {
+    $options->{'as'} = $mt_assembly;
+  }
+  if(!defined $options->{'as'} || $options->{'as'} eq q{}) {
+    die "ERROR: Please define assembly, not found in [CR|B]AM headers.\n";
+  }
+}
 
 sub add_species_flag_ini {
   my ($species, $ini_in) = @_;
   $species =~ s/ /_/g;
   $species = uc $species;
-  my $ini_out = $ENV{HOME}.'/flag.vcf.config.WXS.ini';
+  my $ini_out = $opts{'o'}.'/flag.vcf.config.WGS.ini';
   open my $IN, '<', $ini_in;
   open my $OUT,'>',$ini_out;
   while(my $line = <$IN>) {
@@ -216,14 +275,21 @@ dh-wrapper.pl [options] [file(s)...]
     -cnv_sv      -cs  Path to CNV_SV*.tar.gz
     -subcl       -sc  Path to SUBCL*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
+    -tidx             Tumour [CR|B]AM index (bai|csi|crai)
     -normal      -n   Normal [CR|B]AM file
-    -exclude     -e   Exclude these contigs from pindel analysis
+    -nidx             Normal [CR|B]AM index (bai|csi|crai)
+    -exclude     -e   Exclude these contigs from SNV/Indel analysis
                         e.g. NC_007605,hs37d5,GL%
 
   Optional parameters
     -species     -sp  Species name (may require quoting)
-    -assembly    -a   Reference assembly
+    -assembly    -as   Reference assembly
     -skipbb      -sb  Skip Battenberg allele counts
+    -outdir      -o   Set the output folder [$HOME]
+    -cores       -c   Set the number of cpu/cores available [default all].
+    -ploidy      -pl  Set the ploidy (rho) for ascat - requires purity
+    -purity      -pu  Set the purity (psi) for ascat - requires ploidy
+    -cavereads   -cr  Reads target per caveman split section [350000]
 
   Other:
     -help        -h   Brief help message.
@@ -282,6 +348,27 @@ Specify overriding assembly, by default will select the most prevelant entry in
 =item B<-skipbb>
 
 Disables the Battenberg allele count generation
+
+=item B<-outdir>
+
+Set the output directory.  Defaults to $HOME.
+
+NOTE: Should B<NOT> be set when working with dockstore wrapper.
+
+=item B<-cores>
+
+Sets the number of cores to be used during processing.  Default to use all at appropriate
+points in analysis.
+
+=item B<-ploidy>
+
+Set the ploidy (psi) for ascat when default solution needs additional guidance. If set B<-purity>
+is also required.
+
+=item B<-purity>
+
+Set the purity (rho) for ascat when default solution needs additional guidance. If set B<-ploidy>
+is also required.
 
 =back
 
