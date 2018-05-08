@@ -10,6 +10,7 @@
   files
 * Using build stages to shrink images.
 * remove legacy PRE/POST-EXEC from cgpbox days
+* resolves #17, #18, #19, #20, #21, #24
 
 ## 1.1.2
 
