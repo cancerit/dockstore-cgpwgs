@@ -9,27 +9,26 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="v3.3.0"
+VER_ALLELECOUNT="v4.0.0"
 
 ### cgpNgsQc
-VER_CGPNGSQC="v1.4.0"
-VER_VERIFYBAM="1.1.2"
+VER_CGPNGSQC="v1.5.1"
+BIN_VERIFYBAMID='https://github.com/statgen/verifyBamID/releases/download/v1.1.3/verifyBamID'
 
 ### ascatNgs
-VER_ASCATNGS="v4.1.0"
-SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/6d40e69a2919ddfc1cda870310203c772bf846ce/ASCAT/R/ascat.R"
+VER_ASCATNGS="v4.2.1"
+SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/ASCAT/R/ascat.R"
 
 ### grass
-VER_GRASS="v2.1.0"
+VER_GRASS="v2.1.1"
 
 ### BRASS
-VER_BRASS="v6.0.4"
+VER_BRASS="v6.1.2"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
-SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/v36.3.8d_13Apr16.tar.gz"
+SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/fasta-v36.3.8g.tar.gz"
 
 ### cgpBattenberg
-VER_CGPBB="v3.1.0"
-
+VER_CGPBB="v3.3.0"
 
 if [ "$#" -lt "1" ] ; then
   echo "Please provide an installation path such as /opt/ICGC"
@@ -95,8 +94,10 @@ fi
 ### cgpNgsQc
 if [ ! -e $SETUP_DIR/cgpNgsQc.success ]; then
 
-  curl -sSL https://github.com/statgen/verifyBamID/releases/download/v${VER_VERIFYBAM}/verifyBamID.${VER_VERIFYBAM} > $OPT/bin/verifyBamId
-  chmod +x $OPT/bin/verifyBamId
+  curl --fail -sSL $BIN_VERIFYBAMID > $OPT/bin/verifyBamID
+  chmod +x $OPT/bin/verifyBamID
+  # link to Id to handle misuse in cgpNgsQc
+  ln -s $OPT/bin/verifyBamID $OPT/bin/verifyBamId
 
   curl -sSL --retry 10 https://github.com/cancerit/cgpNgsQc/archive/${VER_CGPNGSQC}.tar.gz > distro.tar.gz
   rm -rf distro/*
@@ -117,8 +118,7 @@ if [ ! -e $SETUP_DIR/ascatNgs.success ]; then
   cd distro/perl
 
   # add ascatSrc
-  curl -sSL $SRC_ASCAT > share/ascat/ascat.R
-
+  curl --fail -sSL $SRC_ASCAT > share/ascat/ascat.R
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR
@@ -156,7 +156,7 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   fi
 
   if [ ! -e $SETUP_DIR/blat.success ]; then
-    curl -sSL --retry 10 $SOURCE_BLAT > distro.zip
+    curl -k -sSL --retry 10 $SOURCE_BLAT > distro.zip
     rm -rf distro/*
     unzip -d distro distro.zip
     cd distro/blatSrc
@@ -194,21 +194,6 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
     touch $SETUP_DIR/velvet.success
   fi
 
-  if [ ! -e $SETUP_DIR/exonerate.success ]; then
-    cd $SETUP_DIR/distro/distros
-    tar zxf exonerate-2.2.0.tar.gz
-    cd exonerate-2.2.0
-    cp ../patches/exonerate_pthread-asneeded.diff .
-    patch -p1 < exonerate_pthread-asneeded.diff
-    ./configure --prefix=$INST_PATH
-    make    # don't do multi-threaded make
-    make check
-    make install
-    cd $SETUP_DIR/distro
-    rm -rf distros/exonerate-2.2.0
-    touch $SETUP_DIR/exonerate.success
-  fi
-
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Graph
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH Bio::Tools::Run::WrapperBase
 
@@ -240,7 +225,9 @@ if [ ! -e $SETUP_DIR/cgpBB.success ]; then
   curl -sSL --retry 10 https://github.com/cancerit/cgpBattenberg/archive/${VER_CGPBB}.tar.gz > distro.tar.gz
   rm -rf distro/*
   tar --strip-components 1 -C distro -xzf distro.tar.gz
-  cd distro/perl
+  cd distro/Rsupport
+  ./setupR.sh $INST_PATH
+  cd $SETUP_DIR/distro/perl
   cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
   cd $SETUP_DIR

@@ -9,20 +9,23 @@ label: "CGP WGS analysis flow"
 cwlVersion: v1.0
 
 doc: |
-    ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
-    A Docker container for the CGP WGS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
-    website for information relating to reference files.
+  ![build_status](https://quay.io/repository/wtsicgp/dockstore-cgpwgs/status)
+  A Docker container for the CGP WXS analysis flow. See the [dockstore-cgpwgs](https://github.com/cancerit/dockstore-cgpwgs)
+  website for more information.
 
-    Example `json` run files are included in the repository.
+  Please read the relevant [changes](https://github.com/cancerit/dockstore-cgpwgs/blob/master/CHANGES.md)
+  when upgrading.
 
-dct:creator:
-  "@id": "http://orcid.org/0000-0002-5634-1539"
-  foaf:name: Keiran M Raine
-  foaf:mbox: "keiranmraine@gmail.com"
+  Parameters for a CWL definition are generally described in a json file, but parameters can be provided on the command line.
+
+  To see the parameters descriptions please run: cwltool --tool-help path_to.cwl
+
+  WARNING: The usual setting for 'exclude' is 'NC_007605,hs37d5,GL%' (human GRCh37/NCBI37). Examples
+  are configured to run as quickly as possible.
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.1.2"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.0.0"
 
 hints:
   - class: ResourceRequirement
@@ -36,7 +39,6 @@ inputs:
     doc: "The core reference (fa, fai, dict) as tar.gz"
     inputBinding:
       prefix: -reference
-      position: 1
       separate: true
 
   annot:
@@ -44,7 +46,6 @@ inputs:
     doc: "The VAGrENT cache files"
     inputBinding:
       prefix: -annot
-      position: 2
       separate: true
 
   snv_indel:
@@ -52,7 +53,6 @@ inputs:
     doc: "Supporting files for SNV and INDEL analysis"
     inputBinding:
       prefix: -snv_indel
-      position: 3
       separate: true
 
   cnv_sv:
@@ -60,7 +60,6 @@ inputs:
     doc: "Supporting files for CNV and SV analysis"
     inputBinding:
       prefix: -cnv_sv
-      position: 4
       separate: true
 
   subcl:
@@ -68,29 +67,45 @@ inputs:
     doc: "Supporting files for allele counts used by Battenberg Subclonal CNV analysis"
     inputBinding:
       prefix: -subcl
-      position: 5
+      separate: true
+
+  qcset:
+    type: File
+    doc: "Supporting files for QC tools"
+    inputBinding:
+      prefix: -qcset
       separate: true
 
   tumour:
     type: File
     secondaryFiles:
-    - .bai
     - .bas
     doc: "Tumour BAM or CRAM file"
     inputBinding:
       prefix: -tumour
-      position: 6
+      separate: true
+
+  tumourIdx:
+    type: File
+    doc: "Tumour alignment file index [bai|csi|crai]"
+    inputBinding:
+      prefix: -tidx
       separate: true
 
   normal:
     type: File
     secondaryFiles:
-    - .bai
     - .bas
     doc: "Normal BAM or CRAM file"
     inputBinding:
       prefix: -normal
-      position: 7
+      separate: true
+
+  normalIdx:
+    type: File
+    doc: "Normal alignment file index"
+    inputBinding:
+      prefix: -nidx
       separate: true
 
   exclude:
@@ -98,7 +113,6 @@ inputs:
     doc: "Contigs to block during indel analysis"
     inputBinding:
       prefix: -exclude
-      position: 8
       separate: true
       shellQuote: true
 
@@ -108,7 +122,6 @@ inputs:
     default: ''
     inputBinding:
       prefix: -species
-      position: 9
       separate: true
       shellQuote: true
 
@@ -118,7 +131,6 @@ inputs:
     default: ''
     inputBinding:
       prefix: -assembly
-      position: 10
       separate: true
       shellQuote: true
 
@@ -127,7 +139,6 @@ inputs:
     doc: "Skip Battenberg allele counts"
     inputBinding:
       prefix: -skipbb
-      position: 11
       separate: true
 
   cavereads:
@@ -136,8 +147,22 @@ inputs:
     default: 350000
     inputBinding:
       prefix: -cavereads
-      position: 12
       separate: true
+
+  purity:
+    type: float?
+    doc: "Set the purity (rho) for ascat when default solution needs additional guidance. If set ploidy is also required."
+    inputBinding:
+      prefix: -pu
+      separate: true
+
+  ploidy:
+    type: float?
+    doc: "Set the ploidy (psi) for ascat when default solution needs additional guidance. If set purity is also required."
+    inputBinding:
+      prefix: -pi
+      separate: true
+
 
 outputs:
   run_params:
@@ -161,4 +186,19 @@ outputs:
     outputBinding:
       glob: WGS_*_vs_*.time
 
-baseCommand: ["/opt/wtsi-cgp/bin/ds-wrapper.pl"]
+baseCommand: ["/opt/wtsi-cgp/bin/ds-cgpwgs.pl"]
+
+$schemas:
+  - http://schema.org/docs/schema_org_rdfa.html
+
+$namespaces:
+  s: http://schema.org/
+
+s:codeRepository: https://github.com/cancerit/dockstore-cgpwgs
+s:license: https://spdx.org/licenses/AGPL-3.0-only
+
+s:author:
+  - class: s:Person
+    s:identifier: https://orcid.org/0000-0002-5634-1539
+    s:email: mailto:cgphelp@sanger.ac.uk
+    s:name: Keiran Raine

@@ -49,12 +49,12 @@ set -e
 
 echo -e "\nStart workflow: `date`\n"
 
-declare -a PRE_EXEC
-declare -a POST_EXEC
-
-if [ -z ${PARAM_FILE+x} ] ; then
+if [[ $# -eq 1 ]] ; then
+  PARAM_FILE=$1
+elif [ -z ${PARAM_FILE+x} ] ; then
   PARAM_FILE=$HOME/run.params
 fi
+
 echo "Loading user options from: $PARAM_FILE"
 if [ ! -f $PARAM_FILE ]; then
   echo -e "\tERROR: file indicated by PARAM_FILE not found: $PARAM_FILE" 1>&2
@@ -63,12 +63,13 @@ fi
 source $PARAM_FILE
 env
 
-TMP=$OUTPUT_DIR/tmp
-mkdir -p $TMP
-mkdir -p $OUTPUT_DIR/timings
-
 if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
+fi
+
+PINDEL_CPU=$CPU
+if [ $PINDEL_CPU -gt 8 ]; then
+  PINDEL_CPU=8
 fi
 
 # create area which allows monitoring site to be started, not actively updated until after PRE-EXEC completes
@@ -77,29 +78,10 @@ fi
 echo -e "\tBAM_MT : $BAM_MT"
 echo -e "\tBAM_WT : $BAM_WT"
 
-if [ ${#PRE_EXEC[@]} -eq 0 ]; then
-  PRE_EXEC='echo No PRE_EXEC defined'
-fi
-
-if [ ${#POST_EXEC[@]} -eq 0 ]; then
-  POST_EXEC='echo No POST_EXEC defined'
-fi
-
 set -u
-mkdir -p $OUTPUT_DIR
-
-# run any pre-exec step before attempting to access BAMs
-# logically the pre-exec could be pulling them
-if [ ! -f $OUTPUT_DIR/pre-exec.done ]; then
-  echo -e "\nRun PRE_EXEC: `date`"
-
-  for i in "${PRE_EXEC[@]}"; do
-    set -x
-    $i
-    { set +x; } 2> /dev/null
-  done
-  touch $OUTPUT_DIR/pre-exec.done
-fi
+TMP=$OUTPUT_DIR/tmp
+mkdir -p $TMP
+mkdir -p $OUTPUT_DIR/timings
 
 ## get sample names from BAM headers
 NAME_MT=`samtools view -H $BAM_MT | perl -ne 'chomp; if($_ =~ m/^\@RG/) {($sm) = $_ =~m/\tSM:([^\t]+)/; print "$sm\n";}' | uniq`
@@ -108,20 +90,57 @@ NAME_WT=`samtools view -H $BAM_WT | perl -ne 'chomp; if($_ =~ m/^\@RG/) {($sm) =
 echo -e "\tNAME_MT : $NAME_MT"
 echo -e "\tNAME_WT : $NAME_WT"
 
-BAM_MT_TMP=$TMP/$NAME_MT.bam
-BAM_WT_TMP=$TMP/$NAME_WT.bam
+# capture index extension type (assuming same from both)
+ALN_EXTN='bam'
+IDX_EXTN=''
+if [[ "$IDX_MT" == *.bam.bai ]]; then
+  IDX_EXTN='bam.bai'
+elif [[ "$IDX_MT" == *.bam.csi ]]; then
+  IDX_EXTN='bam.csi'
+elif [[ "$IDX_MT" == *.cram.crai ]]; then
+  IDX_EXTN='cram.crai'
+  ALN_EXTN='cram'
+else
+  echo "Alignment is not BAM or CRAM file: $" >&2
+  exit 1
+fi
+
+BAM_MT_TMP=$TMP/$NAME_MT.$ALN_EXTN
+IDX_MT_TMP=$TMP/$NAME_MT.$IDX_EXTN
+BAM_WT_TMP=$TMP/$NAME_WT.$ALN_EXTN
+IDX_WT_TMP=$TMP/$NAME_WT.$IDX_EXTN
+
+## BAS files are not generated in this flow due to siginifcant run time overhead.
 
 ln -fs $BAM_MT $BAM_MT_TMP
-ln -fs $BAM_WT $BAM_WT_TMP
-ln -fs $BAM_MT.bai $BAM_MT_TMP.bai
-ln -fs $BAM_WT.bai $BAM_WT_TMP.bai
 ln -fs $BAM_MT.bas $BAM_MT_TMP.bas
+ln -fs $IDX_MT $IDX_MT_TMP
+ln -fs $BAM_WT $BAM_WT_TMP
 ln -fs $BAM_WT.bas $BAM_WT_TMP.bas
+ln -fs $IDX_WT $IDX_WT_TMP
+
+ASCAT_ADD_ARGS=''
+# ASCAT_PURITY set
+if [ ! -z ${ASCAT_PURITY+x} ]; then
+  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pu $ASCAT_PURITY"
+fi
+# ASCAT_PLOIDY set
+if [ ! -z ${ASCAT_PLOIDY+x} ]; then
+  ASCAT_ADD_ARGS="$ASCAT_ADD_ARGS -pi $ASCAT_PLOIDY"
+fi
 
 ## Make fake copynumber so we can run early steps of caveman
 perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee $TMP/norm.cn.bed > $TMP/tum.cn.bed
 
 echo "Setting up Parallel block 1"
+
+if [ "$ALN_EXTN" == "cram" ]; then
+  ## prime the cache
+  USER_CACHE=$OUTPUT_DIR/ref_cache
+  export REF_CACHE=$USER_CACHE/%2s/%2s/%s
+  export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
+  do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
+fi
 
 echo -e "\t[Parallel block 1] CaVEMan setup added..."
 do_parallel[CaVEMan_setup]="caveman.pl \
@@ -143,6 +162,7 @@ do_parallel[CaVEMan_setup]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -p setup"
 
 echo -e "\t[Parallel block 1] BB splitlocifiles added..."
@@ -169,13 +189,17 @@ do_parallel[geno]="compareBamGenotypes.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
  -nb $BAM_WT_TMP \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
- -tb $BAM_MT_TMP"
+ -tb $BAM_MT_TMP \
+ -s $REF_BASE/general.tsv \
+ -g $REF_BASE/gender.tsv"
 
 echo -e "\t[Parallel block 1] VerifyBam Normal added..."
 do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
   -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
   -b $BAM_WT_TMP \
-  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json"
+  -t $CPU \
+  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json \
+  -s $REF_BASE/verifyBamID_snps.vcf.gz"
 
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
@@ -224,6 +248,7 @@ do_parallel[CaVEMan_split]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -p split"
 
 echo "Starting Parallel block 2: `date`"
@@ -247,7 +272,8 @@ do_parallel[ascat]="ascat.pl \
  -ra $ASSEMBLY \
  -pr $PROTOCOL \
  -pl ILLUMINA \
- -c $CPU"
+ -c $CPU\
+ $ASCAT_ADD_ARGS"
 
 echo -e "\t[Parallel block 3] BRASS_input added..."
 do_parallel[BRASS_input]="brass.pl -j 4 -k 4 -c $CPU \
@@ -299,7 +325,7 @@ declare -A do_parallel
 echo -e "\nSetting up Parallel block 4"
 
 echo -e "\t[Parallel block 4] cgpPindel added..."
-do_parallel[cgpPindel]="nice -n 10 pindel.pl \
+do_parallel[cgpPindel]="pindel.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel \
  -r $REF_BASE/genome.fa \
  -t $BAM_MT_TMP \
@@ -311,9 +337,9 @@ do_parallel[cgpPindel]="nice -n 10 pindel.pl \
  -st $PROTOCOL \
  -as $ASSEMBLY \
  -sp '$SPECIES' \
- -e $PINDEL_EXCLUDE \
+ -e $CONTIG_EXCLUDE \
  -b $REF_BASE/pindel/HiDepth.bed.gz \
- -c $CPU \
+ -c $PINDEL_CPU \
  -sf $REF_BASE/pindel/softRules.lst"
 
 echo -e "\t[Parallel block 4] CaVEMan added..."
@@ -336,10 +362,19 @@ do_parallel[CaVEMan]="caveman.pl \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
  -no-flagging"
 
 echo "Starting Parallel block 4: `date`"
 run_parallel do_parallel
+
+GERMLINE_BED=$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed
+if [ -f $GERMLINE_BED ]; then
+  # need to sort and index pindel germline
+  sort -k1,1 -k2,2n -k3,3n $GERMLINE_BED | bgzip -c > $GERMLINE_BED.gz
+  tabix -p bed $GERMLINE_BED.gz
+  rm -f $GERMLINE_BED
+fi
 
 # unset and redeclare the parallel array ready for next block
 unset do_parallel
@@ -360,7 +395,7 @@ do_parallel[BRASS]="brass.pl -j 4 -k 4 -c $CPU \
  -cb $REF_BASE/brass/cytoband.txt \
  -t $BAM_MT_TMP \
  -n $BAM_WT_TMP \
- -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/*.samplestatistics.txt \
+ -ss $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.samplestatistics.txt \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/brass"
 
 # ensure no annotated pindel
@@ -379,7 +414,7 @@ do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
  -m $BAM_MT_TMP \
  -n $BAM_WT_TMP \
  -b $REF_BASE/caveman/flagging \
- -g $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.germline.bed \
+ -g $GERMLINE_BED.gz \
  -umv $REF_BASE/caveman \
  -ab $REF_BASE/vagrent \
  -ref $REF_BASE/genome.fa.fai \
@@ -409,8 +444,10 @@ echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
  -b $BAM_MT_TMP \
+ -t $CPU \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
- -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json"
+ -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json \
+ -s $REF_BASE/verifyBamID_snps.vcf.gz"
 
 echo "Starting Parallel block 6: `date`"
 run_parallel do_parallel
@@ -425,18 +462,20 @@ rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_MT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}.time.verify_MT
 
+# cleanup reference area, see ds-cgpwgs.pl
+if [ ! -z ${CLEAN_REF+x} ]; then
+  rm -rf $REF_BASE
+fi
+
+# cleanup ref cache
+if [ "$ALN_EXTN" == "cram" ]; then
+  rm -rf $USER_CACHE
+fi
+
 echo 'Package results'
 # timings first
-tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
-tar -C $OUTPUT_DIR -zcf ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
-cp $PARAM_FILE ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
-
-# run any post-exec step
-echo -e "\nRun POST_EXEC: `date`"
-for i in "${POST_EXEC[@]}"; do
-  set -x
-  $i
-  set +x
-done
+tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
+tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+cp $PARAM_FILE $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
 
 echo -e "\nWorkflow end: `date`"
