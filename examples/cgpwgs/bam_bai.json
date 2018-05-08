@@ -1,26 +1,26 @@
 {
   "reference": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/core_ref_GRCh37d5.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/core_ref_GRCh37d5.tar.gz",
     "class": "File"
   },
   "annot": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz",
     "class": "File"
   },
   "snv_indel": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz",
     "class": "File"
   },
   "cnv_sv": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5_brass6+.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5_brass6+.tar.gz",
     "class": "File"
   },
   "subcl": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
     "class": "File"
   },
   "qcset": {
-    "path": "ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/human/qcGenotype_GRCh37d5.tar.gz",
+    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/qcGenotype_GRCh37d5.tar.gz",
     "class": "File"
   },
   "tumour": {
