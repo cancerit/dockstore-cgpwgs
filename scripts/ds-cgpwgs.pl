@@ -18,7 +18,7 @@ my %opts = ('c' => undef,
             'as' => undef,
             'pu' => undef,
             'pi' => undef,
-
+            'cr' => 350000,
             );
 
 GetOptions( 'h|help' => \$opts{'h'},
@@ -37,7 +37,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
-            'cr|cavereads=i' => \$opts{'cr'},
+            'cr|cavereads:i' => \$opts{'cr'},
             'c|cores:i' => \$opts{'c'},
             'o|outdir:s' => \$opts{'o'},
             'pu|purity:f' => \$opts{'pu'},
@@ -289,6 +289,7 @@ dh-wrapper.pl [options] [file(s)...]
     -cores       -c   Set the number of cpu/cores available [default all].
     -ploidy      -pl  Set the ploidy (rho) for ascat - requires purity
     -purity      -pu  Set the purity (psi) for ascat - requires ploidy
+    -cavereads   -cr  Reads target per caveman split section [350000]
 
   Other:
     -help        -h   Brief help message.
