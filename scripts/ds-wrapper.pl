@@ -12,7 +12,7 @@ use warnings FATAL => 'all';
 pod2usage(-verbose => 1, -exitval => 1) if(@ARGV == 0);
 
 # set defaults
-my %opts = ();
+my %opts = ('pc' => 8,);
 
 GetOptions( 'h|help' => \$opts{'h'},
             'm|man' => \$opts{'m'},
@@ -27,7 +27,8 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species=s' => \$opts{'sp'},
             'as|assembly=s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
-            'cr|cavereads=i' => \$opts{'cr'}
+            'cr|cavereads=i' => \$opts{'cr'},
+            'pc|pindelcpu:i' => \$opts{'pc'}
 ) or pod2usage(2);
 
 pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -103,6 +104,7 @@ printf $FH "REF_BASE='%s'\n", $ref_area;
 printf $FH "BAM_MT='%s'\n", $opts{'t'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
 printf $FH "PINDEL_EXCLUDE='%s'\n", $opts{'e'};
+printf $FH "PINDEL_MAXCPU=%d\n", $opts{'pc'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
@@ -224,6 +226,7 @@ dh-wrapper.pl [options] [file(s)...]
     -species     -sp  Species name (may require quoting)
     -assembly    -a   Reference assembly
     -skipbb      -sb  Skip Battenberg allele counts
+    -pindelcpu   -pc  Max CPUs for pindel analysis, >8 ignored [8]
 
   Other:
     -help        -h   Brief help message.
@@ -282,6 +285,11 @@ Specify overriding assembly, by default will select the most prevelant entry in
 =item B<-skipbb>
 
 Disables the Battenberg allele count generation
+
+=item B<-pindelcpu>
+
+Maximum parallel CPU jobs for pindel.  Useful if you have data with an extreme memory spike.
+Rarely needs setting.
 
 =back
 

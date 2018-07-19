@@ -1,3 +1,8 @@
+### 1.1.4
+
+* Provide parameter to allow user to lower max pindel threads for analysis proving to have huge memory spikes
+* Add `-force` to `ascat.pl` execution, seems to have been lost along the way
+
 ### 1.1.3
 
 * Limit max threads for pindel to prevent memory explosion on noisy datasets

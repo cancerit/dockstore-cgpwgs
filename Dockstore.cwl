@@ -22,7 +22,7 @@ dct:creator:
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.1.3"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:1.1.4"
 
 hints:
   - class: ResourceRequirement
@@ -130,13 +130,22 @@ inputs:
       position: 11
       separate: true
 
+  pindelcpu:
+    type: int?
+    doc: "Max cpus for pindel, ignores >8"
+    default: 8
+    inputBinding:
+      prefix: -pindelcpu
+      position: 12
+      separate: true
+
   cavereads:
     type: int?
     doc: "Number of reads in a split section for CaVEMan"
     default: 350000
     inputBinding:
       prefix: -cavereads
-      position: 12
+      position: 13
       separate: true
 
 outputs:
