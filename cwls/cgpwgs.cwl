@@ -25,7 +25,7 @@ doc: |
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.0.0"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.0.1"
 
 hints:
   - class: ResourceRequirement
@@ -139,6 +139,14 @@ inputs:
     doc: "Skip Battenberg allele counts"
     inputBinding:
       prefix: -skipbb
+      separate: true
+
+  pindelcpu:
+    type: int?
+    doc: "Max cpus for pindel, ignores >8"
+    default: 8
+    inputBinding:
+      prefix: -pindelcpu
       separate: true
 
   cavereads:

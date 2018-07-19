@@ -67,10 +67,9 @@ if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
 fi
 
-PINDEL_CPU=$CPU
-if [ $PINDEL_CPU -gt 8 ]; then
-  PINDEL_CPU=8
-fi
+# calculate the min of user defined, host and max we should ever allow for pindel
+min_cpu=`echo -e "$PINDEL_MAXCPU\n$CPU\n8" | sort -k1,1n | head -n 1`
+PINDEL_CPU=$min_cpu
 
 # create area which allows monitoring site to be started, not actively updated until after PRE-EXEC completes
 #cp -r /opt/wtsi-cgp/site $OUTPUT_DIR/site
@@ -273,6 +272,7 @@ do_parallel[ascat]="ascat.pl \
  -pr $PROTOCOL \
  -pl ILLUMINA \
  -c $CPU\
+ -force\
  $ASCAT_ADD_ARGS"
 
 echo -e "\t[Parallel block 3] BRASS_input added..."
