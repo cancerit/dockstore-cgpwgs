@@ -1,5 +1,15 @@
 # CHANGES
 
+## 2.0.1
+
+* Add param to skip QC related steps that rely on heterozygous data.
+
+Merge back-port into mainline:
+
+* 1.1.4
+  * Provide parameter to allow user to lower max pindel threads for analysis proving to have huge memory spikes
+  * Add `-force` to `ascat.pl` execution, seems to have been lost along the way
+
 ## 2.0.0
 
 * Full support for BAM+CSI and CRAM+CRAI as inputs

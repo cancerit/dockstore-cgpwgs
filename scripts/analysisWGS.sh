@@ -67,10 +67,9 @@ if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
 fi
 
-PINDEL_CPU=$CPU
-if [ $PINDEL_CPU -gt 8 ]; then
-  PINDEL_CPU=8
-fi
+# calculate the min of user defined, host and max we should ever allow for pindel
+min_cpu=`echo -e "$PINDEL_MAXCPU\n$CPU\n8" | sort -k1,1n | head -n 1`
+PINDEL_CPU=$min_cpu
 
 # create area which allows monitoring site to be started, not actively updated until after PRE-EXEC completes
 #cp -r /opt/wtsi-cgp/site $OUTPUT_DIR/site
@@ -184,22 +183,27 @@ else
     -t $CPU"
 fi
 
-echo -e "\t[Parallel block 1] Genotype Check added..."
-do_parallel[geno]="compareBamGenotypes.pl \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
- -nb $BAM_WT_TMP \
- -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
- -tb $BAM_MT_TMP \
- -s $REF_BASE/general.tsv \
- -g $REF_BASE/gender.tsv"
+if [ ! -z ${SKIPQC+x} ]; then
+  do_parallel[geno]="echo 'Genotype Check disabled by params'"
+  do_parallel[verify_WT]="echo 'VerifyBam Normal disabled by params'"
+else
+  echo -e "\t[Parallel block 1] Genotype Check added..."
+  do_parallel[geno]="compareBamGenotypes.pl \
+  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped \
+  -nb $BAM_WT_TMP \
+  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/genotyped/result.json \
+  -tb $BAM_MT_TMP \
+  -s $REF_BASE/general.tsv \
+  -g $REF_BASE/gender.tsv"
 
-echo -e "\t[Parallel block 1] VerifyBam Normal added..."
-do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
-  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
-  -b $BAM_WT_TMP \
-  -t $CPU \
-  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json \
-  -s $REF_BASE/verifyBamID_snps.vcf.gz"
+  echo -e "\t[Parallel block 1] VerifyBam Normal added..."
+  do_parallel[verify_WT]="verifyBamHomChk.pl -d 25 \
+    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination \
+    -b $BAM_WT_TMP \
+    -t $CPU \
+    -j $OUTPUT_DIR/${PROTOCOL}_${NAME_WT}/contamination/result.json \
+    -s $REF_BASE/verifyBamID_snps.vcf.gz"
+fi
 
 echo "Starting Parallel block 1: `date`"
 run_parallel do_parallel
@@ -273,6 +277,7 @@ do_parallel[ascat]="ascat.pl \
  -pr $PROTOCOL \
  -pl ILLUMINA \
  -c $CPU\
+ -force\
  $ASCAT_ADD_ARGS"
 
 echo -e "\t[Parallel block 3] BRASS_input added..."
@@ -440,6 +445,9 @@ do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
+if [ ! -z ${SKIPQC+x} ]; then
+  do_parallel[verify_WT]="echo 'VerifyBam Tumour disabled by params'"
+else
 echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -o $OUTPUT_DIR/${PROTOCOL}_$NAME_MT/contamination \
@@ -448,6 +456,7 @@ do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
  -a $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/${NAME_MT}.copynumber.caveman.csv \
  -j $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}/contamination/result.json \
  -s $REF_BASE/verifyBamID_snps.vcf.gz"
+fi
 
 echo "Starting Parallel block 6: `date`"
 run_parallel do_parallel
