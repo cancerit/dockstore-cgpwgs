@@ -141,6 +141,13 @@ inputs:
       prefix: -skipbb
       separate: true
 
+  skipqc:
+    type: boolean?
+    doc: "Disable genotype and verifyBamID steps"
+    inputBinding:
+      prefix: -skipqc
+      separate: true
+
   pindelcpu:
     type: int?
     doc: "Max cpus for pindel, ignores >8"

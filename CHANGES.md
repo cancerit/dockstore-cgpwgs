@@ -2,6 +2,8 @@
 
 ## 2.0.1
 
+* Add param to skip QC related steps that rely on heterozygous data.
+
 Merge back-port into mainline:
 
 * 1.1.4

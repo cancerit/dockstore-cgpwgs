@@ -38,6 +38,7 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
+            'sq|skipqc' => \$opts{'sq'},
             'cr|cavereads:i' => \$opts{'cr'},
             'pc|pindelcpu:i' => \$opts{'pc'},
             'c|cores:i' => \$opts{'c'},
@@ -139,6 +140,7 @@ printf $FH "ASCAT_PURITY=%.5f\n", $opts{'pu'} if(defined $opts{'pu'});
 printf $FH "CLEAN_REF=1\n" if($ref_unpack);
 # Options to disable algorithms
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
+print $FH "SKIPQC=1\n" if(exists $opts{'sq'});
 close $FH;
 
 ### Ensure headless compatible R is used for images (cairo):
@@ -352,6 +354,10 @@ Specify overriding assembly, by default will select the most prevelant entry in
 =item B<-skipbb>
 
 Disables the Battenberg allele count generation
+
+=item B<-skipqc>
+
+Disable genotype, gender and verifyBamID. Generally you want to set this for non-human data
 
 =item B<-pindelcpu>
 
