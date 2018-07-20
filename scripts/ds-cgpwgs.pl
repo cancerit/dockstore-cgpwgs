@@ -19,6 +19,7 @@ my %opts = ('c' => undef,
             'pu' => undef,
             'pi' => undef,
             'cr' => 350000,
+            'pc' => 8,
             );
 
 GetOptions( 'h|help' => \$opts{'h'},
@@ -37,7 +38,9 @@ GetOptions( 'h|help' => \$opts{'h'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
             'sb|skipbb' => \$opts{'sb'},
+            'sq|skipqc' => \$opts{'sq'},
             'cr|cavereads:i' => \$opts{'cr'},
+            'pc|pindelcpu:i' => \$opts{'pc'},
             'c|cores:i' => \$opts{'c'},
             'o|outdir:s' => \$opts{'o'},
             'pu|purity:f' => \$opts{'pu'},
@@ -126,6 +129,7 @@ printf $FH "IDX_MT='%s'\n", $opts{'tidx'};
 printf $FH "BAM_WT='%s'\n", $opts{'n'};
 printf $FH "IDX_WT='%s'\n", $opts{'nidx'};
 printf $FH "CONTIG_EXCLUDE='%s'\n", $opts{'e'};
+printf $FH "PINDEL_MAXCPU=%d\n", $opts{'pc'};
 printf $FH "SPECIES='%s'\n", $opts{'sp'};
 printf $FH "ASSEMBLY='%s'\n", $opts{'as'};
 printf $FH "CAVESPLIT='%s'\n", $opts{'cr'};
@@ -136,6 +140,7 @@ printf $FH "ASCAT_PURITY=%.5f\n", $opts{'pu'} if(defined $opts{'pu'});
 printf $FH "CLEAN_REF=1\n" if($ref_unpack);
 # Options to disable algorithms
 print $FH "SKIPBB=1\n" if(exists $opts{'sb'});
+print $FH "SKIPQC=1\n" if(exists $opts{'sq'});
 close $FH;
 
 ### Ensure headless compatible R is used for images (cairo):
@@ -285,6 +290,7 @@ dh-wrapper.pl [options] [file(s)...]
     -species     -sp  Species name (may require quoting)
     -assembly    -as   Reference assembly
     -skipbb      -sb  Skip Battenberg allele counts
+    -pindelcpu   -pc  Max CPUs for pindel analysis, >8 ignored [8]
     -outdir      -o   Set the output folder [$HOME]
     -cores       -c   Set the number of cpu/cores available [default all].
     -ploidy      -pl  Set the ploidy (rho) for ascat - requires purity
@@ -348,6 +354,15 @@ Specify overriding assembly, by default will select the most prevelant entry in
 =item B<-skipbb>
 
 Disables the Battenberg allele count generation
+
+=item B<-skipqc>
+
+Disable genotype, gender and verifyBamID. Generally you want to set this for non-human data
+
+=item B<-pindelcpu>
+
+Maximum parallel CPU jobs for pindel.  Useful if you have data with an extreme memory spike.
+Rarely needs setting.
 
 =item B<-outdir>
 
