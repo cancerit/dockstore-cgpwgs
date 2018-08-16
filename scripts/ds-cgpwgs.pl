@@ -267,11 +267,11 @@ __END__
 
 =head1 NAME
 
-dh-wrapper.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
+dh-cgpwgs.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
 
 =head1 SYNOPSIS
 
-dh-wrapper.pl [options] [file(s)...]
+dh-cgpwgs.pl [options] [file(s)...]
 
   Required parameters:
     -reference   -r   Path to core reference tar.gz
@@ -285,6 +285,7 @@ dh-wrapper.pl [options] [file(s)...]
     -nidx             Normal [CR|B]AM index (bai|csi|crai)
     -exclude     -e   Exclude these contigs from SNV/Indel analysis
                         e.g. NC_007605,hs37d5,GL%
+    -qcset       -qc  Path to qcGenotype*.tar.gz
 
   Optional parameters
     -species     -sp  Species name (may require quoting)
@@ -340,6 +341,10 @@ Path to normal BAM or CRAM file with co-located index and BAS file.
 =item B<-exclude>
 
 Contigs to be excluded from Pindel analysis, csv, use '%' for wildcard.
+
+=item B<-qcset>
+
+Path to qcGenotype*.tar.gz
 
 =item B<-species>
 
