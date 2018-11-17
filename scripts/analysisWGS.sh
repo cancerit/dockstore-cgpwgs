@@ -446,7 +446,7 @@ do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
 if [ ! -z ${SKIPQC+x} ]; then
-  do_parallel[verify_WT]="echo 'VerifyBam Tumour disabled by params'"
+  do_parallel[verify_MT]="echo 'VerifyBam Tumour disabled by params'"
 else
 echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
