@@ -36,4 +36,4 @@ ipak(c("ggplot2"))
 ipak(c("gridExtra"))
 ipak(c("gtools"))
 
-install_github("sb43/copynumber", ref="f1688edc154f1a0e3aacf7781090afe02882f623")
+install_github("Irrationone/copynumber", ref="87d2663fe6b11c03cf6006b4ee9ed70450eacb5a")
