@@ -484,7 +484,11 @@ fi
 echo 'Package results'
 # timings first
 tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
-tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+if [ ! -z ${SKIPQC+x} ]; then
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}
+else
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+fi
 cp $PARAM_FILE $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
 
 echo -e "\nWorkflow end: `date`"
