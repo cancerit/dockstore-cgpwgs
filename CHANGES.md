@@ -1,5 +1,9 @@
 # CHANGES
 
+## 2.0.2
+
+* Correct skipqc flag
+
 ## 2.0.1
 
 * Add param to skip QC related steps that rely on heterozygous data.

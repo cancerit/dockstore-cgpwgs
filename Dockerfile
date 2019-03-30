@@ -58,7 +58,7 @@ MAINTAINER  keiranmraine@gmail.com
 
 LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
 LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
-LABEL uk.ac.sanger.cgp.version="2.0.1"
+LABEL uk.ac.sanger.cgp.version="2.0.2"
 
 RUN bash -c 'apt-get update -yq >& this.log || (cat this.log 1>&2 && exit 1)'
 RUN bash -c 'apt-get install -qy --no-install-recommends lsb-release >& this.log || (cat this.log 1>&2 && exit 1)'
