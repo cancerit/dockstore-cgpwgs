@@ -58,6 +58,7 @@ if((defined($opts{'pu'}) && !defined($opts{'pi'})) || (!defined($opts{'pu'}) && 
 delete $opts{'h'};
 delete $opts{'m'};
 delete $opts{'sb'} if(! defined $opts{'sb'}  || length $opts{'sb'} == 0);
+delete $opts{'sq'} if(! defined $opts{'sq'}  || length $opts{'sq'} == 0);
 
 resolve_sp_as(\%opts);
 
