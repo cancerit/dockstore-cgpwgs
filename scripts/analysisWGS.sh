@@ -137,7 +137,7 @@ if [ "$ALN_EXTN" == "cram" ]; then
   ## prime the cache
   USER_CACHE=$OUTPUT_DIR/ref_cache
   export REF_CACHE=$USER_CACHE/%2s/%2s/%s
-  export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
+  export REF_PATH=$REF_CACHE
   do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
 fi
 
