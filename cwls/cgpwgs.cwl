@@ -62,13 +62,6 @@ inputs:
       prefix: -cnv_sv
       separate: true
 
-  subcl:
-    type: File
-    doc: "Supporting files for allele counts used by Battenberg Subclonal CNV analysis"
-    inputBinding:
-      prefix: -subcl
-      separate: true
-
   qcset:
     type: File
     doc: "Supporting files for QC tools"
@@ -133,13 +126,6 @@ inputs:
       prefix: -assembly
       separate: true
       shellQuote: true
-
-  skipbb:
-    type: boolean?
-    doc: "Skip Battenberg allele counts"
-    inputBinding:
-      prefix: -skipbb
-      separate: true
 
   skipqc:
     type: boolean?

@@ -28,7 +28,6 @@ GetOptions( 'h|help' => \$opts{'h'},
             'a|annot=s' => \$opts{'a'},
             'si|snv_indel=s' => \$opts{'si'},
             'cs|cnv_sv=s' => \$opts{'cs'},
-            'sc|subcl=s' => \$opts{'sc'},
             'qc|qcset=s' => \$opts{'qc'},
             't|tumour=s' => \$opts{'t'},
             'tidx=s' => \$opts{'tidx'},
@@ -37,7 +36,6 @@ GetOptions( 'h|help' => \$opts{'h'},
             'e|exclude=s' => \$opts{'e'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
-            'sb|skipbb' => \$opts{'sb'},
             'sq|skipqc' => \$opts{'sq'},
             'cr|cavereads:i' => \$opts{'cr'},
             'pc|pindelcpu:i' => \$opts{'pc'},
@@ -96,7 +94,6 @@ if($opts{'r'} eq $opts{'a'}
   && $opts{'r'} eq $opts{'si'}
   && $opts{'r'} eq $opts{'cs'}
   && $opts{'r'} eq $opts{'qc'}
-  && (exists $opts{'sb'} || $opts{'r'} eq $opts{'sc'})
   && -d $opts{'r'}) {
   $ref_area = $opts{'r'};
   $ref_unpack = 0;
@@ -107,7 +104,6 @@ else {
   ref_unpack($ref_area, $opts{'si'});
   ref_unpack($ref_area, $opts{'cs'});
   ref_unpack($ref_area, $opts{'qc'});
-  ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
 }
 
 ## now complete the caveman flaging file correctly
@@ -279,7 +275,6 @@ dh-wrapper.pl [options] [file(s)...]
     -annot       -a   Path to VAGrENT*.tar.gz
     -snv_indel   -si  Path to SNV_INDEL*.tar.gz
     -cnv_sv      -cs  Path to CNV_SV*.tar.gz
-    -subcl       -sc  Path to SUBCL*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
     -tidx             Tumour [CR|B]AM index (bai|csi|crai)
     -normal      -n   Normal [CR|B]AM file
@@ -290,7 +285,6 @@ dh-wrapper.pl [options] [file(s)...]
   Optional parameters
     -species     -sp  Species name (may require quoting)
     -assembly    -as   Reference assembly
-    -skipbb      -sb  Skip Battenberg allele counts
     -pindelcpu   -pc  Max CPUs for pindel analysis, >8 ignored [8]
     -outdir      -o   Set the output folder [$HOME]
     -cores       -c   Set the number of cpu/cores available [default all].
@@ -326,10 +320,6 @@ Path to Path to SNV_INDEL*.tar.gz
 
 Path to Path to CNV_SV*.tar.gz
 
-=item B<-subcl>
-
-Path to Path to SUBCL*.tar.gz
-
 =item B<-tumour>
 
 Path to tumour BAM or CRAM file with co-located index and BAS file.
@@ -351,10 +341,6 @@ Specify overriding species, by default will select the most prevelant entry in
 
 Specify overriding assembly, by default will select the most prevelant entry in
 [CR|B]AM header (to cope with inclusion of viral/decoy sequences).
-
-=item B<-skipbb>
-
-Disables the Battenberg allele count generation
 
 =item B<-skipqc>
 

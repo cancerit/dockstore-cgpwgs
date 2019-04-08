@@ -44,4 +44,3 @@ script:
  - docker run -t --rm dockstore-cgpwgs alleleCounter --version
  - docker run -t --rm dockstore-cgpwgs brass.pl -version
  - docker run -t --rm dockstore-cgpwgs ascat.pl -version
- - docker run -t --rm dockstore-cgpwgs battenberg.pl -version

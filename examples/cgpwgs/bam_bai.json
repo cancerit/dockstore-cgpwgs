@@ -15,10 +15,6 @@
     "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5_brass6+.tar.gz",
     "class": "File"
   },
-  "subcl": {
-    "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SUBCL_ref_GRCh37d5.tar.gz",
-    "class": "File"
-  },
   "qcset": {
     "path": "http://ftp.sanger.ac.uk/pub/cancer/dockstore/human/qcGenotype_GRCh37d5.tar.gz",
     "class": "File"
@@ -43,7 +39,6 @@
   "species": "human",
   "assembly": "GRCh37d5",
   "cavereads": 800000,
-  "skipbb": true,
   "result_archive": {
     "path": "/tmp/result_WGS.tar.gz",
     "class": "File"

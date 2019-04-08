@@ -164,25 +164,6 @@ do_parallel[CaVEMan_setup]="caveman.pl \
  -x $CONTIG_EXCLUDE \
  -p setup"
 
-echo -e "\t[Parallel block 1] BB splitlocifiles added..."
-if [ ! -z ${SKIPBB+x} ]; then
-  do_parallel[splitlocifiles]="echo 'BB splitlocifiles count disabled by params'"
-else
-  do_parallel[splitlocifiles]="battenberg.pl \
-    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-    -u $REF_BASE/battenberg/1000genomesloci \
-    -e $REF_BASE/battenberg/impute/impute_info.txt \
-    -c $REF_BASE/battenberg/probloci.txt \
-    -r $REF_BASE/genome.fa.fai \
-    -ig $REF_BASE/battenberg/ignore_contigs.txt \
-    -ge XX \
-    -tb $BAM_MT_TMP \
-    -nb $BAM_WT_TMP \
-    -p splitlocifiles \
-    -nl 50 \
-    -t $CPU"
-fi
-
 if [ ! -z ${SKIPQC+x} ]; then
   do_parallel[geno]="echo 'Genotype Check disabled by params'"
   do_parallel[verify_WT]="echo 'VerifyBam Normal disabled by params'"
@@ -212,25 +193,6 @@ run_parallel do_parallel
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 2"
-
-echo -e "\t[Parallel block 2] BB alleleCount added..."
-if [ ! -z ${SKIPBB+x} ]; then
-  do_parallel[alleleCount]="echo 'BB allele count disabled by params'"
-else
-  do_parallel[alleleCount]="battenberg.pl \
-    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-    -u $REF_BASE/battenberg/1000genomesloci \
-    -e $REF_BASE/battenberg/impute/impute_info.txt \
-    -c $REF_BASE/battenberg/probloci.txt \
-    -r $REF_BASE/genome.fa.fai \
-    -ig $REF_BASE/battenberg/ignore_contigs.txt \
-    -ge XX \
-    -tb $BAM_MT_TMP \
-    -nb $BAM_WT_TMP \
-    -p allelecount \
-    -nl 50 \
-    -t $CPU"
-fi
 
 echo -e "\t[Parallel block 2] CaVEMan split added..."
 do_parallel[CaVEMan_split]="caveman.pl \
@@ -463,9 +425,6 @@ run_parallel do_parallel
 
 # clean up log files
 rm -rf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/*/logs
-
-# cleanup battenberg logs
-rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/logs/*
 
 # correct default filenames from contamination jobs
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
