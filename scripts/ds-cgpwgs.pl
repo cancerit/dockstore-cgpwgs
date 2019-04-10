@@ -263,17 +263,18 @@ __END__
 
 =head1 NAME
 
-dh-wrapper.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
+ds-cgpwgs.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
 
 =head1 SYNOPSIS
 
-dh-wrapper.pl [options] [file(s)...]
+ds-cgpwgs.pl [options] [file(s)...]
 
   Required parameters:
     -reference   -r   Path to core reference tar.gz
     -annot       -a   Path to VAGrENT*.tar.gz
     -snv_indel   -si  Path to SNV_INDEL*.tar.gz
     -cnv_sv      -cs  Path to CNV_SV*.tar.gz
+    -qcset       -qc  Path to qcGenotype*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
     -tidx             Tumour [CR|B]AM index (bai|csi|crai)
     -normal      -n   Normal [CR|B]AM file
@@ -305,19 +306,29 @@ Wrapper script to map dockstore cwl inputs to PARAMS file used by underlying cod
 
 =item B<-reference>
 
-Path to mapping tar.gz reference files
+Path to mapping tar.gz reference bundle or root of all expanded reference bundles.
+
+e.g. for each ref bundle needed
+
+mkdir expanded
+curl -L ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/.../core_ref_xxx.tar.gz \
+tar -C expanded --strip-components 1 -zx
 
 =item B<-annot>
 
-Path to VAGrENT*.tar.gz
+Path to VAGrENT*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-snv_indel>
 
-Path to Path to SNV_INDEL*.tar.gz
+Path to SNV_INDEL*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-cnv_sv>
 
-Path to Path to CNV_SV*.tar.gz
+Path to CNV_SV*.tar.gz reference bundle or root of all expanded reference bundles.
+
+=item B<-qcset>
+
+Path to qcGenotype*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-tumour>
 
