@@ -109,7 +109,7 @@ COPY scripts/ds-cgpwgs.pl $OPT/bin/ds-cgpwgs.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-cgpwgs.pl
 
 ## HACK
-cp Threaded.pm $OPT/lib/perl5/PCAP/Threaded.pm
+COPY Threaded.pm $OPT/lib/perl5/PCAP/Threaded.pm
 
 ## USER CONFIGURATION
 RUN adduser --disabled-password --gecos '' ubuntu && chsh -s /bin/bash && mkdir -p /home/ubuntu
