@@ -9,7 +9,7 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="v4.0.1"
+VER_ALLELECOUNT="v4.0.2"
 
 ### cgpNgsQc
 VER_CGPNGSQC="v1.5.1"
