@@ -1,4 +1,4 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.1.2 as builder
+FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.1.3 as builder
 
 USER  root
 
@@ -58,7 +58,7 @@ MAINTAINER  keiranmraine@gmail.com
 
 LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
 LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
-LABEL uk.ac.sanger.cgp.version="2.0.2"
+LABEL uk.ac.sanger.cgp.version="2.1.0"
 
 RUN apt-get update -yq && \
 apt-get install -qy --no-install-recommends lsb-release
