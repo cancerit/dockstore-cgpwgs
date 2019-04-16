@@ -1,4 +1,4 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.1.1 as builder
+FROM  quay.io/wtsicgp/dockstore-cgpwxs:3.1.2 as builder
 
 USER  root
 
@@ -60,37 +60,40 @@ LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
 LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
 LABEL uk.ac.sanger.cgp.version="2.0.2"
 
-RUN bash -c 'apt-get update -yq >& this.log || (cat this.log 1>&2 && exit 1)'
-RUN bash -c 'apt-get install -qy --no-install-recommends lsb-release >& this.log || (cat this.log 1>&2 && exit 1)'
+RUN apt-get update -yq && \
+apt-get install -qy --no-install-recommends lsb-release
 
-RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list
-RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
-RUN gpg -a --export E084DAB9 | apt-key add -
+RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list && \
+gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
+gpg -a --export E084DAB9 | apt-key add -
 
-RUN bash -c 'apt-get update -yq >& this.log || (cat this.log 1>&2 && exit 1)'
-RUN bash -c 'apt-get install -yq --no-install-recommends\
-  apt-transport-https\
-  locales\
-  curl\
-  ca-certificates\
-  libperlio-gzip-perl\
-  libssh2-1\
-  bzip2\
-  psmisc\
-  time\
-  zlib1g\
-  liblzma5\
-  libncurses5\
-  libcairo2\
-  gfortran\
-  r-base\
-  exonerate\
-  libboost-iostreams-dev\
-  p11-kit\
-     >& this.log || (cat this.log 1>&2 && exit 1)'
+RUN apt-get update -yq && \
+apt-get install -yq --no-install-recommends \
+apt-transport-https \
+locales \
+curl \
+ca-certificates \
+libperlio-gzip-perl \
+libssh2-1 \
+bzip2 \
+psmisc \
+time \
+zlib1g \
+liblzma5 \
+libncurses5 \
+libcairo2 \
+gfortran \
+r-base \
+exonerate \
+libboost-iostreams-dev \
+p11-kit \
+unattended-upgrades && \
+unattended-upgrade -d -v && \
+apt-get remove -yq unattended-upgrades && \
+apt-get autoremove -yq
 
-RUN bash -c 'locale-gen en_US.UTF-8 >& this.log || (cat this.log 1>&2 && exit 1)'
-RUN bash -c 'update-locale LANG=en_US.UTF-8 >& this.log || (cat this.log 1>&2 && exit 1)'
+RUN locale-gen en_US.UTF-8 && \
+update-locale LANG=en_US.UTF-8
 
 ENV OPT /opt/wtsi-cgp
 ENV PATH $OPT/bin:$OPT/biobambam2/bin:$PATH
@@ -107,9 +110,6 @@ COPY --from=builder $OPT $OPT
 COPY scripts/analysisWGS.sh $OPT/bin/analysisWGS.sh
 COPY scripts/ds-cgpwgs.pl $OPT/bin/ds-cgpwgs.pl
 RUN chmod a+x $OPT/bin/analysisWGS.sh $OPT/bin/ds-cgpwgs.pl
-
-## HACK
-COPY Threaded.pm $OPT/lib/perl5/PCAP/Threaded.pm
 
 ## USER CONFIGURATION
 RUN adduser --disabled-password --gecos '' ubuntu && chsh -s /bin/bash && mkdir -p /home/ubuntu
