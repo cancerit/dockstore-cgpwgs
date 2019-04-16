@@ -1,5 +1,12 @@
 # CHANGES
 
+## 2.1.0
+
+* Update base image
+* Upgrade allele counter and brass
+* Reduce number of layers in final image.
+* Remove some legacy env vars from wrappers
+
 ## 2.0.2
 
 * Correct skipqc flag
