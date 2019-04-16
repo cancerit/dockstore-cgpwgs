@@ -61,7 +61,6 @@ if [ ! -f $PARAM_FILE ]; then
   exit 1
 fi
 source $PARAM_FILE
-env
 
 if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
