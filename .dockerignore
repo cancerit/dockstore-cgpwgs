@@ -2,5 +2,6 @@
 /examples/
 /images/
 /git-hooks/
-/*.*
+/CHANGES.md
+/README.md
 /LICENSE
