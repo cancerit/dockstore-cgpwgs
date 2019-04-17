@@ -407,7 +407,7 @@ do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
 if [ ! -z ${SKIPQC+x} ]; then
-  do_parallel[verify_WT]="echo 'VerifyBam Tumour disabled by params'"
+  do_parallel[verify_MT]="echo 'VerifyBam Tumour disabled by params'"
 else
 echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
@@ -442,7 +442,11 @@ fi
 echo 'Package results'
 # timings first
 tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
-tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+if [ ! -z ${SKIPQC+x} ]; then
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}
+else
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+fi
 cp $PARAM_FILE $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
 
 echo -e "\nWorkflow end: `date`"
