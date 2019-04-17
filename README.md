@@ -13,10 +13,10 @@ the [Dockstore.org](https://dockstore.org/) framework.
 | [![Master Badge][travis-master]][travis-base] | [![Develop Badge][travis-develop]][travis-base] |
 
 * [Usage](#usage)
-	* [Usable Cores](#usable-cores)
+  * [Usable Cores](#usable-cores)
 * [Other uses](#other-uses)
-	* [Native docker](#native-docker)
-	* [Singularity](#singularity)
+  * [Native docker](#native-docker)
+  * [Singularity](#singularity)
 * [Verifying your deployment](#verifying-your-deployment)
 * [Example data](#example-data)
 * [Diagram of internals](#diagram-of-internals)
@@ -76,47 +76,13 @@ If not set detects available cores on system.
 All of the tools installed as part of [dockstore-cgpmap][dockstore-cgpmap] and
 [dockstore-cgpwxs][dockstore-cgpwxs] and the above packages are available for direct use.
 
-```bash
-export CGPWGS_VER=X.X.X
-docker pull quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
-docker --rm -ti [--volume ...] quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER bash
-```
+See the [docker guide in the wiki][cgpmap-wiki-docker] for more details.
 
 ### Singularity
 
-The resulting docker container has been tested with Singularity.  The command to exec is:
+The resulting docker container has been tested with Singularity.
 
-```bash
-ds-cgpwgs.pl -h
-```
-
-Expected use would be along the lines of:
-
-```bash
-export CGPWGS_VER=X.X.X
-singularity pull docker://quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
-
-singularity exec\
- --workdir /.../workspace  \
- --home /.../workspace:/home  \
- --bind /.../ref/human:/var/spool/ref:ro  \
- --bind /.../example_data/cgpwgs:/var/spool/data:ro  \
- dockstore-cgpwgs-${CGPWGS_VER}.simg  \
-  ds-cgpwgs.pl \
-   -reference /var/spool/ref/core_ref_GRCh37d5.tar.gz \
-   -annot /var/spool/ref/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz \
-   -snv_indel /var/spool/ref/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz \
-   -tumour /var/spool/data/COLO-829_ex.cram \
-   ...
-```
-
-For a system automatically attaching _all local mount points_ (not default singularity behaviour)
-you need not specify any `exec` params (workdir, home, bind) but you should specify the `-outdir`
-option for `ds-cgpwgs.pl` to prevent data being written to your home directory.
-
-By default results are written to the home directory of the container so ensure you bind
-a large volume and set the `-home` variable.  As indicated above the location can be overridden
-via the options of `ds-cgpwgs.pl`
+See the [docker guide in the wiki][cgpmap-wiki-singularity] for more details.
 
 ## Verifying your deployment
 
@@ -200,6 +166,8 @@ identical to a statement that reads ‘Copyright (c) 2005, 2006, 2007, 2008,
 [caveman-wiki]: https://github.com/cancerit/cgpCaVEManWrapper/wiki
 [ascatngs-wiki]: https://github.com/cancerit/ascatNgs/wiki
 [vagrent-wiki]: https://github.com/cancerit/VAGrENT/wiki
+[cgpmap-wiki-docker]: https://github.com/cancerit/dockstore-cgpwgs/wiki/Running-under-docker
+[cgpmap-wiki-singularity]: https://github.com/cancerit/dockstore-cgpwgs/wiki/Running-under-singularity
 
 <!-- Travis -->
 [travis-base]: https://travis-ci.org/cancerit/dockstore-cgpwgs
