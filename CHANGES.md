@@ -2,7 +2,7 @@
 
 ## 2.1.0
 
-* Update base image
+* Update base image to dockstore-cgpwxs:3.1.4
 * Upgrade allele counter and brass
 * Reduce number of layers in final image.
 * Remove some legacy env vars from wrappers
