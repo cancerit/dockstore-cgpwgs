@@ -6,6 +6,10 @@
 * Upgrade allele counter and brass
 * Reduce number of layers in final image.
 * Remove some legacy env vars from wrappers
+* Battenberg removed
+  * Was only included to do base allele counts not complete analysis
+  * Underlying data files are not supported for new builds or other species
+  * Contact [original authors](https://github.com/Wedge-Oxford/battenberg) for ongoing support
 
 ## 2.0.2
 
