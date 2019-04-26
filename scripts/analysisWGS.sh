@@ -233,6 +233,7 @@ do_parallel[ascat]="ascat.pl \
  -r $REF_BASE/genome.fa \
  -q 20 \
  -g L \
+ -l $REF_BASE/gender.tsv \
  -rs '$SPECIES' \
  -ra $ASSEMBLY \
  -pr $PROTOCOL \
