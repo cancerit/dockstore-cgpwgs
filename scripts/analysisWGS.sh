@@ -127,6 +127,28 @@ perl -alne 'print join(qq{\t},$F[0],0,$F[1],2);' < $REF_BASE/genome.fa.fai | tee
 
 echo "Setting up Parallel block 1"
 
+echo -e "\t[Parallel block 1] CaVEMan setup added..."
+do_parallel[CaVEMan_setup]="caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
+ -b $REF_BASE/caveman/flagging \
+ -ab $REF_BASE/vagrent \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
+ -c $SNVFLAG \
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -p setup"
+
 echo -e "\t[Parallel block 1] BB splitlocifiles added..."
 if [ ! -z ${SKIPBB+x} ]; then
   do_parallel[splitlocifiles]="echo 'BB splitlocifiles count disabled by params'"
@@ -185,6 +207,28 @@ else
     -nl 50 \
     -t $CPU"
 fi
+
+echo -e "\t[Parallel block 2] CaVEMan split added..."
+do_parallel[CaVEMan_split]="caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
+ -b $REF_BASE/caveman/flagging \
+ -ab $REF_BASE/vagrent \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
+ -c $SNVFLAG \
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -p split"
 
 echo "Starting Parallel block 2: `date`"
 run_parallel do_parallel
@@ -252,7 +296,7 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
-NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT`
+NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.samplestatistics.txt`
 set +x
 
 # unset and redeclare the parallel array ready for next block
