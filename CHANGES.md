@@ -1,3 +1,7 @@
+### 1.1.5
+
+* Fix missing parameter for containation foing passed from ASCAT to caveman.
+
 ### 1.1.4
 
 * Provide parameter to allow user to lower max pindel threads for analysis proving to have huge memory spikes

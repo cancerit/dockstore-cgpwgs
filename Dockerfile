@@ -1,9 +1,9 @@
-FROM  quay.io/wtsicgp/dockstore-cgpwgs:1.1.2
+FROM  quay.io/wtsicgp/dockstore-cgpwgs:1.1.4
 
 MAINTAINER  keiranmraine@gmail.com
 
 LABEL uk.ac.sanger.cgp="Cancer Genome Project, Wellcome Trust Sanger Institute" \
-      version="1.1.4" \
+      version="1.1.5" \
       description="The CGP WGS pipeline for dockstore.org"
 
 USER  root
