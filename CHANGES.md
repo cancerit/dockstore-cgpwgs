@@ -10,6 +10,11 @@
   * Was only included to do base allele counts not complete analysis
   * Underlying data files are not supported for new builds or other species
   * Contact [original authors](https://github.com/Wedge-Oxford/battenberg) for ongoing support
+* Wrapper script didn't explicitly specify sex SNP loci file (ASCAT)
+  * no impact for GRCh37 other species/build would have used wrong sex chromosome SNPs
+* CaVEMan step wasn't being passed normal contamination value, scientific impact:
+  * previously `caveman.pl` default of `0.1` was applied
+  * this will now honor the value from ASCAT (`1-$rho`)
 
 ## 2.0.2
 

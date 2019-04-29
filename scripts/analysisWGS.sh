@@ -284,6 +284,7 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
+NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT`
 set +x
 
 # unset and redeclare the parallel array ready for next block
@@ -330,7 +331,8 @@ do_parallel[CaVEMan]="caveman.pl \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -x $CONTIG_EXCLUDE \
- -no-flagging"
+ -k $NORM_CONTAM \
+ -no-flagging -noclean"
 
 echo "Starting Parallel block 4: `date`"
 run_parallel do_parallel
@@ -373,20 +375,30 @@ do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cac
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
 
-echo -e "\t[Parallel block 5] cgpFlagCaVEMan added..."
-do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
- -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.muts.ids.vcf.gz \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf \
- -s '$SPECIES' \
- -m $BAM_MT_TMP \
- -n $BAM_WT_TMP \
+echo -e "\t[Parallel block 5] CaVEMan flag added..."
+do_parallel[CaVEMan]="caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
- -g $GERMLINE_BED.gz \
- -umv $REF_BASE/caveman \
  -ab $REF_BASE/vagrent \
- -ref $REF_BASE/genome.fa.fai \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
  -c $SNVFLAG \
- -v $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini"
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
+ -k $NORM_CONTAM \
+ -in $GERMLINE_BED.gz \
+ -p flag"
 
 echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
