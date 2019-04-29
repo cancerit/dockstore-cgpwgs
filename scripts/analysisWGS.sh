@@ -284,7 +284,7 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
-NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT`
+NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.samplestatistics.txt`
 set +x
 
 # unset and redeclare the parallel array ready for next block
