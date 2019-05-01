@@ -396,10 +396,6 @@ do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
 echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
 
-# compress and index flagged caveman
-bgzip $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf
-tabix -p vcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz
-
 # unset and redeclare the parallel array ready for next block
 unset do_parallel
 declare -A do_parallel
