@@ -341,7 +341,7 @@ do_parallel[CaVEMan]="caveman.pl \
  -c $SNVFLAG \
  -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
  -e $CAVESPLIT \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -k $NORM_CONTAM \
  -no-flagging"
 
