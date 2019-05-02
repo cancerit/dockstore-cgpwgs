@@ -217,6 +217,29 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   touch $SETUP_DIR/BRASS.success
 fi
 
+
+### HACK_REMOVE ME - cgpPindel
+VER_CGPPINDEL=feature/speedUpGRCh38
+if [ ! -e $SETUP_DIR/cgpPindel.success ]; then
+  curl -sSL --retry 10 https://github.com/cancerit/cgpPindel/archive/${VER_CGPPINDEL}.tar.gz > distro.tar.gz
+  rm -rf distro/*
+  tar --strip-components 1 -C distro -xzf distro.tar.gz
+  cd distro
+  if [ ! -e $SETUP_DIR/cgpPindel_c.success ]; then
+    g++ -O3 -o $INST_PATH/bin/pindel c++/pindel.cpp
+    g++ -O3 -o $INST_PATH/bin/filter_pindel_reads c++/filter_pindel_reads.cpp
+    touch $SETUP_DIR/cgpPindel_c.success
+  fi
+  cd perl
+  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+  cd $SETUP_DIR
+  rm -rf distro.* distro/*
+  touch $SETUP_DIR/cgpPindel.success
+fi
+
+
+
 cd $HOME
 rm -rf $SETUP_DIR
 
