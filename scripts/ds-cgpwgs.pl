@@ -28,7 +28,6 @@ GetOptions( 'h|help' => \$opts{'h'},
             'a|annot=s' => \$opts{'a'},
             'si|snv_indel=s' => \$opts{'si'},
             'cs|cnv_sv=s' => \$opts{'cs'},
-            'sc|subcl=s' => \$opts{'sc'},
             'qc|qcset=s' => \$opts{'qc'},
             't|tumour=s' => \$opts{'t'},
             'tidx=s' => \$opts{'tidx'},
@@ -37,7 +36,6 @@ GetOptions( 'h|help' => \$opts{'h'},
             'e|exclude=s' => \$opts{'e'},
             'sp|species:s' => \$opts{'sp'},
             'as|assembly:s' => \$opts{'as'},
-            'sb|skipbb' => \$opts{'sb'},
             'sq|skipqc' => \$opts{'sq'},
             'cr|cavereads:i' => \$opts{'cr'},
             'pc|pindelcpu:i' => \$opts{'pc'},
@@ -96,7 +94,6 @@ if($opts{'r'} eq $opts{'a'}
   && $opts{'r'} eq $opts{'si'}
   && $opts{'r'} eq $opts{'cs'}
   && $opts{'r'} eq $opts{'qc'}
-  && (exists $opts{'sb'} || $opts{'r'} eq $opts{'sc'})
   && -d $opts{'r'}) {
   $ref_area = $opts{'r'};
   $ref_unpack = 0;
@@ -107,7 +104,6 @@ else {
   ref_unpack($ref_area, $opts{'si'});
   ref_unpack($ref_area, $opts{'cs'});
   ref_unpack($ref_area, $opts{'qc'});
-  ref_unpack($ref_area, $opts{'sc'}) if(! exists $opts{'sb'});
 }
 
 ## now complete the caveman flaging file correctly
@@ -115,10 +111,6 @@ my $ini = add_species_flag_ini($opts{'sp'}, "$ref_area/caveman/flag.vcf.config.W
 
 my $run_file = $opts{'o'}.'/run.params';
 open my $FH,'>',$run_file or die "Failed to write to $run_file: $!";
-# Force explicit checking of file flush
-print $FH "export PCAP_THREADED_NO_SCRIPT=1\n";
-print $FH "export PCAP_THREADED_FORCE_SYNC=1\n";
-print $FH "export PCAP_THREADED_LOADBACKOFF=1\n";
 print $FH "export PCAP_THREADED_REM_LOGS=1\n";
 # hard-coded
 printf $FH "PROTOCOL=WGS\n";
@@ -268,18 +260,18 @@ __END__
 
 =head1 NAME
 
-dh-wrapper.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
+ds-cgpwgs.pl - Generate the param file and execute analysisWGS.sh (for dockstore)
 
 =head1 SYNOPSIS
 
-dh-wrapper.pl [options] [file(s)...]
+ds-cgpwgs.pl [options] [file(s)...]
 
   Required parameters:
     -reference   -r   Path to core reference tar.gz
     -annot       -a   Path to VAGrENT*.tar.gz
     -snv_indel   -si  Path to SNV_INDEL*.tar.gz
     -cnv_sv      -cs  Path to CNV_SV*.tar.gz
-    -subcl       -sc  Path to SUBCL*.tar.gz
+    -qcset       -qc  Path to qcGenotype*.tar.gz
     -tumour      -t   Tumour [CR|B]AM file
     -tidx             Tumour [CR|B]AM index (bai|csi|crai)
     -normal      -n   Normal [CR|B]AM file
@@ -290,7 +282,6 @@ dh-wrapper.pl [options] [file(s)...]
   Optional parameters
     -species     -sp  Species name (may require quoting)
     -assembly    -as   Reference assembly
-    -skipbb      -sb  Skip Battenberg allele counts
     -pindelcpu   -pc  Max CPUs for pindel analysis, >8 ignored [8]
     -outdir      -o   Set the output folder [$HOME]
     -cores       -c   Set the number of cpu/cores available [default all].
@@ -312,23 +303,29 @@ Wrapper script to map dockstore cwl inputs to PARAMS file used by underlying cod
 
 =item B<-reference>
 
-Path to mapping tar.gz reference files
+Path to mapping tar.gz reference bundle or root of all expanded reference bundles.
+
+e.g. for each ref bundle needed
+
+mkdir expanded
+curl -L ftp://ftp.sanger.ac.uk/pub/cancer/dockstore/.../core_ref_xxx.tar.gz \
+tar -C expanded --strip-components 1 -zx
 
 =item B<-annot>
 
-Path to VAGrENT*.tar.gz
+Path to VAGrENT*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-snv_indel>
 
-Path to Path to SNV_INDEL*.tar.gz
+Path to SNV_INDEL*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-cnv_sv>
 
-Path to Path to CNV_SV*.tar.gz
+Path to CNV_SV*.tar.gz reference bundle or root of all expanded reference bundles.
 
-=item B<-subcl>
+=item B<-qcset>
 
-Path to Path to SUBCL*.tar.gz
+Path to qcGenotype*.tar.gz reference bundle or root of all expanded reference bundles.
 
 =item B<-tumour>
 
@@ -351,10 +348,6 @@ Specify overriding species, by default will select the most prevelant entry in
 
 Specify overriding assembly, by default will select the most prevelant entry in
 [CR|B]AM header (to cope with inclusion of viral/decoy sequences).
-
-=item B<-skipbb>
-
-Disables the Battenberg allele count generation
 
 =item B<-skipqc>
 

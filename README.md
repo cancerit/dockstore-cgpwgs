@@ -12,21 +12,17 @@ the [Dockstore.org](https://dockstore.org/) framework.
 | --------------------------------------------- | ----------------------------------------------- |
 | [![Master Badge][travis-master]][travis-base] | [![Develop Badge][travis-develop]][travis-base] |
 
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [Usage](#usage)
-	- [Usable Cores](#usable-cores)
-- [Other uses](#other-uses)
-	- [Native docker](#native-docker)
-	- [Singularity](#singularity)
-- [Verifying your deployment](#verifying-your-deployment)
-- [Example data](#example-data)
-- [Diagram of internals](#diagram-of-internals)
-- [Development environment](#development-environment)
-- [Release process](#release-process)
-- [LICENCE](#licence)
-
-<!-- /TOC -->
+* [Usage](#usage)
+  * [Usable Cores](#usable-cores)
+* [Other uses](#other-uses)
+  * [Native docker](#native-docker)
+  * [Singularity](#singularity)
+* [Verifying your deployment](#verifying-your-deployment)
+* [Example data](#example-data)
+* [Diagram of internals](#diagram-of-internals)
+* [Development environment](#development-environment)
+* [Release process](#release-process)
+* [LICENCE](#licence)
 
 ## Usage
 
@@ -40,14 +36,14 @@ You should see the usage for the `ds-cgpwgs.pl` script for all parameters (or th
 Required input files are
 
 1. Tumour BAM file
-1. Normal BAM file
-1. Core reference archive (e.g. [core_ref_GRCh37d5.tar.gz][ftp-ref])
-1. WXS reference archive (e.g. [SNV_INDEL_ref_GRCh37d5.tar.gz][ftp-ref])
-1. WGS reference archive (e.g. [CNV_SV_ref_GRCh37d5_brass6+.tar.gz][ftp-ref])
-1. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz][ftp-ref])
-1. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz][ftp-ref])
+2. Normal BAM file
+3. Core reference archive (e.g. [core_ref_GRCh37d5.tar.gz][ftp-ref])
+4. WXS reference archive (e.g. [SNV_INDEL_ref_GRCh37d5.tar.gz][ftp-ref])
+5. WGS reference archive (e.g. [CNV_SV_ref_GRCh37d5_brass6+.tar.gz][ftp-ref])
+6. VAGrENT (annotation) reference archive (e.g. [VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz][ftp-ref])
+7. Subclonal reference archive ([SUBCL_ref_GRCh37d5.tar.gz][ftp-ref])
   * Only needed if `skipbb` is `false`
-1. QC reference archive (e.g. [qcGenotype_GRCh37d5.tar.gz][ftp-ref])
+8. QC reference archive (e.g. [qcGenotype_GRCh37d5.tar.gz][ftp-ref])
 
 Inputs 1&2 are expected to have been mapped using [dockstore-cgpmap][dockstore-cgpmap]
 
@@ -56,12 +52,12 @@ your own reference files.  Much of this information is available on the individu
 pages (or the subsequently linked protocols papers).
 
 * Specific to dockstore-cgpwgs:
-	* [BRASS][brass-wiki]
-	* [ascatNgs][ascatngs-wiki]
+  * [BRASS][brass-wiki]
+  * [ascatNgs][ascatngs-wiki]
 * Inherited from dockstore-cgpwxs:
-	* [cgpCaVEManWrapper][caveman-wiki]
-	* [cgpPindel][cgppindel-wiki]
-	* [VAGrENT][vagrent-wiki]
+  * [cgpCaVEManWrapper][caveman-wiki]
+  * [cgpPindel][cgppindel-wiki]
+  * [VAGrENT][vagrent-wiki]
 
 
 ### Usable Cores
@@ -80,54 +76,18 @@ If not set detects available cores on system.
 All of the tools installed as part of [dockstore-cgpmap][dockstore-cgpmap] and
 [dockstore-cgpwxs][dockstore-cgpwxs] and the above packages are available for direct use.
 
-```
-export CGPWGS_VER=X.X.X
-docker pull quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
-docker --rm -ti [--volume ...] quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER bash
-```
+See the [docker guide in the wiki][cgpmap-wiki-docker] for more details.
 
 ### Singularity
 
-The resulting docker container has been tested with Singularity.  The command to exec is:
+The resulting docker container has been tested with Singularity.
 
-```
-ds-cgpwgs.pl -h
-```
-
-Expected use would be along the lines of:
-
-```
-export CGPWGS_VER=X.X.X
-singularity pull docker://quay.io/wtsicgp/dockstore-cgpwgs:$CGPWGS_VER
-
-singularity exec\
- --workdir /.../workspace  \
- --home /.../workspace:/home  \
- --bind /.../ref/human:/var/spool/ref:ro  \
- --bind /.../example_data/cgpwgs:/var/spool/data:ro  \
- dockstore-cgpwgs-${CGPWGS_VER}.simg  \
-  ds-cgpwgs.pl \
-   -reference /var/spool/ref/core_ref_GRCh37d5.tar.gz \
-   -annot /var/spool/ref/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz \
-   -snv_indel /var/spool/ref/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz \
-   -tumour /var/spool/data/COLO-829_ex.cram \
-   ...
-```
-
-For a system automatically attaching _all local mount points_ (not default singularity behaviour)
-you need not specify any `exec` params (workdir, home, bind) but you should specify the `-outdir`
-option for `ds-cgpwgs.pl` to prevent data being written to your home directory.
-
-By default results are written to the home directory of the container so ensure you bind
-a large volume and set the `-home` variable.  As indicated above the location can be overridden
-via the options of `ds-cgpwgs.pl`
+See the [docker guide in the wiki][cgpmap-wiki-singularity] for more details.
 
 ## Verifying your deployment
 
 The `examples/` tree contains test json files populated with data that can be used to verify the
-tool.  More details can be found [here](examples/README.md).
-
-The `expected/` tree contains the expected output for each tool.  More details can be found [here](expected/README.md).
+tool.
 
 ## Example data
 
@@ -148,7 +108,7 @@ will need to be manually cleaned to keep the repo size down.
 
 Activate the hooks with
 
-```
+```bash
 git config core.hooksPath git-hooks
 ```
 
@@ -157,21 +117,19 @@ git config core.hooksPath git-hooks
 This project is maintained using HubFlow.
 
 1. Make appropriate changes
-1. Build image locally
-1. Run all example inputs and verify any changes are acceptable
-1. Update `expected/` tree with output of last step
-1. Bump version in `Dockerfile` and `Dockstore.cwl`
-1. Push changes
-1. Check state on Travis
-1. Update expected datasets
-1. Generate the release (add notes to GitHub)
-1. Confirm that image has been built on [quay.io][quay-builds]
-1. Update the [dockstore][dockstore-cgpwgs] entry, see [their docs][dockstore-get-started].
+2. Build image locally
+3. Run all example inputs and verify any changes are acceptable
+4. Bump version in `Dockerfile` and `Dockstore.cwl`
+5. Push changes
+6. Check state on Travis
+7. Generate the release (add notes to GitHub)
+8. Confirm that image has been built on [quay.io][quay-builds]
+9. Update the [dockstore][dockstore-cgpwgs] entry, see [their docs][dockstore-get-started].
 
 ## LICENCE
 
-```
-Copyright (c) 2017-2018 Genome Research Ltd.
+```none
+Copyright (c) 2017-2019 Genome Research Ltd.
 
 Author: Cancer Genome Project <cgphelp@sanger.ac.uk>
 
@@ -208,6 +166,8 @@ identical to a statement that reads ‘Copyright (c) 2005, 2006, 2007, 2008,
 [caveman-wiki]: https://github.com/cancerit/cgpCaVEManWrapper/wiki
 [ascatngs-wiki]: https://github.com/cancerit/ascatNgs/wiki
 [vagrent-wiki]: https://github.com/cancerit/VAGrENT/wiki
+[cgpmap-wiki-docker]: https://github.com/cancerit/dockstore-cgpwgs/wiki/Running-under-docker
+[cgpmap-wiki-singularity]: https://github.com/cancerit/dockstore-cgpwgs/wiki/Running-under-singularity
 
 <!-- Travis -->
 [travis-base]: https://travis-ci.org/cancerit/dockstore-cgpwgs
