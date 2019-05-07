@@ -9,7 +9,7 @@ fi
 set -u
 
 ### alleleCount
-VER_ALLELECOUNT="v4.0.0"
+VER_ALLELECOUNT="v4.0.2"
 
 ### cgpNgsQc
 VER_CGPNGSQC="v1.5.1"
@@ -23,12 +23,9 @@ SRC_ASCAT="https://raw.githubusercontent.com/Crick-CancerGenomics/ascat/v2.5.1/A
 VER_GRASS="v2.1.1"
 
 ### BRASS
-VER_BRASS="v6.1.2"
+VER_BRASS="v6.2.1"
 SOURCE_BLAT="http://users.soe.ucsc.edu/~kent/src/blatSrc35.zip"
 SRC_FASTA36="https://github.com/wrpearson/fasta36/archive/fasta-v36.3.8g.tar.gz"
-
-### cgpBattenberg
-VER_CGPBB="v3.3.0"
 
 if [ "$#" -lt "1" ] ; then
   echo "Please provide an installation path such as /opt/ICGC"
@@ -218,21 +215,6 @@ if [ ! -e $SETUP_DIR/BRASS.success ]; then
   cd $SETUP_DIR
   rm -rf distro.* distro/*
   touch $SETUP_DIR/BRASS.success
-fi
-
-### cgpBattenberg
-if [ ! -e $SETUP_DIR/cgpBB.success ]; then
-  curl -sSL --retry 10 https://github.com/cancerit/cgpBattenberg/archive/${VER_CGPBB}.tar.gz > distro.tar.gz
-  rm -rf distro/*
-  tar --strip-components 1 -C distro -xzf distro.tar.gz
-  cd distro/Rsupport
-  ./setupR.sh $INST_PATH
-  cd $SETUP_DIR/distro/perl
-  cpanm --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
-  cpanm -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
-  cd $SETUP_DIR
-  rm -rf distro.* distro/*
-  touch $SETUP_DIR/cgpBB.success
 fi
 
 cd $HOME

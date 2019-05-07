@@ -61,7 +61,6 @@ if [ ! -f $PARAM_FILE ]; then
   exit 1
 fi
 source $PARAM_FILE
-env
 
 if [ -z ${CPU+x} ]; then
   CPU=`grep -c ^processor /proc/cpuinfo`
@@ -137,7 +136,7 @@ if [ "$ALN_EXTN" == "cram" ]; then
   ## prime the cache
   USER_CACHE=$OUTPUT_DIR/ref_cache
   export REF_CACHE=$USER_CACHE/%2s/%2s/%s
-  export REF_PATH=$REF_CACHE:http://www.ebi.ac.uk/ena/cram/md5/%s
+  export REF_PATH=$REF_CACHE
   do_parallel[cache_POP]="seq_cache_populate.pl -root $USER_CACHE $REF_BASE/genome.fa"
 fi
 
@@ -163,25 +162,6 @@ do_parallel[CaVEMan_setup]="caveman.pl \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -x $CONTIG_EXCLUDE \
  -p setup"
-
-echo -e "\t[Parallel block 1] BB splitlocifiles added..."
-if [ ! -z ${SKIPBB+x} ]; then
-  do_parallel[splitlocifiles]="echo 'BB splitlocifiles count disabled by params'"
-else
-  do_parallel[splitlocifiles]="battenberg.pl \
-    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-    -u $REF_BASE/battenberg/1000genomesloci \
-    -e $REF_BASE/battenberg/impute/impute_info.txt \
-    -c $REF_BASE/battenberg/probloci.txt \
-    -r $REF_BASE/genome.fa.fai \
-    -ig $REF_BASE/battenberg/ignore_contigs.txt \
-    -ge XX \
-    -tb $BAM_MT_TMP \
-    -nb $BAM_WT_TMP \
-    -p splitlocifiles \
-    -nl 50 \
-    -t $CPU"
-fi
 
 if [ ! -z ${SKIPQC+x} ]; then
   do_parallel[geno]="echo 'Genotype Check disabled by params'"
@@ -212,25 +192,6 @@ run_parallel do_parallel
 unset do_parallel
 declare -A do_parallel
 echo -e "\nSetting up Parallel block 2"
-
-echo -e "\t[Parallel block 2] BB alleleCount added..."
-if [ ! -z ${SKIPBB+x} ]; then
-  do_parallel[alleleCount]="echo 'BB allele count disabled by params'"
-else
-  do_parallel[alleleCount]="battenberg.pl \
-    -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg \
-    -u $REF_BASE/battenberg/1000genomesloci \
-    -e $REF_BASE/battenberg/impute/impute_info.txt \
-    -c $REF_BASE/battenberg/probloci.txt \
-    -r $REF_BASE/genome.fa.fai \
-    -ig $REF_BASE/battenberg/ignore_contigs.txt \
-    -ge XX \
-    -tb $BAM_MT_TMP \
-    -nb $BAM_WT_TMP \
-    -p allelecount \
-    -nl 50 \
-    -t $CPU"
-fi
 
 echo -e "\t[Parallel block 2] CaVEMan split added..."
 do_parallel[CaVEMan_split]="caveman.pl \
@@ -272,6 +233,7 @@ do_parallel[ascat]="ascat.pl \
  -r $REF_BASE/genome.fa \
  -q 20 \
  -g L \
+ -l $REF_BASE/gender.tsv \
  -rs '$SPECIES' \
  -ra $ASSEMBLY \
  -pr $PROTOCOL \
@@ -322,6 +284,7 @@ set -x
 ASCAT_CN="$OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.copynumber.caveman.csv"
 perl -ne '@F=(split q{,}, $_)[1,2,3,4]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/norm.cn.bed
 perl -ne '@F=(split q{,}, $_)[1,2,3,6]; $F[1]-1; print join("\t",@F)."\n";' < $ASCAT_CN > $TMP/tum.cn.bed
+NORM_CONTAM=`perl -ne 'if(m/^rho\s(.+)\n/){print 1-$1;}' $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/ascat/$NAME_MT.samplestatistics.txt`
 set +x
 
 # unset and redeclare the parallel array ready for next block
@@ -368,7 +331,8 @@ do_parallel[CaVEMan]="caveman.pl \
  -e $CAVESPLIT \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
  -x $CONTIG_EXCLUDE \
- -no-flagging"
+ -k $NORM_CONTAM \
+ -no-flagging -noclean"
 
 echo "Starting Parallel block 4: `date`"
 run_parallel do_parallel
@@ -411,27 +375,33 @@ do_parallel[cgpPindel_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cac
  -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.flagged.vcf.gz \
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/pindel/${NAME_MT}_vs_${NAME_WT}.annot.vcf"
 
-echo -e "\t[Parallel block 5] cgpFlagCaVEMan added..."
-do_parallel[cgpFlagCaVEMan]="cgpFlagCaVEMan.pl \
- -i $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.muts.ids.vcf.gz \
- -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf \
- -s '$SPECIES' \
- -m $BAM_MT_TMP \
- -n $BAM_WT_TMP \
+echo -e "\t[Parallel block 5] CaVEMan flag added..."
+do_parallel[CaVEMan_flag]="caveman.pl \
+ -r $REF_BASE/genome.fa.fai \
+ -ig $REF_BASE/caveman/HiDepth.tsv \
  -b $REF_BASE/caveman/flagging \
- -g $GERMLINE_BED.gz \
- -umv $REF_BASE/caveman \
  -ab $REF_BASE/vagrent \
- -ref $REF_BASE/genome.fa.fai \
+ -u $REF_BASE/caveman \
+ -s '$SPECIES' \
+ -sa $ASSEMBLY \
+ -t $CPU \
+ -st $PROTOCOL \
+ -tc $TMP/tum.cn.bed \
+ -nc $TMP/norm.cn.bed \
+ -td 5 -nd 2 \
+ -tb $BAM_MT_TMP \
+ -nb $BAM_WT_TMP \
  -c $SNVFLAG \
- -v $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini"
+ -f $REF_BASE/caveman/flagging/flag.to.vcf.convert.ini \
+ -e $CAVESPLIT \
+ -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman \
+ -x $CONTIG_EXCLUDE \
+ -k $NORM_CONTAM \
+ -in $GERMLINE_BED.gz \
+ -p flag"
 
 echo "Starting Parallel block 5: `date`"
 run_parallel do_parallel
-
-# compress and index flagged caveman
-bgzip $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf
-tabix -p vcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.flagged.muts.vcf.gz
 
 # unset and redeclare the parallel array ready for next block
 unset do_parallel
@@ -446,7 +416,7 @@ do_parallel[CaVEMan_annot]="AnnotateVcf.pl -t -c $REF_BASE/vagrent/vagrent.cache
  -o $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/caveman/${NAME_MT}_vs_${NAME_WT}.annot.muts.vcf"
 
 if [ ! -z ${SKIPQC+x} ]; then
-  do_parallel[verify_WT]="echo 'VerifyBam Tumour disabled by params'"
+  do_parallel[verify_MT]="echo 'VerifyBam Tumour disabled by params'"
 else
 echo -e "\t[Parallel block 6] VerifyBam Tumour added..."
 do_parallel[verify_MT]="verifyBamHomChk.pl -d 25 \
@@ -463,9 +433,6 @@ run_parallel do_parallel
 
 # clean up log files
 rm -rf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/*/logs
-
-# cleanup battenberg logs
-rm -f $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}/battenberg/tmpBattenberg/logs/*
 
 # correct default filenames from contamination jobs
 mv $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.time.verify_WT $OUTPUT_DIR/timings/${PROTOCOL}_${NAME_WT}.time.verify_WT
@@ -484,7 +451,11 @@ fi
 echo 'Package results'
 # timings first
 tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.timings.tar.gz timings
-tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+if [ ! -z ${SKIPQC+x} ]; then
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}
+else
+	tar -C $OUTPUT_DIR -zcf $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.result.tar.gz ${PROTOCOL}_${NAME_MT}_vs_${NAME_WT} ${PROTOCOL}_${NAME_MT} ${PROTOCOL}_${NAME_WT}
+fi
 cp $PARAM_FILE $OUTPUT_DIR/${PROTOCOL}_${NAME_MT}_vs_${NAME_WT}.run.params
 
 echo -e "\nWorkflow end: `date`"

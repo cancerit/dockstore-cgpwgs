@@ -1,5 +1,25 @@
 # CHANGES
 
+## 2.1.0
+
+* Update base image to dockstore-cgpwxs:3.1.6 (from 3.0.3)
+  * Includes, memory footprint reduction for Caveman flagging
+  * Significant speedup in inde input generation
+  * Parallel flagging for SNV
+  * Fragment based SNV/Indel calling
+* Upgrade allele counter and brass
+* Reduce number of layers in final image.
+* Remove some legacy env vars from wrappers
+* Battenberg removed
+  * Was only included to do base allele counts not complete analysis
+  * Underlying data files are not supported for new builds or other species
+  * Contact [original authors](https://github.com/Wedge-Oxford/battenberg) for ongoing support
+* Wrapper script didn't explicitly specify sex SNP loci file (ASCAT)
+  * no impact for GRCh37 other species/build would have used wrong sex chromosome SNPs
+* CaVEMan step wasn't being passed normal contamination value, scientific impact:
+  * previously `caveman.pl` default of `0.1` was applied
+  * this will now honor the value from ASCAT (`1-$rho`)
+
 ## 2.0.2
 
 * Correct skipqc flag

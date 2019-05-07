@@ -25,7 +25,7 @@ doc: |
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.0.2"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.1.0"
 
 hints:
   - class: ResourceRequirement
@@ -60,13 +60,6 @@ inputs:
     doc: "Supporting files for CNV and SV analysis"
     inputBinding:
       prefix: -cnv_sv
-      separate: true
-
-  subcl:
-    type: File
-    doc: "Supporting files for allele counts used by Battenberg Subclonal CNV analysis"
-    inputBinding:
-      prefix: -subcl
       separate: true
 
   qcset:
@@ -133,13 +126,6 @@ inputs:
       prefix: -assembly
       separate: true
       shellQuote: true
-
-  skipbb:
-    type: boolean?
-    doc: "Skip Battenberg allele counts"
-    inputBinding:
-      prefix: -skipbb
-      separate: true
 
   skipqc:
     type: boolean?
