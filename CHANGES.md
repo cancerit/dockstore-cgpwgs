@@ -2,7 +2,11 @@
 
 ## 2.1.0
 
-* Update base image to dockstore-cgpwxs:3.1.4
+* Update base image to dockstore-cgpwxs:3.1.6 (from 3.0.3)
+  * Includes, memory footprint reduction for Caveman flagging
+  * Significant speedup in inde input generation
+  * Parallel flagging for SNV
+  * Fragment based SNV/Indel calling
 * Upgrade allele counter and brass
 * Reduce number of layers in final image.
 * Remove some legacy env vars from wrappers
