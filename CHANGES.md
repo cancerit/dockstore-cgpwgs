@@ -1,5 +1,10 @@
 # CHANGES
 
+## 2.1.1
+
+* updated CWL files metadata schema IRI
+* updated R's GPG key
+
 ## 2.1.0
 
 * Update base image to dockstore-cgpwxs:3.1.6 (from 3.0.3)
