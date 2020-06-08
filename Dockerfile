@@ -6,8 +6,8 @@ RUN bash -c 'apt-get update -yq >& this.log || (cat this.log 1>&2 && exit 1)'
 RUN bash -c 'apt-get install -qy --no-install-recommends lsb-release >& this.log || (cat this.log 1>&2 && exit 1)'
 
 RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list
-RUN gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
-RUN gpg -a --export E084DAB9 | apt-key add -
+RUN gpg --keyserver keyserver.ubuntu.com --recv-key E298A3A825C0D65DFD57CBB651716619E084DAB9
+RUN gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
 
 RUN bash -c 'apt-get update -yq >& this.log || (cat this.log 1>&2 && exit 1)'
 RUN bash -c 'apt-get install -qy --no-install-recommends\
@@ -58,14 +58,14 @@ MAINTAINER  keiranmraine@gmail.com
 
 LABEL vendor="Cancer Genome Project, Wellcome Trust Sanger Institute"
 LABEL uk.ac.sanger.cgp.description="CGP WGS pipeline for dockstore.org"
-LABEL uk.ac.sanger.cgp.version="2.1.0"
+LABEL uk.ac.sanger.cgp.version="2.1.1"
 
 RUN apt-get update -yq && \
 apt-get install -qy --no-install-recommends lsb-release
 
 RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/" >> /etc/apt/sources.list && \
-gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9 && \
-gpg -a --export E084DAB9 | apt-key add -
+gpg --keyserver keyserver.ubuntu.com --recv-key E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
+gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
 
 RUN apt-get update -yq && \
 apt-get install -yq --no-install-recommends \
