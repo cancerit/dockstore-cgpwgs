@@ -25,7 +25,7 @@ doc: |
 
 requirements:
   - class: DockerRequirement
-    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.1.0"
+    dockerPull: "quay.io/wtsicgp/dockstore-cgpwgs:2.1.1"
 
 hints:
   - class: ResourceRequirement
@@ -190,7 +190,7 @@ outputs:
 baseCommand: ["/opt/wtsi-cgp/bin/ds-cgpwgs.pl"]
 
 $schemas:
-  - http://schema.org/docs/schema_org_rdfa.html
+  - https://schema.org/version/latest/schema.rdf
 
 $namespaces:
   s: http://schema.org/
